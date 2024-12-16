@@ -1,0 +1,112 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:IntegratedTestsSampleApp.ViewModels"
+             BackgroundColor="Wheat"
+             x:DataType="vm:TestsPageViewModel"
+             x:Class="IntegratedTestsSampleApp.Views.TestsPage">
+        <ContentPage.BindingContext>
+                <vm:TestsPageViewModel/>
+        </ContentPage.BindingContext>
+        <ContentPage.Resources>
+                <ResourceDictionary>
+                        <Style x:Key="ButtonStyle"
+                               TargetType="Button">
+                                <Setter Property="HorizontalOptions"
+                                        Value="Fill"/>
+                                <Setter Property="BackgroundColor"
+                                        Value="SeaGreen"/>
+                                <Setter Property="FontSize"
+                                        Value="22"/>
+                                <Setter Property="FontAttributes"
+                                        Value="Bold"/>
+                                <Setter Property="CornerRadius"
+                                        Value="8"/>
+                                <Setter Property="FontFamily"
+                                        Value="DarkerGrotesque"/>
+                                <Setter Property="Margin"
+                                        Value="30,10"/>
+                                <Setter Property="Padding"
+                                        Value="10"/>
+                                <Setter Property="TextColor"
+                                        Value="Wheat"/>
+                                <Setter Property="VerticalOptions"
+                                        Value="Center"/>
+                        </Style>
+                        <Style x:Key="EditorStyle"
+                               TargetType="Editor">
+                                <Setter Property="FontAttributes"
+                                        Value="Bold"/>
+                                <Setter Property="FontSize"
+                                        Value="20"/>
+                                <Setter Property="FontFamily"
+                                        Value="DarkerGrotesque"/>
+                                <Setter Property="HorizontalOptions"
+                                        Value="Center"/>
+                                <Setter Property="TextColor"
+                                        Value="SeaGreen"/>
+                                <Setter Property="HorizontalOptions"
+                                        Value="Fill"/>
+                                <Setter Property="HeightRequest"
+                                        Value="200"/>
+                                <Setter Property="Margin"
+                                        Value="40,5"/>
+                                <Setter Property="IsEnabled"
+                                        Value="False"/>
+                        </Style>
+                </ResourceDictionary>
+        </ContentPage.Resources>
+        <ScrollView>
+                <VerticalStackLayout Spacing="20"
+                                     Padding="20">
+                        <!-- DeleteTests -->
+                        <Button Text="DeleteTests"
+                                Command="{Binding DeleteTestsCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="Delete test files"
+                                Style="{StaticResource EditorStyle}"/>
+
+                        <!-- ManyToManyTests -->
+                        <Button Text="ManyToManyTests"
+                                Command="{Binding ManyToManyTestsCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="Many to Many test cases"
+                                Style="{StaticResource EditorStyle}"/>
+
+                        <!-- ManyToOneTests -->
+                        <Button Text="ManyToOneTests"
+                                Command="{Binding ManyToOneTestsCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="Many to One test cases"
+                                Style="{StaticResource EditorStyle}"/>
+
+                        <!-- OneToManyTests -->
+                        <Button Text="OneToManyTests"
+                                Command="{Binding OneToManyTestsCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="One to Many test cases"
+                                Style="{StaticResource EditorStyle}"/>
+
+                        <!-- OneToOneTests -->
+                        <Button Text="OneToOneTests"
+                                Command="{Binding OneToOneCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding OneToOneTestsResult}"
+                                Style="{StaticResource EditorStyle}"/>
+
+                        <!-- RecursiveReadTests -->
+                        <Button Text="RecursiveReadTests"
+                                Command="{Binding RecursiveReadTestsCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="Recursive read operations"
+                                Style="{StaticResource EditorStyle}"/>
+
+                        <!-- RecursiveWriteTests -->
+                        <Button Text="RecursiveWriteTests"
+                                Command="{Binding RecursiveWriteTestsCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="Recursive write operations"
+                                Style="{StaticResource EditorStyle}"/>
+                </VerticalStackLayout>
+        </ScrollView>
+</ContentPage>
