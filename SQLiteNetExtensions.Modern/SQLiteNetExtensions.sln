@@ -13,6 +13,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "IntegratedTests", "Integrat
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UnitTests", "UnitTests\UnitTests.csproj", "{E45B1444-70F9-4A2B-B681-28CA98C67B0F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegrationTests", "IntegrationTests\IntegrationTests.csproj", "{2E708E88-28FA-40B5-AEAC-75BDCEDC6AC4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "IntegratedTestsSampleApp", "IntegratedTestsSampleApp\IntegratedTestsSampleApp.csproj", "{C62DF1D6-08E0-4EDC-8DA7-682459111901}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +31,14 @@ Global
 		{E45B1444-70F9-4A2B-B681-28CA98C67B0F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E45B1444-70F9-4A2B-B681-28CA98C67B0F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E45B1444-70F9-4A2B-B681-28CA98C67B0F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2E708E88-28FA-40B5-AEAC-75BDCEDC6AC4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2E708E88-28FA-40B5-AEAC-75BDCEDC6AC4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2E708E88-28FA-40B5-AEAC-75BDCEDC6AC4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2E708E88-28FA-40B5-AEAC-75BDCEDC6AC4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C62DF1D6-08E0-4EDC-8DA7-682459111901}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C62DF1D6-08E0-4EDC-8DA7-682459111901}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C62DF1D6-08E0-4EDC-8DA7-682459111901}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C62DF1D6-08E0-4EDC-8DA7-682459111901}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -35,5 +47,6 @@ Global
 		{6207563A-532C-493D-895D-8B8DA1AE67A9} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{18006A33-0E3F-4409-B7E9-D24AFE3B250D} = {0AB3BF05-4346-4AA6-1389-037BE0695223}
 		{E45B1444-70F9-4A2B-B681-28CA98C67B0F} = {6207563A-532C-493D-895D-8B8DA1AE67A9}
+		{2E708E88-28FA-40B5-AEAC-75BDCEDC6AC4} = {18006A33-0E3F-4409-B7E9-D24AFE3B250D}
 	EndGlobalSection
 EndGlobal
