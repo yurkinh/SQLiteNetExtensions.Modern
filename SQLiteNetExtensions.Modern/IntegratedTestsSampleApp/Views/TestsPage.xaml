@@ -94,7 +94,7 @@
                                            HorizontalOptions="Center"
                                            VerticalOptions="Center"/>
 
-                        <Button Text="ManyToManyTests"
+                        <Button Text="Many To Many Tests"
                                 Margin="30,30,30,10"
                                 Command="{Binding ManyToManyCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
@@ -102,42 +102,42 @@
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding ManyToManyResult, Converter={StaticResource TextToColorConverter}}"/>
 
-                        <Button Text="ManyToOneTests"
+                        <Button Text="Many To One Tests"
                                 Command="{Binding ManyToOneCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
                         <Editor Text="{Binding ManyToOneResult}"
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding ManyToOneResult, Converter={StaticResource TextToColorConverter}}"/>
 
-                        <Button Text="OneToManyTests"
+                        <Button Text="One To Many Tests"
                                 Command="{Binding OneToManyCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
                         <Editor Text="{Binding OneToManyResult}"
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding OneToManyResult, Converter={StaticResource TextToColorConverter}}"/>
 
-                        <Button Text="OneToOneTests"
+                        <Button Text="One To One Tests"
                                 Command="{Binding OneToOneCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
                         <Editor Text="{Binding OneToOneTestsResult}"
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding OneToOneTestsResult, Converter={StaticResource TextToColorConverter}}"/>
 
-                        <Button Text="RecursiveReadTests"
+                        <Button Text="Recursive Read Tests"
                                 Command="{Binding RecursiveReadCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
                         <Editor Text="{Binding RecursiveReadResult}"
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding RecursiveReadResult, Converter={StaticResource TextToColorConverter}}"/>
 
-                        <Button Text="RecursiveWriteTests"
+                        <Button Text="Recursive Write Tests"
                                 Command="{Binding RecursiveWriteCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
                         <Editor Text="{Binding RecursiveWriteResult}"
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding RecursiveWriteResult, Converter={StaticResource TextToColorConverter}}"/>
 
-                        <Button Text="DeleteTests"
+                        <Button Text="Delete Tests"
                                 Command="{Binding DeleteCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
                         <Editor Text="{Binding DeleteTestsResult}"
