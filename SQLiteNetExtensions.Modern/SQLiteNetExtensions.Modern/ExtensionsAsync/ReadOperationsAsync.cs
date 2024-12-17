@@ -31,7 +31,7 @@ public static class ReadOperationsAsync
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static List<T> GetAllWithChildren<T>(this SQLiteAsyncConnection conn, Expression<Func<T, bool>>? filter = null, bool recursive = false)
+	public static async Task<List<T>> GetAllWithChildrenAsync<T>(this SQLiteAsyncConnection conn, Expression<Func<T, bool>> filter = null, bool recursive = false)
 	where T : new()
 	{
 		var elements = conn.Table<T>();
@@ -40,11 +40,11 @@ public static class ReadOperationsAsync
 			elements = elements.Where(filter);
 		}
 
-		var list = elements.ToList();
+		var list = await elements.ToListAsync();
 
 		foreach (T element in list)
 		{
-			conn.GetChildren(element, recursive);
+			await conn.GetChildrenAsync(element, recursive);
 		}
 
 		return list;
@@ -61,11 +61,11 @@ public static class ReadOperationsAsync
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static T GetWithChildren<T>(this SQLiteAsyncConnection conn, object pk, bool recursive = false)
+	public static async Task<T> GetWithChildrenAsync<T>(this SQLiteAsyncConnection conn, object pk, bool recursive = false)
 	where T : new()
 	{
-		var element = conn.Get<T>(pk);
-		conn.GetChildren(element, recursive);
+		var element = await conn.GetAsync<T>(pk);
+		await conn.GetChildrenAsync(element, recursive);
 		return element;
 	}
 
@@ -82,13 +82,13 @@ public static class ReadOperationsAsync
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static T FindWithChildren<T>(this SQLiteAsyncConnection conn, object pk, bool recursive = false)
+	public static async Task<T> FindWithChildren<T>(this SQLiteAsyncConnection conn, object pk, bool recursive = false)
 	where T : new()
 	{
-		var element = conn.Find<T>(pk);
+		var element = await conn.FindAsync<T>(pk);
 		if (!EqualityComparer<T>.Default.Equals(element, default))
 		{
-			conn.GetChildren(element, recursive);
+			await conn.GetChildrenAsync(element, recursive);
 		}
 
 		return element;
@@ -103,9 +103,9 @@ public static class ReadOperationsAsync
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static void GetChildren<T>(this SQLiteAsyncConnection conn, T element, bool recursive = false)
+	public static async Task GetChildrenAsync<T>(this SQLiteAsyncConnection conn, T element, bool recursive = false)
 	{
-		GetChildrenRecursive(conn, element, false, recursive);
+		await GetChildrenRecursiveAsync(conn, element, false, recursive);
 	}
 
 	/// <summary>
@@ -127,7 +127,7 @@ public static class ReadOperationsAsync
 		var property = element.GetType().GetRuntimeProperty(relationshipProperty)
 			?? throw new ArgumentException($"Property {relationshipProperty} not found on type {typeof(T).Name}", nameof(relationshipProperty));
 
-		conn.GetChild(element, property, recursive);
+		conn.GetChildAsync(element, property, recursive);
 	}
 
 	/// <summary>
@@ -141,9 +141,9 @@ public static class ReadOperationsAsync
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static void GetChild<T>(this SQLiteAsyncConnection conn, T element, Expression<Func<T, object>> propertyExpression, bool recursive = false)
+	public static async void GetChild<T>(this SQLiteAsyncConnection conn, T element, Expression<Func<T, object>> propertyExpression, bool recursive = false)
 	{
-		conn.GetChild(element, ReflectionExtensions.GetProperty(propertyExpression), recursive);
+		await conn.GetChildAsync(element, ReflectionExtensions.GetProperty(propertyExpression), recursive);
 	}
 
 	/// <summary>
@@ -156,19 +156,19 @@ public static class ReadOperationsAsync
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static void GetChild<T>(this SQLiteAsyncConnection conn, T element, PropertyInfo relationshipProperty, bool recursive = false)
+	public static Task GetChildAsync<T>(this SQLiteAsyncConnection conn, T element, PropertyInfo relationshipProperty, bool recursive = false)
 	{
 		ArgumentNullException.ThrowIfNull(conn);
 		ArgumentNullException.ThrowIfNull(element);
 		ArgumentNullException.ThrowIfNull(relationshipProperty);
 
-		conn.GetChildRecursive(element, relationshipProperty, recursive, []);
+		return conn.GetChildRecursiveAsync(element, relationshipProperty, recursive, []);
 	}
 
 	#endregion
 
 	#region Private methods
-	static void GetChildrenRecursive(this SQLiteConnection conn, object element, bool onlyCascadeChildren, bool recursive, ObjectCache? objectCache = null)
+	static async Task GetChildrenRecursiveAsync(this SQLiteAsyncConnection conn, object element, bool onlyCascadeChildren, bool recursive, ObjectCache? objectCache = null)
 	{
 		ArgumentNullException.ThrowIfNull(conn);
 		ArgumentNullException.ThrowIfNull(element);
@@ -183,11 +183,11 @@ public static class ReadOperationsAsync
 		foreach (var property in properties)
 		{
 			var isTextBlob = property.GetAttribute<RelationshipAttribute>() is TextBlobAttribute;
-			conn.GetChildRecursive(element, property, recursive && !isTextBlob, objectCache);
+			await conn.GetChildRecursiveAsync(element, property, recursive && !isTextBlob, objectCache);
 		}
 	}
 
-	static void GetChildRecursive(this SQLiteConnection conn, object element, PropertyInfo relationshipProperty, bool recursive, ObjectCache objectCache)
+	static async Task GetChildRecursiveAsync(this SQLiteAsyncConnection conn, object element, PropertyInfo relationshipProperty, bool recursive, ObjectCache objectCache)
 	{
 		ArgumentNullException.ThrowIfNull(conn);
 		ArgumentNullException.ThrowIfNull(element);
@@ -198,19 +198,19 @@ public static class ReadOperationsAsync
 		switch (relationshipAttribute)
 		{
 			case OneToOneAttribute:
-				conn.GetOneToOneChildren([element], relationshipProperty, recursive, objectCache);
+				await conn.GetOneToOneChildrenAsync([element], relationshipProperty, recursive, objectCache);
 				break;
 
 			case OneToManyAttribute:
-				conn.GetOneToManyChildren(element, relationshipProperty, recursive, objectCache);
+				await conn.GetOneToManyChildrenAsync(element, relationshipProperty, recursive, objectCache);
 				break;
 
 			case ManyToOneAttribute:
-				conn.GetManyToOneChildren([element], relationshipProperty, recursive, objectCache);
+				await conn.GetManyToOneChildrenAsync([element], relationshipProperty, recursive, objectCache);
 				break;
 
 			case ManyToManyAttribute:
-				conn.GetManyToManyChildren(element, relationshipProperty, recursive, objectCache);
+				await conn.GetManyToManyChildrenAsync(element, relationshipProperty, recursive, objectCache);
 				break;
 
 			case TextBlobAttribute:
@@ -223,7 +223,7 @@ public static class ReadOperationsAsync
 		}
 	}
 
-	static object GetOneToOneChildren<T>(this SQLiteConnection conn, IList<T> elements,
+	static async Task<object> GetOneToOneChildrenAsync<T>(this SQLiteAsyncConnection conn, IList<T> elements,
 		PropertyInfo relationshipProperty,
 		bool recursive, ObjectCache objectCache)
 	{
@@ -248,7 +248,7 @@ public static class ReadOperationsAsync
 		Assert(hasForeignKey || hasInverseForeignKey, type, relationshipProperty,
 					 "Missing either ForeignKey or PrimaryKey for a complete OneToOne relationship");
 
-		var tableMapping = conn.GetMapping(entityType);
+		var tableMapping = await conn.GetMappingAsync(entityType);
 		Assert(tableMapping != null, type, relationshipProperty, "There's no mapping table for OneToOne relationship");
 
 		var inverseProperty = type.GetInverseProperty(relationshipProperty);
@@ -314,7 +314,7 @@ public static class ReadOperationsAsync
 			var placeHolders = string.Join(",", Enumerable.Repeat("?", primaryKeys.Count));
 			var query = string.Format("select * from [{0}] where [{1}] in ({2})", tableMapping.TableName,
 				columnName, placeHolders);
-			IList<object> values = conn.Query(tableMapping, query, [.. primaryKeys.Keys]);
+			IList<object> values = await conn.QueryAsync(tableMapping, query, [.. primaryKeys.Keys]);
 
 			if (values.Count > 0)
 			{
@@ -334,7 +334,7 @@ public static class ReadOperationsAsync
 							if (value != null && recursive)
 							{
 								SaveObjectToCache(value, otherEntityPrimaryKeyProperty.GetValue(value, null), objectCache);
-								conn.GetChildrenRecursive(value, true, recursive, objectCache);
+								await conn.GetChildrenRecursiveAsync(value, true, recursive, objectCache);
 							}
 						}
 					}
@@ -345,7 +345,7 @@ public static class ReadOperationsAsync
 	}
 
 
-	static object GetManyToOneChildren<T>(this SQLiteAsyncConnection conn, IList<T> elements,
+	static async Task<object> GetManyToOneChildrenAsync<T>(this SQLiteAsyncConnection conn, IList<T> elements,
 		PropertyInfo relationshipProperty,
 		bool recursive, ObjectCache objectCache)
 	{
@@ -362,7 +362,7 @@ public static class ReadOperationsAsync
 		var currentEntityForeignKeyProperty = type.GetForeignKeyProperty(relationshipProperty);
 		Assert(currentEntityForeignKeyProperty != null, type, relationshipProperty, "ManyToOne relationship origin must have Foreign Key");
 
-		var tableMapping = conn.GetMapping(entityType);
+		var tableMapping = await conn.GetMappingAsync(entityType);
 		Assert(tableMapping != null, type, relationshipProperty, "There's no mapping table for OneToMany relationship destination");
 
 		foreach (T element in elements)
@@ -399,7 +399,7 @@ public static class ReadOperationsAsync
 			var placeHolders = string.Join(",", Enumerable.Repeat("?", primaryKeys.Count));
 			var query = string.Format("select * from [{0}] where [{1}] in ({2})", tableMapping.TableName,
 										tableMapping.PK.Name, placeHolders);
-			IList<object> values = conn.Query(tableMapping, query, primaryKeys.Keys.ToArray());
+			List<object> values = await conn.QueryAsync(tableMapping, query, primaryKeys.Keys.ToArray());
 
 			if (values.Count > 0)
 			{
@@ -407,8 +407,7 @@ public static class ReadOperationsAsync
 				foreach (object value in values)
 				{
 					var keyValue = keyProperty.GetValue(value);
-					IList<T> keyElements;
-					if (primaryKeys.TryGetValue(keyValue, out keyElements))
+					if (primaryKeys.TryGetValue(keyValue, out IList<T> keyElements))
 					{
 						foreach (var keyElement in keyElements)
 						{
@@ -416,7 +415,7 @@ public static class ReadOperationsAsync
 							if (value != null && recursive)
 							{
 								SaveObjectToCache(value, otherEntityPrimaryKeyProperty.GetValue(value, null), objectCache);
-								conn.GetChildrenRecursive(value, true, recursive, objectCache);
+								await conn.GetChildrenRecursiveAsync(value, true, recursive, objectCache);
 							}
 						}
 					}
@@ -439,7 +438,7 @@ public static class ReadOperationsAsync
 		list.Add(element);
 	}
 
-	static IEnumerable GetOneToManyChildren<T>(this SQLiteConnection conn, T element,
+	static async Task<IEnumerable> GetOneToManyChildrenAsync<T>(this SQLiteAsyncConnection conn, T element,
 		PropertyInfo relationshipProperty,
 		bool recursive, ObjectCache objectCache)
 	{
@@ -457,7 +456,7 @@ public static class ReadOperationsAsync
 
 		var otherEntityPrimaryKeyProperty = entityType.GetPrimaryKey();
 
-		var tableMapping = conn.GetMapping(entityType);
+		var tableMapping = await conn.GetMappingAsync(entityType);
 		Assert(tableMapping != null, type, relationshipProperty, "There's no mapping table for OneToMany relationship destination");
 
 		var inverseProperty = type.GetInverseProperty(relationshipProperty);
@@ -469,7 +468,7 @@ public static class ReadOperationsAsync
 		{
 			var query = string.Format("select * from [{0}] where [{1}] = ?", entityType.GetTableName(),
 				otherEntityForeignKeyProperty.GetColumnName());
-			var queryResults = conn.Query(tableMapping, query, primaryKeyValue);
+			var queryResults = await conn.QueryAsync(tableMapping, query, primaryKeyValue);
 
 			Array array = null;
 
@@ -527,14 +526,14 @@ public static class ReadOperationsAsync
 		{
 			if (cascadeElements.Count > 0)
 			{
-				conn.GetChildrenRecursiveBatched(cascadeElements, objectCache);
+				await conn.GetChildrenRecursiveBatchedAsync(cascadeElements, objectCache);
 			}
 		}
 
 		return values;
 	}
 
-	static void GetChildrenRecursiveBatched<T>(this SQLiteConnection conn, IList<T> elements, ObjectCache objectCache)
+	static async Task GetChildrenRecursiveBatchedAsync<T>(this SQLiteAsyncConnection conn, IList<T> elements, ObjectCache objectCache)
 	{
 		var element = elements[0];
 		foreach (var relationshipProperty in element.GetType().GetRelationshipProperties())
@@ -544,24 +543,24 @@ public static class ReadOperationsAsync
 			{
 				if (relationshipAttribute is OneToOneAttribute)
 				{
-					conn.GetOneToOneChildren(elements, relationshipProperty, true, objectCache);
+					await conn.GetOneToOneChildrenAsync(elements, relationshipProperty, true, objectCache);
 				}
 				else if (relationshipAttribute is OneToManyAttribute)
 				{
 					foreach (var e in elements)
 					{
-						conn.GetOneToManyChildren(e, relationshipProperty, true, objectCache);
+						await conn.GetOneToManyChildrenAsync(e, relationshipProperty, true, objectCache);
 					}
 				}
 				else if (relationshipAttribute is ManyToOneAttribute)
 				{
-					conn.GetManyToOneChildren(elements, relationshipProperty, true, objectCache);
+					await conn.GetManyToOneChildrenAsync(elements, relationshipProperty, true, objectCache);
 				}
 				else if (relationshipAttribute is ManyToManyAttribute)
 				{
 					foreach (var e in elements)
 					{
-						conn.GetManyToManyChildren(e, relationshipProperty, true, objectCache);
+						await conn.GetManyToManyChildrenAsync(e, relationshipProperty, true, objectCache);
 					}
 				}
 				else if (relationshipAttribute is TextBlobAttribute)
@@ -573,13 +572,13 @@ public static class ReadOperationsAsync
 			{
 				foreach (var e in elements)
 				{
-					conn.GetChildRecursive(e, relationshipProperty, false, objectCache);
+					await conn.GetChildRecursiveAsync(e, relationshipProperty, false, objectCache);
 				}
 			}
 		}
 	}
 
-	static IEnumerable GetManyToManyChildren<T>(this SQLiteConnection conn, T element,
+	static async Task<IEnumerable> GetManyToManyChildrenAsync<T>(this SQLiteAsyncConnection conn, T element,
 		PropertyInfo relationshipProperty,
 		bool recursive, ObjectCache objectCache)
 	{
@@ -592,7 +591,7 @@ public static class ReadOperationsAsync
 		var currentEntityForeignKeyProperty = manyToManyMetaInfo.OriginProperty;
 		var otherEntityForeignKeyProperty = manyToManyMetaInfo.DestinationProperty;
 		var intermediateType = manyToManyMetaInfo.IntermediateType;
-		var tableMapping = conn.GetMapping(entityType);
+		var tableMapping = await conn.GetMappingAsync(entityType);
 
 		Assert(enclosedType != EnclosedType.None, type, relationshipProperty, "ManyToMany relationship must be a List or Array");
 		Assert(currentEntityPrimaryKeyProperty != null, type, relationshipProperty, "ManyToMany relationship origin must have Primary Key");
@@ -614,7 +613,7 @@ public static class ReadOperationsAsync
 			var query = string.Format("select * from [{0}] where [{1}] in ({2})", entityType.GetTableName(),
 				otherEntityPrimaryKeyProperty.GetColumnName(), keysQuery);
 
-			var queryResults = conn.Query(tableMapping, query, primaryKeyValue);
+			var queryResults = await conn.QueryAsync(tableMapping, query, primaryKeyValue);
 
 			Array array = null;
 
@@ -664,7 +663,7 @@ public static class ReadOperationsAsync
 		{
 			foreach (var child in cascadeElements)
 			{
-				conn.GetChildrenRecursive(child, true, recursive, objectCache);
+				await conn.GetChildrenRecursiveAsync(child, true, recursive, objectCache);
 			}
 		}
 
