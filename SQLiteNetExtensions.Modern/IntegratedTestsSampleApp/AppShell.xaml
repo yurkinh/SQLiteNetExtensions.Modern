@@ -4,12 +4,27 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:local="clr-namespace:IntegratedTestsSampleApp.Views"
-    Shell.FlyoutBehavior="Flyout"
+    Shell.FlyoutBehavior="Flyout" 
+    FlyoutBackgroundColor="#FFE7CC98"
     Title="IntegratedTestsSampleApp">
+    <Shell.FlyoutHeader>
+        <Label Text="SQLite"
+               TextColor="Gray"
+               HeightRequest="50"
+               VerticalOptions="Center"
+               FontAttributes="Bold"
+               HorizontalOptions="Center"
+               FontSize="25"/>
+    </Shell.FlyoutHeader>
+    <ShellContent
+        Title="Tests"
+        ContentTemplate="{DataTemplate local:TestsPage}"
+        Route="TestsPage"/>
 
     <ShellContent
-        Title="Home"
-        ContentTemplate="{DataTemplate local:TestsPage}"
-        Route="TestsPage" />
+        Title="About"
+        ContentTemplate="{DataTemplate local:AboutPage}"
+        Route="AboutPage"/>
+
 
 </Shell>
