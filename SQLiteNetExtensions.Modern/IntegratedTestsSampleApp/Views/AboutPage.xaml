@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="IntegratedTestsSampleApp.Views.AboutPage"
+             BackgroundColor="Wheat"
+             Shell.BackgroundColor="#FFE7CC98"
+             Title="AboutPage">
+    <VerticalStackLayout>
+        <Label
+            Text="Welcome to SQLite"
+            VerticalOptions="Center"
+            FontFamily="DarkerGrotesque"
+            TextColor="Gray"
+            Margin="30"
+            FontSize="20"
+            HorizontalOptions="Center"/>
+    </VerticalStackLayout>
+</ContentPage>

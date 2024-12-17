@@ -126,14 +126,12 @@ public static class ReflectionExtensions
 
 		if (!string.IsNullOrEmpty(foreignKeyName))
 		{
-			return originType.GetRuntimeProperty(foreignKeyName)
-				?? throw new InvalidOperationException($"Foreign key property '{foreignKeyName}' not found on type '{originType.Name}'");
+			return originType.GetRuntimeProperty(foreignKeyName);
 		}
 
 		// Fall back to convention-based lookup
-		return originType.GetExplicitForeignKeyProperty(destinationType)
-			?? originType.GetConventionForeignKeyProperty(destinationType.Name)
-			?? throw new InvalidOperationException($"Could not resolve foreign key property for relationship {relationshipProperty.Name}");
+		return originType.GetExplicitForeignKeyProperty(destinationType) ??
+		       originType.GetConventionForeignKeyProperty(destinationType.Name);
 	}
 
 	static string? ResolveForeignKeyName(
