@@ -1,0 +1,148 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:IntegratedTestsSampleApp.ViewModels"
+             BackgroundColor="Wheat"
+             xmlns:converters="clr-namespace:IntegratedTestsSampleApp.Converters"
+             Shell.BackgroundColor="#FFE7CC98"
+             x:DataType="vm:TestsPageViewModel"
+             Title="Tests"
+             x:Class="IntegratedTestsSampleApp.Views.TestsPage">
+        <ContentPage.BindingContext>
+                <vm:TestsPageViewModel/>
+        </ContentPage.BindingContext>
+        <ContentPage.Resources>
+                <converters:TextToColorConverter x:Key="TextToColorConverter"/>
+                <ResourceDictionary>
+                        <Style x:Key="ButtonStyle"
+                               TargetType="Button">
+                                <Setter Property="HorizontalOptions"
+                                        Value="Fill"/>
+                                <Setter Property="BackgroundColor"
+                                        Value="SeaGreen"/>
+                                <Setter Property="FontSize"
+                                        Value="22"/>
+                                <Setter Property="FontAttributes"
+                                        Value="Bold"/>
+                                <Setter Property="CornerRadius"
+                                        Value="20"/>
+                                <Setter Property="FontFamily"
+                                        Value="DarkerGrotesque"/>
+                                <Setter Property="Margin"
+                                        Value="30,10"/>
+                                <Setter Property="Padding"
+                                        Value="10"/>
+                                <Setter Property="TextColor"
+                                        Value="Wheat"/>
+                                <Setter Property="VerticalOptions"
+                                        Value="Center"/>
+                        </Style>
+                        <Style x:Key="EditorStyle"
+                               TargetType="Editor">
+                                <Setter Property="FontAttributes"
+                                        Value="Bold"/>
+                                <Setter Property="FontSize"
+                                        Value="20"/>
+                                <Setter Property="FontFamily"
+                                        Value="DarkerGrotesque"/>
+                                <Setter Property="HorizontalOptions"
+                                        Value="Center"/>
+                                <Setter Property="TextColor"
+                                        Value="Gray"/>
+                                <Setter Property="HorizontalOptions"
+                                        Value="Fill"/>
+                                <Setter Property="Margin"
+                                        Value="40,5"/>
+                                <Setter Property="IsEnabled"
+                                        Value="False"/>
+                                <Setter Property="AutoSize"
+                                        Value="TextChanges"/>
+                        </Style>
+                </ResourceDictionary>
+        </ContentPage.Resources>
+        <ScrollView>
+                <VerticalStackLayout>
+                        <Grid
+                                ColumnDefinitions="*,Auto"
+                                HorizontalOptions="Fill">
+                                <Button Text="Run All Tests"
+                                        Command="{Binding RunAllTestsCommand}"
+                                        HorizontalOptions="Fill"
+                                        CornerRadius="30"
+                                        Margin="30,50,10,30"
+                                        HeightRequest="70"
+                                        Style="{StaticResource ButtonStyle}"/>
+                                <Button Command="{Binding ResetTestResultsCommand}"
+                                        BackgroundColor="Gray"
+                                        WidthRequest="70"
+                                        Grid.Column="1"
+                                        Margin="10,50,30,30"
+                                        CornerRadius="30"
+                                        HeightRequest="70"
+                                        Style="{StaticResource ButtonStyle}"
+                                        FontFamily="FontAwesomeSolid"
+                                        Text="&#xf0e2;"/>
+                        </Grid>
+
+                        <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                           IsVisible="{Binding IsLoading}"
+                                           Color="SeaGreen"
+                                           Margin="10"
+                                           HeightRequest="50"
+                                           Scale="2"
+                                           WidthRequest="50"
+                                           HorizontalOptions="Center"
+                                           VerticalOptions="Center"/>
+
+                        <Button Text="Many To Many Tests"
+                                Margin="30,30,30,10"
+                                Command="{Binding ManyToManyCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding ManyToManyResult}"
+                                Style="{StaticResource EditorStyle}"
+                                TextColor="{Binding ManyToManyResult, Converter={StaticResource TextToColorConverter}}"/>
+
+                        <Button Text="Many To One Tests"
+                                Command="{Binding ManyToOneCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding ManyToOneResult}"
+                                Style="{StaticResource EditorStyle}"
+                                TextColor="{Binding ManyToOneResult, Converter={StaticResource TextToColorConverter}}"/>
+
+                        <Button Text="One To Many Tests"
+                                Command="{Binding OneToManyCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding OneToManyResult}"
+                                Style="{StaticResource EditorStyle}"
+                                TextColor="{Binding OneToManyResult, Converter={StaticResource TextToColorConverter}}"/>
+
+                        <Button Text="One To One Tests"
+                                Command="{Binding OneToOneCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding OneToOneTestsResult}"
+                                Style="{StaticResource EditorStyle}"
+                                TextColor="{Binding OneToOneTestsResult, Converter={StaticResource TextToColorConverter}}"/>
+
+                        <Button Text="Recursive Read Tests"
+                                Command="{Binding RecursiveReadCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding RecursiveReadResult}"
+                                Style="{StaticResource EditorStyle}"
+                                TextColor="{Binding RecursiveReadResult, Converter={StaticResource TextToColorConverter}}"/>
+
+                        <Button Text="Recursive Write Tests"
+                                Command="{Binding RecursiveWriteCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding RecursiveWriteResult}"
+                                Style="{StaticResource EditorStyle}"
+                                TextColor="{Binding RecursiveWriteResult, Converter={StaticResource TextToColorConverter}}"/>
+
+                        <Button Text="Delete Tests"
+                                Command="{Binding DeleteCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding DeleteTestsResult}"
+                                Style="{StaticResource EditorStyle}"
+                                TextColor="{Binding DeleteTestsResult, Converter={StaticResource TextToColorConverter}}"/>
+                </VerticalStackLayout>
+        </ScrollView>
+</ContentPage>
