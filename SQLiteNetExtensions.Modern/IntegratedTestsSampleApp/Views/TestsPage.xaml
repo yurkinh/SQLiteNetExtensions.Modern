@@ -123,6 +123,14 @@
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding OneToOneTestsResult, Converter={StaticResource TextToColorConverter}}"/>
 
+                        <Button Text="Delete Tests"
+                                Command="{Binding DeleteCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding DeleteTestsResult}"
+                                Style="{StaticResource EditorStyle}"
+                                TextColor="{Binding DeleteTestsResult, Converter={StaticResource TextToColorConverter}}"/>
+
+
                         <Button Text="Recursive Read Tests"
                                 Command="{Binding RecursiveReadCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
@@ -137,12 +145,20 @@
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding RecursiveWriteResult, Converter={StaticResource TextToColorConverter}}"/>
 
-                        <Button Text="Delete Tests"
-                                Command="{Binding DeleteCommand}"
+                        <Button Text="Async Recursive Read Tests"
+                                Command="{Binding RecursiveReadCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
-                        <Editor Text="{Binding DeleteTestsResult}"
+                        <Editor Text="{Binding RecursiveReadResult}"
                                 Style="{StaticResource EditorStyle}"
-                                TextColor="{Binding DeleteTestsResult, Converter={StaticResource TextToColorConverter}}"/>
+                                TextColor="{Binding RecursiveReadResult, Converter={StaticResource TextToColorConverter}}"/>
+
+                        <Button Text="Async Recursive Write Tests"
+                                Command="{Binding AsyncRecursiveWriteCommand}"
+                                Style="{StaticResource ButtonStyle}"/>
+                        <Editor Text="{Binding RecursiveWriteResult}"
+                                Style="{StaticResource EditorStyle}"
+                                TextColor="{Binding AsyncRecursiveWriteResult, Converter={StaticResource TextToColorConverter}}"/>
+
                 </VerticalStackLayout>
         </ScrollView>
 </ContentPage>
