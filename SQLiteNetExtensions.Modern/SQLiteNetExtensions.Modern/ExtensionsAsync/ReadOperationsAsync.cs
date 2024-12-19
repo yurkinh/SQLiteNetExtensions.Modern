@@ -1,4 +1,3 @@
-using System;
 using System.Collections;
 using System.Collections.ObjectModel;
 using System.Linq.Expressions;
@@ -31,7 +30,7 @@ public static class ReadOperationsAsync
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static async Task<List<T>> GetAllWithChildrenAsync<T>(this SQLiteAsyncConnection conn, Expression<Func<T, bool>> filter = null, bool recursive = false)
+	public static async Task<List<T>> GetAllWithChildrenAsync<T>(this SQLiteAsyncConnection conn, Expression<Func<T, bool>>? filter = null, bool recursive = false)
 	where T : new()
 	{
 		var elements = conn.Table<T>();
@@ -49,6 +48,7 @@ public static class ReadOperationsAsync
 
 		return list;
 	}
+
 
 	/// <summary>
 	/// Obtains the object from the database and fetches all the properties annotated with
@@ -103,10 +103,9 @@ public static class ReadOperationsAsync
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static async Task GetChildrenAsync<T>(this SQLiteAsyncConnection conn, T element, bool recursive = false)
-	{
-		await GetChildrenRecursiveAsync(conn, element, false, recursive);
-	}
+	public static Task GetChildrenAsync<T>(this SQLiteAsyncConnection conn, T element, bool recursive = false)
+	=> GetChildrenRecursiveAsync(conn, element, false, recursive);
+
 
 	/// <summary>
 	/// Fetches a specific property of the current object and keeps fetching recursively if the
@@ -166,7 +165,7 @@ public static class ReadOperationsAsync
 	#endregion
 
 	#region Private methods
-	static async Task GetChildrenRecursiveAsync(this SQLiteAsyncConnection conn, object element, bool onlyCascadeChildren, bool recursive, ObjectCache? objectCache = null)
+	static async Task GetChildrenRecursiveAsync(this SQLiteAsyncConnection conn, object? element, bool onlyCascadeChildren, bool recursive, ObjectCache? objectCache = null)
 	{
 		ArgumentNullException.ThrowIfNull(conn);
 		ArgumentNullException.ThrowIfNull(element);
@@ -226,7 +225,11 @@ public static class ReadOperationsAsync
 		bool recursive, ObjectCache objectCache)
 	{
 		var primaryKeys = new Dictionary<object, IList<T>>();
-		var type = elements[0].GetType();
+		if (elements == null || elements.Count == 0)
+		{
+			throw new ArgumentException("Elements list cannot be null or empty", nameof(elements));
+		}
+		var type = elements[0]?.GetType();
 		var entityType = relationshipProperty.GetEntityType(out EnclosedType enclosedType);
 
 		Assert(enclosedType == EnclosedType.None, type, relationshipProperty, "OneToOne relationship cannot be of type List or Array");
@@ -312,7 +315,7 @@ public static class ReadOperationsAsync
 			var placeHolders = string.Join(",", Enumerable.Repeat("?", primaryKeys.Count));
 			var query = string.Format("select * from [{0}] where [{1}] in ({2})", tableMapping.TableName,
 				columnName, placeHolders);
-			IList<object> values = await conn.QueryAsync(tableMapping, query, [.. primaryKeys.Keys]);
+			List<object> values = await conn.QueryAsync(tableMapping, query, [.. primaryKeys.Keys]);
 
 			if (values.Count > 0)
 			{
