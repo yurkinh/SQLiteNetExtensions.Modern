@@ -69,7 +69,7 @@ public static class WriteOperationsAsync
 	/// <param name="conn">SQLite Net connection object</param>
 	/// <param name="element">Object to be inserted.</param>
 	/// <param name="recursive">If set to <c>true</c> all the insert-cascade properties will be inserted</param>
-	public static Task InsertOrReplaceWithChildren(this SQLiteAsyncConnection conn, object element, bool recursive = false)
+	public static Task InsertOrReplaceWithChildrenAsync(this SQLiteAsyncConnection conn, object element, bool recursive = false)
 	{
 		return conn.InsertWithChildrenRecursiveAsync(element, true, recursive);
 	}
@@ -86,7 +86,7 @@ public static class WriteOperationsAsync
 	/// <param name="conn">SQLite Net connection object</param>
 	/// <param name="elements">Objects to be inserted.</param>
 	/// <param name="recursive">If set to <c>true</c> all the insert-cascade properties will be inserted</param>
-	public static Task InsertAllWithChildren(this SQLiteAsyncConnection conn, IEnumerable elements, bool recursive = false)
+	public static Task InsertAllWithChildrenAsync(this SQLiteAsyncConnection conn, IEnumerable elements, bool recursive = false)
 	{
 		return conn.InsertAllWithChildrenRecursiveAsync(elements, false, recursive);
 	}
@@ -103,7 +103,7 @@ public static class WriteOperationsAsync
 	/// <param name="conn">SQLite Net connection object</param>
 	/// <param name="elements">Objects to be inserted.</param>
 	/// <param name="recursive">If set to <c>true</c> all the insert-cascade properties will be inserted</param>
-	public static Task InsertOrReplaceAllWithChildren(this SQLiteAsyncConnection conn, IEnumerable elements, bool recursive = false)
+	public static Task InsertOrReplaceAllWithChildrenAsync(this SQLiteAsyncConnection conn, IEnumerable elements, bool recursive = false)
 	{
 		return conn.InsertAllWithChildrenRecursiveAsync(elements, true, recursive);
 	}
