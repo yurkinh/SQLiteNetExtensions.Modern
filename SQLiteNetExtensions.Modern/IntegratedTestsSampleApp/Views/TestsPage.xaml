@@ -146,11 +146,11 @@
                                 TextColor="{Binding RecursiveWriteResult, Converter={StaticResource TextToColorConverter}}"/>
 
                         <Button Text="Async Recursive Read Tests"
-                                Command="{Binding RecursiveReadCommand}"
+                                Command="{Binding AsyncRecursiveReadCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
                         <Editor Text="{Binding RecursiveReadResult}"
                                 Style="{StaticResource EditorStyle}"
-                                TextColor="{Binding RecursiveReadResult, Converter={StaticResource TextToColorConverter}}"/>
+                                TextColor="{Binding AsyncRecursiveReadResult, Converter={StaticResource TextToColorConverter}}"/>
 
                         <Button Text="Async Recursive Write Tests"
                                 Command="{Binding AsyncRecursiveWriteCommand}"
@@ -158,7 +158,6 @@
                         <Editor Text="{Binding RecursiveWriteResult}"
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding AsyncRecursiveWriteResult, Converter={StaticResource TextToColorConverter}}"/>
-
                 </VerticalStackLayout>
         </ScrollView>
 </ContentPage>
