@@ -141,10 +141,8 @@ public static class ReadOperationsAsync
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static async void GetChild<T>(this SQLiteAsyncConnection conn, T element, Expression<Func<T, object>> propertyExpression, bool recursive = false)
-	{
-		await conn.GetChildAsync(element, ReflectionExtensions.GetProperty(propertyExpression), recursive);
-	}
+	public static Task GetChild<T>(this SQLiteAsyncConnection conn, T element, Expression<Func<T, object>> propertyExpression, bool recursive = false)
+	=> conn.GetChildAsync(element, ReflectionExtensions.GetProperty(propertyExpression), recursive);
 
 	/// <summary>
 	/// Fetches a specific property of the current object and keeps fetching recursively if the
