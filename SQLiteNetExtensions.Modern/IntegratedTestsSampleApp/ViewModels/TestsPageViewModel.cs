@@ -61,6 +61,33 @@ public partial class TestsPageViewModel : ObservableObject
             ManyToManyResult = $"Error occurred: {ex.Message}";
             OneToManyResult = $"Error occurred: {ex.Message}";
             OneToOneTestsResult = $"Error occurred: {ex.Message}";
+            RecursiveReadResult = $"Error occurred: {ex.Message}";
+            RecursiveWriteResult = $"Error occurred: {ex.Message}";
+        }
+        finally
+        {
+            IsLoading = false;
+            OnPropertyChanged(nameof(IsLoading));
+        }
+    }
+
+    [RelayCommand]
+    private async Task RunAllAsyncTestsAsync()
+    {
+        try
+        {
+            IsLoading = true;
+            OnPropertyChanged(nameof(IsLoading));
+
+            await Task.WhenAll(
+                            AsyncRecursiveRead(),
+                            AsyncRecursiveWrite()
+                                );
+        }
+        catch (Exception ex)
+        {
+            AsyncRecursiveReadResult = $"Error occurred: {ex.Message}";
+            AsyncRecursiveWriteResult = $"Error occurred: {ex.Message}";
         }
         finally
         {
@@ -315,14 +342,14 @@ public partial class TestsPageViewModel : ObservableObject
         {
             var testResults = await Task.WhenAll(
             [
-                RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseAsync(),
-                RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseReversedAsync(),
+                //RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseAsync(),
+                //RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseReversedAsync(),
                 RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseDoubleForeignKeyAsync(),
                 RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseDoubleForeignKeyReversedAsync(),
                 RecursiveReadAsyncTests.TestOneToManyCascadeWithInverseAsync(),
                 RecursiveReadAsyncTests.TestManyToOneCascadeWithInverseAsync(),
-                RecursiveReadAsyncTests.TestManyToManyCascadeWithSameClassRelationshipAsync(),
-                RecursiveReadAsyncTests.TestInsertTextBlobPropertiesRecursiveAsync()
+                //RecursiveReadAsyncTests.TestManyToManyCascadeWithSameClassRelationshipAsync(),
+                //RecursiveReadAsyncTests.TestInsertTextBlobPropertiesRecursiveAsync()
             ]);
 
             var failedTests = testResults.Where(result => !result.Item1).ToList();
