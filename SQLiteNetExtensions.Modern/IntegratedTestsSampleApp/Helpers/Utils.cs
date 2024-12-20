@@ -19,13 +19,7 @@ public class Utils
         return con;
     }
 
-    private static void Log(object userData, string statement)
-    {
-        Console.WriteLine(statement);
-    }
+    private static void Log(object userData, string statement) => Console.WriteLine(statement);
 
-    public static SQLiteAsyncConnection CreateAsyncConnection()
-    {
-        return new SQLiteAsyncConnection(DatabaseFilePath);
-    }
+    public static SQLiteAsyncConnection CreateAsyncConnection() => new(DatabaseFilePath);
 }
