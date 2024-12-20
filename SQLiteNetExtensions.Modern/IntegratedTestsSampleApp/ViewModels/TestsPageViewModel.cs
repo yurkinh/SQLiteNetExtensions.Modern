@@ -10,7 +10,7 @@ public partial class TestsPageViewModel : ObservableObject
     bool isLoading;
 
     [ObservableProperty]
-    string? deleteTestsResult = "Press to run test";
+    bool isAsyncLoading;
 
     [ObservableProperty]
     string? manyToManyResult = "Press to run test";
@@ -25,10 +25,29 @@ public partial class TestsPageViewModel : ObservableObject
     string? oneToOneTestsResult = "Press to run test";
 
     [ObservableProperty]
+    string? deleteTestsResult = "Press to run test";
+
+    [ObservableProperty]
     string? recursiveReadResult = "Press to run test";
 
     [ObservableProperty]
     string? recursiveWriteResult = "Press to run test";
+
+
+    [ObservableProperty]
+    string? manyToManyAsyncResult = "Press to run test";
+
+    [ObservableProperty]
+    string? manyToOneAsyncResult = "Press to run test";
+
+    [ObservableProperty]
+    string? oneToManyAsyncResult = "Press to run test";
+
+    [ObservableProperty]
+    string? oneToOneTestsAsyncResult = "Press to run test";
+
+    [ObservableProperty]
+    string? deleteTestsAsyncResult = "Press to run test";
 
     [ObservableProperty]
     string? asyncRecursiveReadResult = "Press to run test";
@@ -37,7 +56,7 @@ public partial class TestsPageViewModel : ObservableObject
     string? asyncRecursiveWriteResult = "Press to run test";
 
     [RelayCommand]
-    private async Task RunAllTestsAsync()
+    private async Task RunAllSyncTestsAsync()
     {
         try
         {
@@ -76,19 +95,16 @@ public partial class TestsPageViewModel : ObservableObject
     {
         try
         {
-            IsLoading = true;
+            IsAsyncLoading = true;
             OnPropertyChanged(nameof(IsLoading));
-            
-            await DeleteAsync();
-                ManyToMany();
-                ManyToOne();
-                OneToMany();
-                OneToOne();
-                RecursiveRead();
-                RecursiveWrite();
-            
+
+            await AsyncDelete();
+            await AsyncManyToMany();
+            await AsyncManyToOne();
+            await AsyncOneToMany();
+            await AsyncOneToOne();
             await AsyncRecursiveRead();
-            //await AsyncRecursiveWrite();
+            await AsyncRecursiveWrite();
         }
         catch (Exception ex)
         {
@@ -97,11 +113,11 @@ public partial class TestsPageViewModel : ObservableObject
         }
         finally
         {
-            IsLoading = false;
-            OnPropertyChanged(nameof(IsLoading));
+            IsAsyncLoading = false;
+            OnPropertyChanged(nameof(IsAsyncLoading));
         }
     }
-
+    #region Sync
     [RelayCommand]
     private void ManyToMany()
     {
@@ -268,36 +284,6 @@ public partial class TestsPageViewModel : ObservableObject
         }
     }
 
-     [RelayCommand]
-    private Task DeleteAsync()
-    {
-        try
-        {
-            var testResults = new[]
-            {
-                DeleteTests.TestDeleteAllGuidPK(),
-                DeleteTests.TestDeleteAllIntPK(),
-                DeleteTests.TestDeleteAllThousandObjects(),
-                DeleteTests.TestDeleteAllIdsGuidPK(),
-                DeleteTests.TestDeleteAllIdsIntPK()
-            };
-
-            var failedTests = testResults.Where(result => !result.Item1).ToList();
-            if (failedTests.Count() != 0)
-            {
-                DeleteTestsResult = $"Tests failed: {failedTests.Count}. \n Failed tests: \n {string.Join(",\n ", failedTests.Select(x => x.Item2))}.";
-            }
-            else
-            {
-                DeleteTestsResult = "All tests passed successfully!";
-            }
-        }
-        catch (Exception ex)
-        {
-            DeleteTestsResult = $"Error occurred: {ex.Message}";
-        }
-    }
-
     [RelayCommand]
     private void RecursiveRead()
     {
@@ -370,23 +356,192 @@ public partial class TestsPageViewModel : ObservableObject
             RecursiveWriteResult = $"Error occurred: {ex.Message}";
         }
     }
+    #endregion
+
+    #region Async
+
+    [RelayCommand]
+    private async Task AsyncManyToMany()
+    {
+        try
+        {
+            var testResults = new List<Tuple<bool, string>>
+            {
+                await ManyToManyTestsAsync.TestGetManyToManyListAsync(),
+                await ManyToManyTestsAsync.TestGetManyToManyArrayAsync(),
+                await ManyToManyTestsAsync.TestUpdateSetManyToManyListAsync(),
+                await ManyToManyTestsAsync.TestUpdateUnsetManyToManyListAsync(),
+                await ManyToManyTestsAsync.TestGetManyToManyGuidIdentifierAsync(),
+                await ManyToManyTestsAsync.TestManyToManyCircularAsync(),
+                await ManyToManyTestsAsync.TestManyToManyCircularReadOnlyAsync(),
+            };
+
+            var failedTests = testResults.Where(result => !result.Item1).ToList();
+            if (failedTests.Count() != 0)
+            {
+                ManyToManyAsyncResult = $"Tests failed: {failedTests.Count}. \n Failed tests: \n {string.Join(",\n ", failedTests.Select(x => x.Item2))}.";
+            }
+            else
+            {
+                ManyToManyAsyncResult = "All tests passed successfully!";
+            }
+        }
+        catch (Exception ex)
+        {
+            ManyToManyAsyncResult = $"Error occurred: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task AsyncManyToOne()
+    {
+        try
+        {
+            var testResults = new List<Tuple<bool, string>>
+            {
+                await ManyToOneTestsAsync.TestGetManyToOneAsync(),
+                await ManyToOneTestsAsync.TestUpdateSetManyToOneAsync(),
+                await ManyToOneTestsAsync.TestUpdateUnsetManyToOneAsync()
+            };
+
+            var failedTests = testResults.Where(result => !result.Item1).ToList();
+            if (failedTests.Count() != 0)
+            {
+                ManyToOneAsyncResult = $"Tests failed: {failedTests.Count}. \n Failed tests: \n {string.Join(",\n ", failedTests.Select(x => x.Item2))}.";
+            }
+            else
+            {
+                ManyToOneAsyncResult = "All tests passed successfully!";
+            }
+        }
+        catch (Exception ex)
+        {
+            ManyToOneAsyncResult = $"Error occurred: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task AsyncOneToMany()
+    {
+        try
+        {
+            var testResults = new List<Tuple<bool, string>>
+            {
+                await OneToManyTestsAsync.TestGetOneToManyListAsync(),
+                await OneToManyTestsAsync.TestGetOneToManyListWithInverseAsync(),
+                await OneToManyTestsAsync.TestGetOneToManyArrayAsync(),
+                await OneToManyTestsAsync.TestGetOneToManyArrayAsync(),
+                await OneToManyTestsAsync.TestUpdateSetOneToManyListAsync(),
+                await OneToManyTestsAsync.TestUpdateUnsetOneToManyEmptyListAsync(),
+                await OneToManyTestsAsync.TestUpdateUnsetOneToManyNullListAsync(),
+                await OneToManyTestsAsync.TestUpdateSetOneToManyArrayAsync(),
+                await OneToManyTestsAsync.TestUpdateSetOneToManyListWithInverseAsync(),
+                await OneToManyTestsAsync.TestGetOneToManyListWithInverseGuidIdAsync(),
+                await OneToManyTestsAsync.TestUpdateSetOneToManyListWithInverseGuidIdAsync(),
+
+                // Tests the recursive inverse relationship automatic discovery
+                // Issue #17: https://bitbucket.org/twincoders/sqlite-net-extensions/issue/17
+                //await OneToManyTestsAsync.TestRecursiveInverseRelationshipAsync()
+            };
+
+            var failedTests = testResults.Where(result => !result.Item1).ToList();
+            if (failedTests.Count() != 0)
+            {
+                OneToManyAsyncResult = $"Tests failed: {failedTests.Count}. \n Failed tests: \n {string.Join(",\n ", failedTests.Select(x => x.Item2))}.";
+            }
+            else
+            {
+                OneToManyAsyncResult = "All tests passed successfully!";
+            }
+        }
+        catch (Exception ex)
+        {
+            OneToManyAsyncResult = $"Error occurred: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task AsyncOneToOne()
+    {
+        try
+        {
+            var testResults = new List<Tuple<bool, string>>
+            {
+                await OneToOneTestsAsync.TestGetOneToOneDirectAsync(),
+                await OneToOneTestsAsync.TestGetOneToOneInverseForeignKeyAsync(),
+                await OneToOneTestsAsync.TestGetOneToOneWithInverseRelationshipAsync(),
+                await OneToOneTestsAsync.TestGetInverseOneToOneRelationshipWithExplicitKeyAsync(),
+                await OneToOneTestsAsync.TestUpdateSetOneToOneRelationshipAsync(),
+                await OneToOneTestsAsync.TestUpdateUnsetOneToOneRelationshipAsync(),
+                await OneToOneTestsAsync.TestUpdateSetOneToOneRelationshipWithInverseAsync(),
+                await OneToOneTestsAsync.TestUpdateSetOneToOneRelationshipWithInverseForeignKeyAsync(),
+                await OneToOneTestsAsync.TestUpdateUnsetOneToOneRelationshipWithInverseForeignKeyAsync(),
+                await OneToOneTestsAsync.TestGetAllNoFilterAsync(),
+                await OneToOneTestsAsync.TestGetAllFilterAsync()
+            };
+
+            var failedTests = testResults.Where(result => !result.Item1).ToList();
+            if (failedTests.Count() != 0)
+            {
+                OneToOneTestsAsyncResult = $"Tests failed: {failedTests.Count}. \n Failed tests: \n {string.Join(",\n ", failedTests.Select(x => x.Item2))}.";
+            }
+            else
+            {
+                OneToOneTestsAsyncResult = "All tests passed successfully!";
+            }
+        }
+        catch (Exception ex)
+        {
+            OneToOneTestsAsyncResult = $"Error occurred: {ex.Message}";
+        }
+    }
+
+    [RelayCommand]
+    private async Task AsyncDelete()
+    {
+        try
+        {
+            var testResults = new List<Tuple<bool, string>>
+            {
+                await DeleteTestsAsunc.TestDeleteAllGuidPKAsync(),
+                await DeleteTestsAsunc.TestDeleteAllIntPKAsync(),
+                await DeleteTestsAsunc.TestDeleteAllThousandObjectsAsync(),
+                await DeleteTestsAsunc.TestDeleteAllIdsGuidPKAsync(),
+                await DeleteTestsAsunc.TestDeleteAllIdsIntPKAsync()
+            };
+
+            var failedTests = testResults.Where(result => !result.Item1).ToList();
+            if (failedTests.Count() != 0)
+            {
+                DeleteTestsAsyncResult = $"Tests failed: {failedTests.Count}. \n Failed tests: \n {string.Join(",\n ", failedTests.Select(x => x.Item2))}.";
+            }
+            else
+            {
+                DeleteTestsAsyncResult = "All tests passed successfully!";
+            }
+        }
+        catch (Exception ex)
+        {
+            DeleteTestsAsyncResult = $"Error occurred: {ex.Message}";
+        }
+    }
 
     [RelayCommand]
     private async Task AsyncRecursiveRead()
     {
         try
         {
-            var testResults = await Task.WhenAll(
-            [
-                //RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseAsync(),
-                //RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseReversedAsync(),
-                RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseDoubleForeignKeyAsync(),
-                RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseDoubleForeignKeyReversedAsync(),
-                RecursiveReadAsyncTests.TestOneToManyCascadeWithInverseAsync(),
-                RecursiveReadAsyncTests.TestManyToOneCascadeWithInverseAsync(),
-                //RecursiveReadAsyncTests.TestManyToManyCascadeWithSameClassRelationshipAsync(),
-                //RecursiveReadAsyncTests.TestInsertTextBlobPropertiesRecursiveAsync()
-            ]);
+            var testResults = new List<Tuple<bool, string>>
+            {
+               await RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseAsync(),
+               await RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseReversedAsync(),
+               await RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseDoubleForeignKeyAsync(),
+               await RecursiveReadAsyncTests.TestOneToOneCascadeWithInverseDoubleForeignKeyReversedAsync(),
+               await RecursiveReadAsyncTests.TestOneToManyCascadeWithInverseAsync(),
+               await RecursiveReadAsyncTests.TestManyToOneCascadeWithInverseAsync(),
+               await RecursiveReadAsyncTests.TestManyToManyCascadeWithSameClassRelationshipAsync(),
+               await RecursiveReadAsyncTests.TestInsertTextBlobPropertiesRecursiveAsync()
+            };
 
             var failedTests = testResults.Where(result => !result.Item1).ToList();
             if (failedTests.Count != 0)
@@ -404,30 +559,29 @@ public partial class TestsPageViewModel : ObservableObject
         }
     }
 
-
     [RelayCommand]
     private async Task AsyncRecursiveWrite()
     {
         try
         {
-            var testResults = await Task.WhenAll(
-            [
-                RecursiveWriteAsyncTests.TestOneToOneRecursiveInsertAsync(),
-                RecursiveWriteAsyncTests.TestOneToOneRecursiveInsertOrReplaceAsync(),
-                RecursiveWriteAsyncTests.TestOneToOneRecursiveInsertGuidAsync(),
-                RecursiveWriteAsyncTests.TestOneToOneRecursiveInsertOrReplaceGuidAsync(),
-                RecursiveWriteAsyncTests.TestOneToManyRecursiveInsertAsync(),
-                RecursiveWriteAsyncTests.TestOneToManyRecursiveInsertOrReplaceAsync(),
-                RecursiveWriteAsyncTests.TestOneToManyRecursiveInsertGuidAsync(),
-                RecursiveWriteAsyncTests.TestOneToManyRecursiveInsertOrReplaceGuidAsync(),
-                RecursiveWriteAsyncTests.TestManyToOneRecursiveInsertAsync(),
-                RecursiveWriteAsyncTests.TestManyToOneRecursiveInsertOrReplaceAsync(),
-                RecursiveWriteAsyncTests.TestManyToOneRecursiveInsertGuidAsync(),
-                RecursiveWriteAsyncTests.TestManyToOneRecursiveInsertOrReplaceGuidAsync(),
-                RecursiveWriteAsyncTests.TestManyToManyRecursiveInsertWithSameClassRelationshipAsync(),
-                RecursiveWriteAsyncTests.TestManyToManyRecursiveDeleteWithSameClassRelationshipAsync(),
-                RecursiveWriteAsyncTests.TestInsertTextBlobPropertiesRecursiveAsync(),
-            ]);
+            var testResults = new List<Tuple<bool, string>>
+            {
+               await RecursiveWriteAsyncTests.TestOneToOneRecursiveInsertAsync(),
+               await RecursiveWriteAsyncTests.TestOneToOneRecursiveInsertOrReplaceAsync(),
+               await RecursiveWriteAsyncTests.TestOneToOneRecursiveInsertGuidAsync(),
+               await RecursiveWriteAsyncTests.TestOneToOneRecursiveInsertOrReplaceGuidAsync(),
+               await RecursiveWriteAsyncTests.TestOneToManyRecursiveInsertAsync(),
+               await RecursiveWriteAsyncTests.TestOneToManyRecursiveInsertOrReplaceAsync(),
+               await RecursiveWriteAsyncTests.TestOneToManyRecursiveInsertGuidAsync(),
+               await RecursiveWriteAsyncTests.TestOneToManyRecursiveInsertOrReplaceGuidAsync(),
+               await RecursiveWriteAsyncTests.TestManyToOneRecursiveInsertAsync(),
+               await RecursiveWriteAsyncTests.TestManyToOneRecursiveInsertOrReplaceAsync(),
+               await RecursiveWriteAsyncTests.TestManyToOneRecursiveInsertGuidAsync(),
+               await RecursiveWriteAsyncTests.TestManyToOneRecursiveInsertOrReplaceGuidAsync(),
+               await RecursiveWriteAsyncTests.TestManyToManyRecursiveInsertWithSameClassRelationshipAsync(),
+               await RecursiveWriteAsyncTests.TestManyToManyRecursiveDeleteWithSameClassRelationshipAsync(),
+               await RecursiveWriteAsyncTests.TestInsertTextBlobPropertiesRecursiveAsync(),
+            };
 
             var failedTests = testResults.Where(result => !result.Item1).ToList();
             if (failedTests.Count != 0)
@@ -444,19 +598,29 @@ public partial class TestsPageViewModel : ObservableObject
             AsyncRecursiveWriteResult = $"Error occurred: {ex.Message}";
         }
     }
+    #endregion
 
     [RelayCommand]
     private void ResetTestResults()
     {
-        DeleteTestsResult = "Press to run test";
         ManyToManyResult = "Press to run test";
         ManyToOneResult = "Press to run test";
         OneToManyResult = "Press to run test";
         OneToOneTestsResult = "Press to run test";
+        DeleteTestsResult = "Press to run test";
         RecursiveReadResult = "Press to run test";
         RecursiveWriteResult = "Press to run test";
+    }
+
+    [RelayCommand]
+    private void ResetAsyncTestResults()
+    {
+        ManyToManyAsyncResult = "Press to run test";
+        ManyToOneAsyncResult = "Press to run test";
+        OneToManyAsyncResult = "Press to run test";
+        OneToOneTestsAsyncResult = "Press to run test";
+        DeleteTestsAsyncResult = "Press to run test";
         AsyncRecursiveReadResult = "Press to run test";
         AsyncRecursiveWriteResult = "Press to run test";
     }
-
 }
