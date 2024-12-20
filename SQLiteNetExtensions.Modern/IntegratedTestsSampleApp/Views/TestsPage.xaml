@@ -6,7 +6,6 @@
              xmlns:converters="clr-namespace:IntegratedTestsSampleApp.Converters"
              Shell.BackgroundColor="#FFE7CC98"
              x:DataType="vm:TestsPageViewModel"
-             Title="Tests"
              x:Class="IntegratedTestsSampleApp.Views.TestsPage">
         <ContentPage.BindingContext>
                 <vm:TestsPageViewModel/>
@@ -31,7 +30,7 @@
                                 <Setter Property="Margin"
                                         Value="30,10"/>
                                 <Setter Property="Padding"
-                                        Value="10"/>
+                                        Value="5"/>
                                 <Setter Property="TextColor"
                                         Value="Wheat"/>
                                 <Setter Property="VerticalOptions"
@@ -64,24 +63,36 @@
                 <VerticalStackLayout>
                         <Grid
                                 ColumnDefinitions="*,Auto"
+                                RowDefinitions="*,*"
                                 HorizontalOptions="Fill">
                                 <Button Text="Run All Tests"
                                         Command="{Binding RunAllTestsCommand}"
                                         HorizontalOptions="Fill"
                                         CornerRadius="30"
-                                        Margin="30,50,10,30"
-                                        HeightRequest="70"
+                                        Margin="30,0,10,5"
+                                        HeightRequest="60"
                                         Style="{StaticResource ButtonStyle}"/>
                                 <Button Command="{Binding ResetTestResultsCommand}"
                                         BackgroundColor="Gray"
                                         WidthRequest="70"
                                         Grid.Column="1"
-                                        Margin="10,50,30,30"
+                                        Margin="10,0,30,0"
+                                        Grid.RowSpan="2"
                                         CornerRadius="30"
-                                        HeightRequest="70"
+                                        VerticalOptions="Center"
+                                        HeightRequest="140"
                                         Style="{StaticResource ButtonStyle}"
                                         FontFamily="FontAwesomeSolid"
                                         Text="&#xf0e2;"/>
+
+                                <Button Text="Run All Async Tests"
+                                        Command="{Binding RunAllAsyncTestsCommand}"
+                                        HorizontalOptions="Fill"
+                                        CornerRadius="30"
+                                        Grid.Row="1"
+                                        Margin="30,0,10,20"
+                                        HeightRequest="60"
+                                        Style="{StaticResource ButtonStyle}"/>
                         </Grid>
 
                         <ActivityIndicator IsRunning="{Binding IsLoading}"
@@ -148,14 +159,14 @@
                         <Button Text="Async Recursive Read Tests"
                                 Command="{Binding AsyncRecursiveReadCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
-                        <Editor Text="{Binding RecursiveReadResult}"
+                        <Editor Text="{Binding AsyncRecursiveReadResult}"
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding AsyncRecursiveReadResult, Converter={StaticResource TextToColorConverter}}"/>
 
                         <Button Text="Async Recursive Write Tests"
                                 Command="{Binding AsyncRecursiveWriteCommand}"
                                 Style="{StaticResource ButtonStyle}"/>
-                        <Editor Text="{Binding RecursiveWriteResult}"
+                        <Editor Text="{Binding AsyncRecursiveWriteResult}"
                                 Style="{StaticResource EditorStyle}"
                                 TextColor="{Binding AsyncRecursiveWriteResult, Converter={StaticResource TextToColorConverter}}"/>
                 </VerticalStackLayout>
