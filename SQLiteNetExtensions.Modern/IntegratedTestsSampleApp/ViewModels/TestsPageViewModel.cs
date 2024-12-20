@@ -78,11 +78,17 @@ public partial class TestsPageViewModel : ObservableObject
         {
             IsLoading = true;
             OnPropertyChanged(nameof(IsLoading));
-
-            await Task.WhenAll(
-                            AsyncRecursiveRead(),
-                            AsyncRecursiveWrite()
-                                );
+            
+            await DeleteAsync();
+                ManyToMany();
+                ManyToOne();
+                OneToMany();
+                OneToOne();
+                RecursiveRead();
+                RecursiveWrite();
+            
+            await AsyncRecursiveRead();
+            //await AsyncRecursiveWrite();
         }
         catch (Exception ex)
         {
@@ -234,6 +240,36 @@ public partial class TestsPageViewModel : ObservableObject
 
     [RelayCommand]
     private void Delete()
+    {
+        try
+        {
+            var testResults = new[]
+            {
+                DeleteTests.TestDeleteAllGuidPK(),
+                DeleteTests.TestDeleteAllIntPK(),
+                DeleteTests.TestDeleteAllThousandObjects(),
+                DeleteTests.TestDeleteAllIdsGuidPK(),
+                DeleteTests.TestDeleteAllIdsIntPK()
+            };
+
+            var failedTests = testResults.Where(result => !result.Item1).ToList();
+            if (failedTests.Count() != 0)
+            {
+                DeleteTestsResult = $"Tests failed: {failedTests.Count}. \n Failed tests: \n {string.Join(",\n ", failedTests.Select(x => x.Item2))}.";
+            }
+            else
+            {
+                DeleteTestsResult = "All tests passed successfully!";
+            }
+        }
+        catch (Exception ex)
+        {
+            DeleteTestsResult = $"Error occurred: {ex.Message}";
+        }
+    }
+
+     [RelayCommand]
+    private Task DeleteAsync()
     {
         try
         {
