@@ -1,0 +1,90 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ToDoSampleApp.ViewModels"
+             x:DataType="vm:TodoListViewModel"
+             BackgroundColor="#FFA1E283"
+             Shell.BackgroundColor="#FFE7CC98"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:models="clr-namespace:ToDoSampleApp.Models;assembly=ToDoSampleApp"
+             x:Class="ToDoSampleApp.Views.TodoListPage">
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand, Mode=OneTime}"
+                                        EventName="Appearing"/>
+    </ContentPage.Behaviors>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="ButtonStyle"
+                   TargetType="Button">
+                <Setter Property="HorizontalOptions"
+                        Value="Fill"/>
+                <Setter Property="BackgroundColor"
+                        Value="SeaGreen"/>
+                <Setter Property="FontSize"
+                        Value="22"/>
+                <Setter Property="FontAttributes"
+                        Value="Bold"/>
+                <Setter Property="CornerRadius"
+                        Value="20"/>
+                <Setter Property="FontFamily"
+                        Value="DarkerGrotesque"/>
+                <Setter Property="Margin"
+                        Value="30,10"/>
+                <Setter Property="Padding"
+                        Value="5"/>
+                <Setter Property="TextColor"
+                        Value="Wheat"/>
+                <Setter Property="VerticalOptions"
+                        Value="Center"/>
+            </Style>
+
+            <Style x:Key="BorderStyle"
+                   TargetType="Border">
+                <Setter Property="HorizontalOptions"
+                        Value="Fill"/>
+                <Setter Property="Stroke"
+                        Value="Transparent"/>
+                <Setter Property="Margin"
+                        Value="20"/>
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <VerticalStackLayout>
+        <Button Text="Add Item"
+                Margin="30"
+                Style=" {StaticResource ButtonStyle}"
+                Command="{Binding AddItemCommand}"/>
+
+        <CollectionView ItemsSource="{Binding Items, Mode=OneWay}"
+                        SelectionMode="Single"
+                        SelectionChangedCommand="{Binding SelectItemCommand}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical"
+                                   ItemSpacing="10"/>
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:TodoItem">
+                    <Border Style="{StaticResource BorderStyle}">
+                        <Grid HorizontalOptions="Fill"
+                              ColumnDefinitions="*,Auto">
+                            <Label Text="{Binding Name}"
+                                   FontSize="22"
+                                   HorizontalOptions="Center"/>
+                            <Image Source="check.png"
+                                   HeightRequest="30"
+                                   WidthRequest="30"
+                                   Margin="10"
+                                   Grid.Column="1"
+                                   HorizontalOptions="End"
+                                   IsVisible="{Binding Done}"/>
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TodoListViewModel}}, Path=SelectItemCommand}"
+                                                  CommandParameter="{Binding .}"/>
+                        </Border.GestureRecognizers>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+    </VerticalStackLayout>
+</ContentPage>

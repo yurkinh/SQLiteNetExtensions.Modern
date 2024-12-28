@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:ToDoSampleApp.ViewModels"
+             x:Class="ToDoSampleApp.Views.TodoItemPage"
+             Shell.BackgroundColor="#FFE7CC98"
+             x:DataType="vm:TodoItemViewModel"
+             BackgroundColor="Wheat"
+             Title="{Binding Name}">
+        <ContentPage.Resources>
+                <ResourceDictionary>
+                        <Style
+                                TargetType="Label">
+                                <Setter Property="HorizontalOptions"
+                                        Value="Fill"/>
+                                <Setter Property="FontSize"
+                                        Value="22"/>
+                                <Setter Property="FontAttributes"
+                                        Value="Bold"/>
+                                <Setter Property="FontFamily"
+                                        Value="DarkerGrotesque"/>
+                                <Setter Property="TextColor"
+                                        Value="Black"/>
+                                <Setter Property="VerticalOptions"
+                                        Value="Center"/>
+                        </Style>
+                        <Style
+                                TargetType="Entry">
+                                <Setter Property="HorizontalOptions"
+                                        Value="Fill"/>
+                                <Setter Property="FontSize"
+                                        Value="22"/>
+                                <Setter Property="FontFamily"
+                                        Value="DarkerGrotesque"/>
+                                <Setter Property="TextColor"
+                                        Value="Black"/>
+                                <Setter Property="BackgroundColor"
+                                        Value="#FF46805F"/>
+                                <Setter Property="VerticalOptions"
+                                        Value="Center"/>
+                        </Style>
+                        <Style
+                                TargetType="Editor">
+                                <Setter Property="FontAttributes"
+                                        Value="Bold"/>
+                                <Setter Property="FontSize"
+                                        Value="20"/>
+                                <Setter Property="BackgroundColor"
+                                        Value="#FF46805F"/>
+                                <Setter Property="FontFamily"
+                                        Value="DarkerGrotesque"/>
+                                <Setter Property="TextColor"
+                                        Value="Black"/>
+                                <Setter Property="HorizontalOptions"
+                                        Value="Fill"/>
+                                <Setter Property="AutoSize"
+                                        Value="TextChanges"/>
+                        </Style>
+                        <Style x:Key="ButtonStyle"
+                               TargetType="Button">
+                                <Setter Property="HorizontalOptions"
+                                        Value="Fill"/>
+                                <Setter Property="BackgroundColor"
+                                        Value="SeaGreen"/>
+                                <Setter Property="FontSize"
+                                        Value="22"/>
+                                <Setter Property="FontAttributes"
+                                        Value="Bold"/>
+                                <Setter Property="CornerRadius"
+                                        Value="20"/>
+                                <Setter Property="FontFamily"
+                                        Value="DarkerGrotesque"/>
+                                <Setter Property="Margin"
+                                        Value="30,10"/>
+                                <Setter Property="Padding"
+                                        Value="5"/>
+                                <Setter Property="TextColor"
+                                        Value="Wheat"/>
+                                <Setter Property="VerticalOptions"
+                                        Value="Center"/>
+                        </Style>
+                </ResourceDictionary>
+        </ContentPage.Resources>
+        <VerticalStackLayout Margin="20"
+                             Spacing="20"
+                             VerticalOptions="Start">
+                <Label Text="Name"/>
+                <Entry Text="{Binding Name}"/>
+
+                <Label Text="Notes"/>
+                <Editor Text="{Binding Notes}"/>
+
+                <Label Text="Done"/>
+                <Switch IsToggled="{Binding Done}"/>
+
+                <Button Text="Save"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding SaveCommand}"/>
+                <Button Text="Delete"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding DeleteCommand}"/>
+                <Button Text="Cancel"
+                        Style="{StaticResource ButtonStyle}"
+                        Command="{Binding CancelCommand}"/>
+        </VerticalStackLayout>
+</ContentPage>
