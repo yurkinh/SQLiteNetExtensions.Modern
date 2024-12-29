@@ -15,10 +15,12 @@ public partial class TodoListViewModel(IDatabaseService databaseService) : Obser
 
     public async Task LoadItemsAsync()
     {
+        await Task.Delay(100);
+
         var items = await databaseService.GetItemsAsync();
         Items.Clear();
         foreach (var item in items)
-            Items.Add(item); 
+            Items.Add(item);
     }
 
     [RelayCommand]

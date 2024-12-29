@@ -5,15 +5,17 @@ using ToDoSampleApp.Services;
 
 namespace ToDoSampleApp.ViewModels;
 
-public partial class TodoItemViewModel : ObservableObject
+public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
 {
     private readonly IDatabaseService databaseService;
 
-    [ObservableProperty]
-    private string name;
+    private TodoItem? receivedTodoItem;
 
     [ObservableProperty]
-    private string notes;
+    private string? name;
+
+    [ObservableProperty]
+    private string? notes;
 
     [ObservableProperty]
     private bool done;
@@ -30,6 +32,17 @@ public partial class TodoItemViewModel : ObservableObject
         }
     }
 
+    public void ApplyQueryAttributes(IDictionary<string, object> query)
+    {
+        if (query.TryGetValue("TodoItem", out var todoItemObj) && todoItemObj is TodoItem todoItem)
+        {
+            receivedTodoItem = todoItem;
+            Name = todoItem.Name;
+            Notes = todoItem.Notes;
+            Done = todoItem.Done;
+        }
+    }
+
     [RelayCommand]
     private async Task SaveAsync()
     {
@@ -40,6 +53,13 @@ public partial class TodoItemViewModel : ObservableObject
             Done = Done
         };
 
+        //Edit mode
+        if (receivedTodoItem != null)
+        {
+            todoItem.ID = receivedTodoItem.ID;
+            await DeleteAsync(); //deleting old item
+        }
+ 
         await databaseService.SaveItemAsync(todoItem);
         await Shell.Current.GoToAsync("..");
     }
@@ -47,19 +67,12 @@ public partial class TodoItemViewModel : ObservableObject
     [RelayCommand]
     private async Task DeleteAsync()
     {
-        var todoItem = new TodoItem
-        {
-            Name = Name,
-            Notes = Notes,
-            Done = Done
-        };
-
-        await databaseService.DeleteItemAsync(todoItem);
+        await databaseService.DeleteItemAsync(receivedTodoItem);
         await Shell.Current.GoToAsync("..");
     }
 
     [RelayCommand]
-    private async Task CancelAsync()
+    private static async Task CancelAsync()
     {
         await Shell.Current.GoToAsync("..");
     }

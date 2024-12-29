@@ -57,10 +57,6 @@
         <CollectionView ItemsSource="{Binding Items, Mode=OneWay}"
                         SelectionMode="Single"
                         SelectionChangedCommand="{Binding SelectItemCommand}">
-            <CollectionView.ItemsLayout>
-                <LinearItemsLayout Orientation="Vertical"
-                                   ItemSpacing="10"/>
-            </CollectionView.ItemsLayout>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:TodoItem">
                     <Border Style="{StaticResource BorderStyle}">
@@ -68,7 +64,8 @@
                               ColumnDefinitions="*,Auto">
                             <Label Text="{Binding Name}"
                                    FontSize="22"
-                                   HorizontalOptions="Center"/>
+                                   Margin="20,0"
+                                   HorizontalOptions="Start"/>
                             <Image Source="check.png"
                                    HeightRequest="30"
                                    WidthRequest="30"
