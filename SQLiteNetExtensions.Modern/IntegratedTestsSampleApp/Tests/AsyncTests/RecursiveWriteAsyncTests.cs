@@ -1129,10 +1129,10 @@ public class RecursiveWriteAsyncTests
                     throw new Exception($"TestManyToManyRecursiveInsertWithSameClassRelationshipAsync: User is null: {expected.Name}");
                 if (obtained.Name != expected.Name)
                     throw new Exception($"TestManyToManyRecursiveInsertWithSameClassRelationshipAsync: Name mismatch for user: {expected.Name}");
-                if (!obtained.FollowingUsers.SequenceEqual(expected.FollowingUsers))
+                if (!obtained.FollowingUsers.OrderBy(u => u.Name).SequenceEqual(expected.FollowingUsers.OrderBy(u => u.Name)))
                     throw new Exception($"TestManyToManyRecursiveInsertWithSameClassRelationshipAsync: Following users mismatch for {expected.Name}");
                 var followers = allUsers.Where(u => u.FollowingUsers.Contains(expected));
-                if (!obtained.Followers.SequenceEqual(followers))
+                if (!obtained.Followers.OrderBy(u => u.Name).SequenceEqual(followers.OrderBy(u => u.Name)))
                     throw new Exception($"TestManyToManyRecursiveInsertWithSameClassRelationshipAsync: Followers mismatch for {expected.Name}");
             };
 
@@ -1232,7 +1232,7 @@ public class RecursiveWriteAsyncTests
             var expectedUsers = new[] { jaime, mark, claire, will };
             var existingUsers = await conn.Table<TwitterUser>().ToListAsync();
 
-            if (!existingUsers.SequenceEqual(expectedUsers))
+            if (!existingUsers.OrderBy(u => u.Name).SequenceEqual(expectedUsers.OrderBy(u => u.Name)))
                 return new Tuple<bool, string>(false, "TestManyToManyRecursiveDeleteWithSameClassRelationshipAsync: Users were not deleted correctly");
 
             return new Tuple<bool, string>(true, "TestManyToManyRecursiveDeleteWithSameClassRelationshipAsync: Passed");
