@@ -61,16 +61,22 @@
                 <DataTemplate x:DataType="models:TodoItem">
                     <Border Style="{StaticResource BorderStyle}">
                         <Grid HorizontalOptions="Fill"
-                              ColumnDefinitions="*,Auto">
+                              ColumnDefinitions="*,*,Auto">
                             <Label Text="{Binding Name}"
                                    FontSize="22"
                                    Margin="20,0"
                                    HorizontalOptions="Start"/>
+                            <Label Text="{Binding Notes.CreationTime, StringFormat='{}{0:MM/dd/yyyy   HH:mm}'}"
+                                   FontSize="14"
+                                   Margin="20,0"
+                                   Grid.Column="1"
+                                   HorizontalOptions="Start"
+                                   VerticalOptions="Center"/>
                             <Image Source="check.png"
                                    HeightRequest="30"
                                    WidthRequest="30"
                                    Margin="10"
-                                   Grid.Column="1"
+                                   Grid.Column="2"
                                    HorizontalOptions="End"
                                    IsVisible="{Binding Done}"/>
                         </Grid>

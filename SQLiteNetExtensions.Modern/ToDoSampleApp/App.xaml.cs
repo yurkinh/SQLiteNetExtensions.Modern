@@ -1,11 +1,21 @@
-﻿namespace ToDoSampleApp;
+﻿using ToDoSampleApp.Services;
+
+namespace ToDoSampleApp;
 
 public partial class App : Application
 {
-	public App()
+	IDatabaseService databaseService;
+	public App(IDatabaseService databaseService)
 	{
 		InitializeComponent();
 
 		MainPage = new AppShell();
+
+		this.databaseService = databaseService;
+	}
+
+	protected override async void OnStart()
+	{
+		await databaseService.Init();
 	}
 }

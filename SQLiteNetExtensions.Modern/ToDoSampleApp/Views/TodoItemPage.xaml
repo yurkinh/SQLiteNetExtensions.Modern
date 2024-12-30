@@ -87,8 +87,24 @@
                 <Label Text="Name"/>
                 <Entry Text="{Binding Name}"/>
 
+                <Label Text="Notes Title"/>
+                <Entry Text="{Binding NotesTitle}"/>
+
                 <Label Text="Notes"/>
-                <Editor Text="{Binding Notes}"/>
+                <Editor Text="{Binding NotesBody}"/>
+
+                <HorizontalStackLayout>
+                        <DatePicker Date="{Binding EventDateTime}"
+                                    Margin="10"
+                                    BackgroundColor="SeaGreen"
+                                    FontSize="30"/>
+                        <TimePicker Time="{Binding EventDateTime}"
+                                    Margin="10"
+                                    BackgroundColor="SeaGreen"
+                                    CharacterSpacing="5"
+                                    FontAutoScalingEnabled="True"
+                                    FontSize="03"/>
+                </HorizontalStackLayout>
 
                 <Label Text="Done"/>
                 <Switch IsToggled="{Binding Done}"/>

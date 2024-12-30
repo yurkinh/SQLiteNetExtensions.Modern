@@ -15,10 +15,16 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
     private string? name;
 
     [ObservableProperty]
-    private string? notes;
+    private string? notesTitle;
+
+    [ObservableProperty]
+    private string? notesBody;
 
     [ObservableProperty]
     private bool done;
+
+    [ObservableProperty]
+    private DateTime eventDateTime = DateTime.Now;
 
     public TodoItemViewModel(IDatabaseService databaseService, TodoItem? todoItem = null)
     {
@@ -27,8 +33,11 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
         if (todoItem != null)
         {
             Name = todoItem.Name;
-            Notes = todoItem.Notes;
             Done = todoItem.Done;
+            NotesTitle = todoItem.Notes?.Title;
+            NotesBody = todoItem.Notes?.Body;
+
+            EventDateTime = todoItem.Notes?.EventDateTime ?? DateTime.Now;
         }
     }
 
@@ -38,35 +47,52 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
         {
             receivedTodoItem = todoItem;
             Name = todoItem.Name;
-            Notes = todoItem.Notes;
             Done = todoItem.Done;
+            NotesTitle = todoItem.Notes?.Title;
+            NotesBody = todoItem.Notes?.Body;
+            EventDateTime = todoItem.Notes?.EventDateTime ?? DateTime.Now;
         }
     }
 
     [RelayCommand]
     private async Task SaveAsync()
     {
-        var todoItem = new TodoItem
-        {
-            Name = Name,
-            Notes = Notes,
-            Done = Done
-        };
-
-        //Edit mode
         if (receivedTodoItem != null)
         {
-            todoItem.ID = receivedTodoItem.ID;
-            await DeleteAsync(); //deleting old item
+            receivedTodoItem.Name = Name;
+            receivedTodoItem.Done = Done;
+
+            receivedTodoItem.Notes ??= new Notes();
+            receivedTodoItem.Notes.Title = NotesTitle;
+            receivedTodoItem.Notes.Body = NotesBody;
+            receivedTodoItem.Notes.EventDateTime = EventDateTime;
+
+            await databaseService.UpdateItemAsync(receivedTodoItem);
         }
- 
-        await databaseService.SaveItemAsync(todoItem);
+        else
+        {
+            var todoItem = new TodoItem
+            {
+                Name = Name,
+                Done = Done,
+                Notes = new Notes
+                {
+                    Title = NotesTitle,
+                    Body = NotesBody,
+                    EventDateTime = EventDateTime
+                }
+            };
+            await databaseService.SaveItemAsync(todoItem);
+        }
+
         await Shell.Current.GoToAsync("..");
     }
 
     [RelayCommand]
     private async Task DeleteAsync()
     {
+        if (receivedTodoItem == null)
+            return;
         await databaseService.DeleteItemAsync(receivedTodoItem);
         await Shell.Current.GoToAsync("..");
     }

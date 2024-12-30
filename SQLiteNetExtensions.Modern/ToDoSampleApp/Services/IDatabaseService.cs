@@ -1,3 +1,4 @@
+using System.Diagnostics.Metrics;
 using ToDoSampleApp.Models;
 
 namespace ToDoSampleApp.Services;
@@ -5,6 +6,8 @@ namespace ToDoSampleApp.Services;
 public interface IDatabaseService
 {
     Task<List<TodoItem>> GetItemsAsync();
-    Task<int> SaveItemAsync(TodoItem item);
+    Task SaveItemAsync(TodoItem item);
+    Task UpdateItemAsync(TodoItem item);
     Task<int> DeleteItemAsync(TodoItem item);
+    Task Init();
 }
