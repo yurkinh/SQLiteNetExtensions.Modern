@@ -4,9 +4,34 @@
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
+
+    <!-- NuGet -->
+		<Authors>yurkinh</Authors>
+		<Copyright>Copyright © yurkinh and contributors</Copyright>
+		<PackageReadmeFile>README.md</PackageReadmeFile>
+		<PackageVersion>1.0.0</PackageVersion>
+		<IsPackable>True</IsPackable>
+		<PackageProjectUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</PackageProjectUrl>
+		<RepositoryUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+		<PackageTags>dotnet-maui;maui;calendar;calendar control</PackageTags>
+		<IncludeSymbols>True</IncludeSymbols>
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>    
+		<Title>All time favourite SQLiteNetExtensions</Title>
+		<Description>SQLiteNetExtensions is a very simple ORM that provides one-to-one, one-to-many, many-to-one, many-to-many, inverse and text-blobbed relationships on top of the sqlite-net library.</Description>
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
+		<DebugType>portable</DebugType>
+		<PackageIcon>nuget.png</PackageIcon>
+    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+		<PackageReleaseNotes>
+		                    Initial release;							
+    </PackageReleaseNotes>
   </PropertyGroup>
 
-  <ItemGroup>
+  <ItemGroup>    
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
   </ItemGroup>
 
