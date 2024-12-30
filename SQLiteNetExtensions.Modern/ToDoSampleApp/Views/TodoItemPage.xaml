@@ -41,8 +41,6 @@
                         </Style>
                         <Style
                                 TargetType="Editor">
-                                <Setter Property="FontAttributes"
-                                        Value="Bold"/>
                                 <Setter Property="FontSize"
                                         Value="20"/>
                                 <Setter Property="BackgroundColor"
@@ -81,42 +79,44 @@
                         </Style>
                 </ResourceDictionary>
         </ContentPage.Resources>
-        <VerticalStackLayout Margin="20"
-                             Spacing="20"
-                             VerticalOptions="Start">
-                <Label Text="Name"/>
-                <Entry Text="{Binding Name}"/>
+        <ScrollView>
+                <VerticalStackLayout Margin="20"
+                                     Spacing="20"
+                                     VerticalOptions="Start">
+                        <Label Text="Name"/>
+                        <Entry Text="{Binding Name}"/>
 
-                <Label Text="Notes Title"/>
-                <Entry Text="{Binding NotesTitle}"/>
+                        <Label Text="Notes Title"/>
+                        <Entry Text="{Binding NotesTitle}"/>
 
-                <Label Text="Notes"/>
-                <Editor Text="{Binding NotesBody}"/>
+                        <Label Text="Notes"/>
+                        <Editor Text="{Binding NotesBody}"/>
 
-                <HorizontalStackLayout>
-                        <DatePicker Date="{Binding EventDateTime}"
-                                    Margin="10"
-                                    BackgroundColor="SeaGreen"
-                                    FontSize="30"/>
-                        <TimePicker Time="{Binding EventDateTime}"
-                                    Margin="10"
-                                    BackgroundColor="SeaGreen"
-                                    CharacterSpacing="5"
-                                    FontAutoScalingEnabled="True"
-                                    FontSize="03"/>
-                </HorizontalStackLayout>
+                        <HorizontalStackLayout>
+                                <DatePicker Date="{Binding EventDateTime}"
+                                            Margin="10"
+                                            BackgroundColor="#FF46805F"
+                                            FontSize="28"/>
+                                <TimePicker Time="{Binding EventDateTime}"
+                                            Margin="10"
+                                            BackgroundColor="#FF46805F"
+                                            CharacterSpacing="5"
+                                            FontAutoScalingEnabled="True"
+                                            FontSize="28"/>
+                        </HorizontalStackLayout>
 
-                <Label Text="Done"/>
-                <Switch IsToggled="{Binding Done}"/>
+                        <Label Text="Done"/>
+                        <Switch IsToggled="{Binding Done}"/>
 
-                <Button Text="Save"
-                        Style="{StaticResource ButtonStyle}"
-                        Command="{Binding SaveCommand}"/>
-                <Button Text="Delete"
-                        Style="{StaticResource ButtonStyle}"
-                        Command="{Binding DeleteCommand}"/>
-                <Button Text="Cancel"
-                        Style="{StaticResource ButtonStyle}"
-                        Command="{Binding CancelCommand}"/>
-        </VerticalStackLayout>
+                        <Button Text="Save"
+                                Style="{StaticResource ButtonStyle}"
+                                Command="{Binding SaveCommand}"/>
+                        <Button Text="Delete"
+                                Style="{StaticResource ButtonStyle}"
+                                Command="{Binding DeleteCommand}"/>
+                        <Button Text="Cancel"
+                                Style="{StaticResource ButtonStyle}"
+                                Command="{Binding CancelCommand}"/>
+                </VerticalStackLayout>
+        </ScrollView>
 </ContentPage>
