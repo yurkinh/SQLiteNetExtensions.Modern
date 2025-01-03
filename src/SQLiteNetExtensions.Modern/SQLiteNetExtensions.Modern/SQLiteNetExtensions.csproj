@@ -14,7 +14,7 @@
 		<PackageProjectUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</RepositoryUrl>
 		<RepositoryType>git</RepositoryType>
-		<PackageTags>dotnet-maui;maui;calendar;calendar control</PackageTags>
+		<PackageTags>sqlite sqlite-net net extensions orm cascade recursive .net</PackageTags>
 		<IncludeSymbols>True</IncludeSymbols>
 		<PublishRepositoryUrl>true</PublishRepositoryUrl>
 		<EmbedUntrackedSources>true</EmbedUntrackedSources>
@@ -25,7 +25,7 @@
 		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 		<DebugType>portable</DebugType>
 		<PackageIcon>nuget.png</PackageIcon>
-    <ContinuousIntegrationBuild Condition="'$(GITHUB_ACTIONS)' == 'true'">true</ContinuousIntegrationBuild>
+    <PackageId>SQLiteNetExtensions.Modern</PackageId>
 		<PackageReleaseNotes>
 		                    Initial release;							
     </PackageReleaseNotes>
@@ -34,5 +34,9 @@
   <ItemGroup>    
     <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
   </ItemGroup>
+  <ItemGroup>
+		<None Include="..\..\..\nuget.png" PackagePath="nuget.png" Pack="true" />
+		<None Include="..\..\..\README.md" PackagePath="README.md" Pack="true" />
+	</ItemGroup>	
 
 </Project>
