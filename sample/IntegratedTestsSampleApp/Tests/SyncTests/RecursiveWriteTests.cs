@@ -1,7 +1,8 @@
 using IntegratedTestsSampleApp.Helpers;
 using SQLiteNetExtensions.Extensions;
-using SQLite;
 using SQLiteNetExtensions.Attributes;
+using SQLite;
+
 
 namespace IntegratedTestsSampleApp.Tests;
 
