@@ -1,8 +1,22 @@
-# SQLite-Net Extensions
+# SQLiteNetExtensions.Modern
+
+This is a .NET 8 migration of the [TwinCoders]([https://bitbucket.org/twincoders])   [SQLiteNetExtensions](https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/)
+
+ Available on NuGet: https://www.nuget.org/packages/SQLiteNetExtensions.Modern [![NuGet](https://img.shields.io/nuget/v/SQLiteNetExtensions.Modern.svg?label=NuGet)](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/)
 
 [SQLite-Net Extensions](https://github.com/yurkinh/SQLiteNetExtensions.Modern/) is a very simple ORM that provides **one-to-one**, **one-to-many**, **many-to-one**, **many-to-many**, **inverse** and **text-blobbed** relationships on top of the [sqlite-net library](https://github.com/praeclarum/sqlite-net).
 
 sqlite-net is an open source, minimal library to allow .NET and Mono applications to store data in [SQLite 3 databases](http://www.sqlite.org). SQLite-Net Extensions extends its functionality to help the user handle relationships between sqlite-net entities.
+
+### What's new
+* Migrated to .NET 8
+* Updated to the latest version of the [sqlite-net library](https://github.com/praeclarum/sqlite-net)
+* Aligned parity between synchronous and asynchronous extensions (Sync Read/Write operations have Async counterparts)
+* Utilising SQLiteAsyncConnection from the sqlite-net (SQLiteAsync.cs.) instead of third-party nuget plugin
+* Replaced Newtonsoft serializer with built-in .NET **System.Text.Json**
+* Migrated unit tests
+* Migrated Integration tests. Added integration tests for the async extensions
+* Added minimal Todo .NET MAUI Sample app (ios, android, mac, windows)  
 
 
 ## How it works
@@ -21,7 +35,7 @@ You can update foreign keys manually if you feel more comfortable handling some 
 ## Installation
 The easiest way of installing the library in your project is by adding a reference to [_SQLiteNetExtensions.Modern_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/).
 
-Currently, the recommended version is the official SQLite-Net PCL NuGet package. If you are using this SQLite-Net version, you can simply add a reference to [_SQLiteNetExtensions_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/). Nuget package contains both sync and async versions.
+Currently, the recommended version is the official SQLite-Net PCL NuGet package. If you are using this SQLite-Net version, you can simply add a reference to [_SQLiteNetExtensions.Modern_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/). Nuget package contains both sync and async versions.
 
 Otherwise, you can download and compile the sources by yourself and add the reference to your newly compiled DLL or add SQLite-Net Extensions project as a dependency to your code.
 
@@ -344,9 +358,9 @@ The serializer used to store and load the elements can be customized by implemen
         object Deserialize(string text, Type type);
     }
 
-A JSON-based serializer is used if no other serializer has been specified using `TextBlobOperations.SetTextSerializer` method. Serialization and Deserialization are done via System.text.Json.
+A JSON-based serializer is used if no other serializer has been specified using `TextBlobOperations.SetTextSerializer` method. Serialization and Deserialization are done via `System.Text.Json`.
 
-Text-blobbed properties cannot have relationships to other objects nor inverse relationships to its parent.
+Text-blobbed properties cannot have relationships to other objects nor inverse relationships to their parent.
 
 Example:
 
@@ -387,7 +401,7 @@ Asynchronous equivalent:
 
 ### Cascade operations
 
-For safety, all operations are not recursive by default, but most of them can be configured to work recursively. SQLite-Net Extensions provides mechanisms for handling inverse relationships, references to the same class, and circular dependencies out-of-the-box, so you won't have to worry about it. To handle it, there's a new property in all relationship attributes called `CascadeOperations` that allows you to specify how that relationship should behave on cascade operations. Cascade operations can be combined using the binary _OR_ operator `|`, for example:
+For safety, all operations are not recursive by default, but most of them can be configured to work recursively. SQLite-Net Extensions provide mechanisms for handling inverse relationships, references to the same class, and circular dependencies out-of-the-box, so you won't have to worry about it. To handle it, there's a new property in all relationship attributes called `CascadeOperations` that allows you to specify how that relationship should behave on cascade operations. Cascade operations can be combined using the binary _OR_ operator `|`, for example:
 
 	[OneToMany(CascadeOperations = CascadeOperation.CascadeRead | CascadeOperation.CascadeInsert)]
 
