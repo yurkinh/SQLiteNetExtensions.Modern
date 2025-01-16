@@ -12,7 +12,7 @@ sqlite-net is an open source, minimal library to allow .NET and Mono application
 * Migrated to .NET 8
 * Updated to the latest version of the [sqlite-net library](https://github.com/praeclarum/sqlite-net)
 * Aligned parity between synchronous and asynchronous extensions (Sync Read/Write operations have Async counterparts)
-* Utilising SQLiteAsyncConnection from the sqlite-net (SQLiteAsync.cs.) instead of third-party nuget plugin
+* Utilized SQLiteAsyncConnection from the sqlite-net (SQLiteAsync.cs.) instead of third-party nuget plugin
 * Replaced Newtonsoft serializer with built-in .NET **System.Text.Json**
 * Migrated unit tests
 * Migrated Integration tests. Added integration tests for the async extensions
