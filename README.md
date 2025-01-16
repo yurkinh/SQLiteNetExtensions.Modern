@@ -1,47 +1,37 @@
 # SQLite-Net Extensions
 
-[SQLite-Net Extensions](https://bitbucket.org/twincoders/sqlite-net-extensions) is a very simple ORM that provides **one-to-one**, **one-to-many**, **many-to-one**, **many-to-many**, **inverse** and **text-blobbed** relationships on top of the [sqlite-net library](https://github.com/praeclarum/sqlite-net).
+[SQLite-Net Extensions](https://github.com/yurkinh/SQLiteNetExtensions.Modern/) is a very simple ORM that provides **one-to-one**, **one-to-many**, **many-to-one**, **many-to-many**, **inverse** and **text-blobbed** relationships on top of the [sqlite-net library](https://github.com/praeclarum/sqlite-net).
 
 sqlite-net is an open source, minimal library to allow .NET and Mono applications to store data in [SQLite 3 databases](http://www.sqlite.org). SQLite-Net Extensions extends its functionality to help the user handle relationships between sqlite-net entities.
 
 
 ## How it works
-SQLite-Net Extensions provides attributes for specifying the relationships in different ways and uses reflection to read and write the objects at Runtime.
+SQLite-Net Extensions provide attributes for specifying the relationships in different ways and use reflection to read and write the objects at Runtime.
 
-SQLite-Net Extensions doesn't create any table or columns in your database and doesn't persist obscure elements to handle the database. For this reason, you have full control over the database schema used to persist your entities. SQLite-Net Extensions only requires you to specify the foreign keys used to handle the relationships and it will find out the rest by itself.
+SQLite-Net Extensions don't create any table or columns in your database and don't persist obscure elements to handle the database. For this reason, you have full control over the database schema used to persist your entities. SQLite-Net Extensions only requires you to specify the foreign keys used to handle the relationships and it will find out the rest by itself.
 
 SQLite-Net Extensions doesn't modify or override any method behavior of SQLite.Net. Instead, it extends `SQLiteConnection` class with methods to handle the relationships.
 
-For example `GetChildren` finds all the relationship properties that have been specified in the element, finds the required foreign keys and fills the properties automatically for you.
+For example `GetChildren` finds all the relationship properties that have been specified in the element, finds the required foreign keys, and fills the properties automatically for you.
 
-Complementarily `UpdateWithChildren` looks at the relationships that you have set, updates all the foreign keys and save the changes in the database. This is particulary helpful for one-to-many, many-to-many or one-to-one relationships where the foreign key is in the destination table.
+Complementarily `UpdateWithChildren` looks at the relationships that you have set, updates all the foreign keys and save the changes in the database. This is particularly helpful for one-to-many, many-to-many or one-to-one relationships where the foreign key is in the destination table.
 
 You can update foreign keys manually if you feel more comfortable handling some relationships by yourself and let the SQLite-Net extensions handle the rest for you. You can even add or remove SQLite-Net extensions of any project at any time without changes to your database.
 
 ## Installation
-The easiest way of installing the library in your project is adding a reference to [_SQLiteNetExtensions_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions/) or [_SQLiteNetExtensions.Async_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Async/) for asynchronous operations.
+The easiest way of installing the library in your project is by adding a reference to [_SQLiteNetExtensions.Modern_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/).
 
-SQLite-Net Extensions is provided in three different flavors, depending on the SQLite-Net version that you are using:
-
-- [SQLite-Net PCL](https://github.com/oysteinkrog/SQLite.Net-PCL) version (also as [NuGet package](https://www.nuget.org/packages/SQLite.Net-PCL/))
-- [SQLite.Net.Async-PCL](https://github.com/oysteinkrog/SQLite.Net-PCL) version (also as [NuGet package](https://www.nuget.org/packages/SQLite.Net.Async-PCL/))
-- [MvvmCross SQLite Community](https://github.com/MvvmCross/MvvmCross-SQLite PCL) version (also as [NuGet package](https://www.nuget.org/packages/MvvmCross.Community.Plugin.Sqlite/))
-- [SQLite-Net standard](https://github.com/praeclarum/sqlite-net) version (also as [NuGet package](https://www.nuget.org/packages/sqlite-net))
-
-Currently the recommended version is the official SQLite-Net PCL NuGet package. If you are using this SQLite-Net version, you can simply add a reference to [_SQLiteNetExtensions_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions/). Also available with Async support in [_SQLiteNetExtensions.Async_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Async/).
-
-There's also [a PCL NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions-MvvmCross/) for users of MvvmCross SQLite Community plugin.
+Currently, the recommended version is the official SQLite-Net PCL NuGet package. If you are using this SQLite-Net version, you can simply add a reference to [_SQLiteNetExtensions_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/). Nuget package contains both sync and async versions.
 
 Otherwise, you can download and compile the sources by yourself and add the reference to your newly compiled DLL or add SQLite-Net Extensions project as a dependency to your code.
 
 ## Get help
 The best way to get help is searching [StackOverflow](http://stackoverflow.com) for already existing answers of your problem or asking your own question and tagging it with [`sqlite-net-extensions` tag](http://stackoverflow.com/questions/tagged/sqlite-net-extensions).
 
-If you find a bug or have a suggestion or feature request. Feel free to create a new ticket in the [issue tracker](https://bitbucket.org/twincoders/sqlite-net-extensions/issues?status=new&status=open) if it doesn't already exist.
-
+If you find a bug or have a suggestion or feature request. Feel free to create a new ticket in the [issue tracker](https://github.com/yurkinh/SQLiteNetExtensions.Modern/issues) if it doesn't already exist.
 
 ## Some code
-Theories are for the conspiracists, lets see some code.
+Theories are for the conspiracists, let's see some code.
 
 #### sqlite-net version
 This is how you usually specify a relationship in **sqlite-net** (extracted from [sqlite-net wiki](https://github.com/praeclarum/sqlite-net/wiki/GettingStarted)):
@@ -134,10 +124,10 @@ Here's how we'll create, read and update the entities:
     }
 
         
-We've specified `AutoIncrement` primary keys, so we have to insert the objects to the database first to be assigned a correct primary key before stablishing the relationships.
+We've specified `AutoIncrement` primary keys, so we have to insert the objects into the database first to be assigned a correct primary key before establishing the relationships.
 
 ##### Using recursive operations
-The complexity of the sample can be reduced using recursive operations, that are explained in detail below. As we can see in the `Stock` class defined above, we've already specified cascade operations for the `Valuations` property, so we can use cascade operations to make the previous method easier as we don't need to manually insert the objects one by one in the database:
+The complexity of the sample can be reduced using recursive operations, which are explained in detail below. As we can see in the `Stock` class defined above, we've already specified cascade operations for the `Valuations` property, so we can use cascade operations to make the previous method easier as we don't need to manually insert the objects one by one in the database:
 
     var db = Utils.CreateConnection();
     db.CreateTable<Stock>();
@@ -169,14 +159,14 @@ Recursive operations are explained in detail in the _Cascade operations_ section
 
 
 ## Features
-SQLite-Net extensions is built on top of [sqlite-net library](https://github.com/praeclarum/sqlite-net), so obviously all the [features of **sqlite-net**](https://github.com/praeclarum/sqlite-net/wiki) are present in it.
+SQLite-Net extensions are built on top of [sqlite-net library](https://github.com/praeclarum/sqlite-net), so obviously all the [features of **sqlite-net**](https://github.com/praeclarum/sqlite-net/wiki) are present in it.
 
 If you don't know why a foreign key or an intermediate table is required at some point or what a relationship represents, take a look at [this article](http://www.onlamp.com/pub/a/onlamp/2001/03/20/aboutSQL.html) that explains pretty simple how relationships are stored in a database.
 
 ### One to one
-The foreign key for a one-to-one relationship may be defined in any entity or even in **both** entities. In the latter case SQLite-Net extensions will automatically update inverse foreign keys when needed.
+The foreign key for a one-to-one relationship may be defined in any entity or even in **both** entities. In the latter case, SQLite-Net extensions will automatically update inverse foreign keys when needed.
 
-The **inverse** relationship for a **one-to-one** property is also a **one-to-one** relationship. SQLite-Net extensions will automatically load one-to-one inverse relationships, because the object is already loaded into memory and it has no DB overhead.
+The **inverse** relationship for a **one-to-one** property is also a **one-to-one** relationship. SQLite-Net extensions will automatically load one-to-one inverse relationships because the object is already loaded into memory and it has no DB overhead.
 
 Example:
 
@@ -205,11 +195,11 @@ Example:
 ### One to many
 The foreign key for a one-to-many relationship must be defined in the *many* end of the relationship.
 
-The **inverse** relationship for a **one-to-many** property is a **many-to-one** relationship. SQLite-Net extensions will automatically load one-to-many inverse relationships, because the object is already loaded into memory and it has no DB overhead.
+The **inverse** relationship for a **one-to-many** property is a **many-to-one** relationship. SQLite-Net extensions will automatically load one-to-many inverse relationships because the object is already loaded into memory and it has no DB overhead.
 
 One-to-many relationships currently support `List` and `Array` of entities. They might be used indistinctly.
 
-Order of the elements is not guarranteed and should be considered as totally random. If sorting is required it should be performed after the elements are loaded.
+The order of the elements is not guaranteed and should be considered as totally random. If sorting is required it should be performed after the elements are loaded.
 
 Example:
 
@@ -236,7 +226,7 @@ Example:
     }
 
 ### Many to one
-Many-to-one is the opposite to a one-to-many relationship. They represent exactly the same relationship seen from opposite entities. It can also be seen as a one-to-one relationship with no inverse restrictions.
+Many-to-one is the opposite of a one-to-many relationship. They represent exactly the same relationship seen from opposite entities. It can also be seen as a one-to-one relationship with no inverse restrictions.
 
 The foreign key for a many-to-one relationship must be defined in the *many* end of the relationship.
 
@@ -268,9 +258,9 @@ Example:
 
 
 ### Many to many
-Many-to-many relationships cannot be expressed using a foreign key in one of the entities, because foreign keys represent X-to-one relationships. Instead, an intermediate entity is required. This entity is never used directly in the application, but for clarity's shake, SQLite-Net Extensions will never create a table that the user hasn't defined explicitly.
+Many-to-many relationships cannot be expressed using a foreign key in one of the entities, because foreign keys represent X-to-one relationships. Instead, an intermediate entity is required. This entity is never used directly in the application, but for clarity's sake, SQLite-Net Extensions will never create a table that the user hasn't defined explicitly.
 
-The foreign keys for a many-to-many relationship are thus declared in a intermediate entity.
+The foreign keys for a many-to-many relationship are thus declared in an intermediate entity.
 
 The **inverse** relationship for a **many-to-many** property is a **many-to-many** relationship. SQLite-Net extensions will not automatically load many-to-many inverse relationships.
 
@@ -354,9 +344,9 @@ The serializer used to store and load the elements can be customized by implemen
         object Deserialize(string text, Type type);
     }
 
-A JSON-based serializer is used if no other serializer has been specified using `TextBlobOperations.SetTextSerializer` method. To use the JSON serializer, a reference to [Newtonsoft Json.Net library](http://james.newtonking.com/projects/json-net.aspx) must be included in the project, also available as a [NuGet package](http://www.nuget.org/packages/newtonsoft.json/).
+A JSON-based serializer is used if no other serializer has been specified using `TextBlobOperations.SetTextSerializer` method. Serialization and Deserialization are done via System.text.Json.
 
-Text-blobbed properties cannot have relationships to other objects nor inverse relationship to its parent.
+Text-blobbed properties cannot have relationships to other objects nor inverse relationships to its parent.
 
 Example:
 
@@ -385,11 +375,7 @@ Example:
     
 
 ### Asynchronous operations
-When using SQLite.Net Async package, you can use _async_ version of all SQLite-Net Extensions methods. All asynchronous methods perform the same operation of their synchronous counterparts, but they have the `Async` suffix to differenciate them.
-
-Asynchronous operations require you to use an instance of [`SQLiteAsyncConnection`](https://github.com/oysteinkrog/SQLite.Net-PCL#sqliteasyncconnection) instead of a regular `SQLiteConnection`.
-
-Relationship properties and foreign keys are declared the same way and they can be used by both async and regular connections without changes.
+When using SQLite.Net Async package, you can use _async_ version of all SQLite-Net Extensions methods. All asynchronous methods perform the same operation of their synchronous counterparts, but they have the `Async` suffix to differentiate them.
 
 Synchronous example:
 
@@ -401,7 +387,7 @@ Asynchronous equivalent:
 
 ### Cascade operations
 
-For safety, all operations are not recursive by default, but most of them can be configured to work recursively. SQLite-Net Extensions provides mechanisms for handling inverse relationships, references to the same class and circular dependencies out-of-the-box, so you won't have to worry about it. To handle it, there's a new property in all relationship attributes called `CascadeOperations` that allows you to specify how that relationship should behave on cascade operations. Cascade operations can be combined using the binary _OR_ operator `|`, for example:
+For safety, all operations are not recursive by default, but most of them can be configured to work recursively. SQLite-Net Extensions provides mechanisms for handling inverse relationships, references to the same class, and circular dependencies out-of-the-box, so you won't have to worry about it. To handle it, there's a new property in all relationship attributes called `CascadeOperations` that allows you to specify how that relationship should behave on cascade operations. Cascade operations can be combined using the binary _OR_ operator `|`, for example:
 
 	[OneToMany(CascadeOperations = CascadeOperation.CascadeRead | CascadeOperation.CascadeInsert)]
 
@@ -429,11 +415,11 @@ SQLite-Net Extensions will ensure that any object is loaded only once from the d
 
 #### Cascade insert
 
-Cascade insert operations allows to you insert or replace objects recursively in the database without having to worry about inserting them before assigning the relationships and so on. To enable recursive insert, make sure that the relationship properties that you want to insert recursively have `CascadeOperations` set to `CascadeInsert`.
+Cascade insert operations allow to you insert or replace objects recursively in the database without having to worry about inserting them before assigning the relationships and so on. To enable recursive insert, make sure that the relationship properties that you want to insert recursively have `CascadeOperations` set to `CascadeInsert`.
 
-Four different methods are used for recursively insert objects into the database: `InsertWithChildren`, `InsertOrReplaceWithChildren`, `InsertAllWithChildren` and `InsertOrReplaceAllWithChildren`, depending on the operation to be performed (_insert_ or _insert-or-replace_) and the number of elements (_one_ or _more_).
+Four different methods are used for recursively insert objects into the database: `InsertWithChildren`, `InsertOrReplaceWithChildren`, `InsertAllWithChildren`, and `InsertOrReplaceAllWithChildren`, depending on the operation to be performed (_insert_ or _insert-or-replace_) and the number of elements (_one_ or _more_).
 
-SQLite-Net Extensions will not try to replace elements in the database which primary key is auto-incremental and hasn't been set yet. This will ensure that `InsertOrReplace` variant methods work as expected with initial inserts with auto-incremental primary keys.
+SQLite-Net Extensions will not try to replace elements in the database whose primary key is auto-incremental and hasn't been set yet. This will ensure that the `InsertOrReplace` variant methods work as expected with initial inserts with auto-incremental primary keys.
 
 SQLite-Net Extensions will ensure that any object in the relationship tree is inserted once and only once. This makes this method work flawlessly with circular dependencies or inverse relationships.
 
@@ -468,13 +454,13 @@ For example, using the same sample, we can change the `CascadeOperations` parame
 
 _Sample extracted from `RecursiveReadTests` and `RecursiveWriteTests` test classes_
 
-Take into account that using `InsertOrReplaceWithChildren` to update a entity tree may impact performance as it will delete and re-insert all objects into the database regardless if they have been modified or not. It's recommended to keep track of the modified objects by yourself and update the objects calling `UpdateWithChildren` rather than calling `InsertOrReplaceWithChildren` to replace the object tree.
+Take into account that using `InsertOrReplaceWithChildren` to update an entity tree may impact performance as it will delete and re-insert all objects into the database regardless if they have been modified or not. It's recommended to keep track of the modified objects by yourself and update the objectsby  calling `UpdateWithChildren` rather than calling `InsertOrReplaceWithChildren` to replace the object tree.
 
 #### Cascade delete
 
 Cascade delete operations allow you to delete a complete entity tree by just performing a simple operation. To enable recursive delete on a relationship property you have to set `CascadeOperations` property to `CascadeDelete` on that relationship attribute.
 
-Two different methods are provided for recursive deletion: `DeleteAll` and `Delete`. These methods already exist in vanilly SQLite-Net, just make sure to call the overloaded method with the `recursive` parameter set to `true`. `DeleteAll` is just a convenience method for deleting a list of objects, but it's recommended over iterating on `Delete` because it will make sure that the objects are only deleted once and will perform the deletion on a single SQL `delete` statement.
+Two different methods are provided for recursive deletion: `DeleteAll` and `Delete`. These methods already exist in vanilla SQLite-Net, just make sure to call the overloaded method with the `recursive` parameter set to `true`. `DeleteAll` is just a convenient method for deleting a list of objects, but it's recommended over iterating on `Delete` because it will make sure that the objects are only deleted once and will perform the deletion on a single SQL `delete` statement.
 
 SQLite-Net Extensions will handle circular references and inverse relationships correctly, and will only perform a `delete` statement for each class type to be deleted.
 
