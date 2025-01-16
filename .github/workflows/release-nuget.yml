@@ -29,7 +29,7 @@ jobs:
         run: dotnet build src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.sln -c Release 
       - name: Pack
         run: dotnet pack src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.sln -c Release  --no-build --output .
-      # - name: Push
-      #   run: dotnet nuget push SQLiteNetExtensions.Modern.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
-      #   env:
-      #     GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
+      - name: Push
+        run: dotnet nuget push SQLiteNetExtensions.Modern.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
