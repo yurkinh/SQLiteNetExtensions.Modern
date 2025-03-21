@@ -410,7 +410,7 @@ public class OneToManyTestsAsync
             }
 
             // Reset the relationship
-            objectA.BObjects = new List<O2MClassB>();
+            objectA.BObjects = [];
 
             await conn.UpdateWithChildrenAsync(objectA);
 

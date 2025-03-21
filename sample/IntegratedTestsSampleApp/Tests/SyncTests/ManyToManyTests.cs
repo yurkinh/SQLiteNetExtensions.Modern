@@ -368,10 +368,10 @@ public class ManyToManyTests
 
             var objectsA = new List<M2MClassA>
         {
-            new () { Bar = string.Format("1- Bar String {0}", new Random().Next(100)), BObjects = new List<M2MClassB>() },
-            new () { Bar = string.Format("2- Bar String {0}", new Random().Next(100)), BObjects = new List<M2MClassB>() },
-            new () { Bar = string.Format("3- Bar String {0}", new Random().Next(100)), BObjects = new List<M2MClassB>() },
-            new () { Bar = string.Format("4- Bar String {0}", new Random().Next(100)), BObjects = new List<M2MClassB>() }
+            new () { Bar = string.Format("1- Bar String {0}", new Random().Next(100)), BObjects = [] },
+            new () { Bar = string.Format("2- Bar String {0}", new Random().Next(100)), BObjects = [] },
+            new () { Bar = string.Format("3- Bar String {0}", new Random().Next(100)), BObjects = [] },
+            new () { Bar = string.Format("4- Bar String {0}", new Random().Next(100)), BObjects = [] }
         };
 
             conn.InsertAll(objectsA);
@@ -459,10 +459,10 @@ public class ManyToManyTests
 
             var objectsA = new List<M2MClassA>
         {
-            new () { Bar = string.Format("1- Bar String {0}", new Random().Next(100)), BObjects = new List<M2MClassB>() },
-            new () { Bar = string.Format("2- Bar String {0}", new Random().Next(100)), BObjects = new List<M2MClassB>() },
-            new () { Bar = string.Format("3- Bar String {0}", new Random().Next(100)), BObjects = new List<M2MClassB>() },
-            new () { Bar = string.Format("4- Bar String {0}", new Random().Next(100)), BObjects = new List<M2MClassB>() }
+            new () { Bar = string.Format("1- Bar String {0}", new Random().Next(100)), BObjects = [] },
+            new () { Bar = string.Format("2- Bar String {0}", new Random().Next(100)), BObjects = [] },
+            new () { Bar = string.Format("3- Bar String {0}", new Random().Next(100)), BObjects = [] },
+            new () { Bar = string.Format("4- Bar String {0}", new Random().Next(100)), BObjects = [] }
         };
 
             conn.InsertAll(objectsA);
@@ -690,11 +690,11 @@ public class ManyToManyTests
                     return new Tuple<bool, string>(false, $"TestManyToManyCircular failed for object with Id {expected.Id}: Name mismatch");
 
                 // Check Children count
-                if ((expected.Children ?? []).Count != (obtained.Children ?? new List<M2MClassG>()).Count)
+                if ((expected.Children ?? []).Count != (obtained.Children ?? []).Count)
                     return new Tuple<bool, string>(false, $"TestManyToManyCircular failed for object with Id {expected.Id}: Children count mismatch");
 
                 // Check Parents count
-                if ((expected.Parents ?? []).Count != (obtained.Parents ?? new ObservableCollection<M2MClassG>()).Count)
+                if ((expected.Parents ?? []).Count != (obtained.Parents ?? []).Count)
                     return new Tuple<bool, string>(false, $"TestManyToManyCircular failed for object with Id {expected.Id}: Parents count mismatch");
 
                 // Check each child
@@ -775,11 +775,11 @@ public class ManyToManyTests
                     return new Tuple<bool, string>(false, $"TestManyToManyCircularReadOnly failed for object with Id {expected.Id}: Name mismatch");
 
                 // Check Children count
-                if ((expected.Children ?? new ObservableCollection<M2MClassH>()).Count != (obtained.Children ?? new ObservableCollection<M2MClassH>()).Count)
+                if ((expected.Children ?? []).Count != (obtained.Children ?? []).Count)
                     return new Tuple<bool, string>(false, $"TestManyToManyCircularReadOnly failed for object with Id {expected.Id}: Children count mismatch");
 
                 // Check Parents count
-                if ((expected.Parents ?? new List<M2MClassH>()).Count != (obtained.Parents ?? new List<M2MClassH>()).Count)
+                if ((expected.Parents ?? []).Count != (obtained.Parents ?? []).Count)
                     return new Tuple<bool, string>(false, $"TestManyToManyCircularReadOnly failed for object with Id {expected.Id}: Parents count mismatch");
 
                 // Check each child
