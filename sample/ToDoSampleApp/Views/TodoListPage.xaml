@@ -87,7 +87,7 @@
                                                                IsVisible="{Binding Done}"/>
                                                 </Grid>
                                                 <Border.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TodoListViewModel}}, Path=SelectItemCommand}"
+                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TodoListViewModel}}, x:DataType=vm:TodoListViewModel, Path=SelectItemCommand}"
                                                                               CommandParameter="{Binding .}"/>
                                                 </Border.GestureRecognizers>
                                         </Border>
