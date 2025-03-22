@@ -97,7 +97,7 @@
                                             Margin="10"
                                             BackgroundColor="#FF46805F"
                                             FontSize="28"/>
-                                <TimePicker Time="{Binding EventDateTime}"
+                                <TimePicker Time="{Binding EventTime}"
                                             Margin="10"
                                             BackgroundColor="#FF46805F"
                                             CharacterSpacing="5"
