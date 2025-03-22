@@ -26,7 +26,7 @@
                                 <Setter Property="CornerRadius"
                                         Value="20"/>
                                 <Setter Property="FontFamily"
-                                        Value="DarkerGrotesque"/>
+                                        Value="RobotoFlex"/>
                                 <Setter Property="Margin"
                                         Value="30,10"/>
                                 <Setter Property="Padding"

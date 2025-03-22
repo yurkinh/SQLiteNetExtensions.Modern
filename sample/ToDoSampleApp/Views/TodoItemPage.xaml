@@ -18,7 +18,7 @@
                                 <Setter Property="FontAttributes"
                                         Value="Bold"/>
                                 <Setter Property="FontFamily"
-                                        Value="DarkerGrotesque"/>
+                                        Value="RobotoFlex"/>
                                 <Setter Property="TextColor"
                                         Value="Black"/>
                                 <Setter Property="VerticalOptions"
@@ -31,7 +31,7 @@
                                 <Setter Property="FontSize"
                                         Value="22"/>
                                 <Setter Property="FontFamily"
-                                        Value="DarkerGrotesque"/>
+                                        Value="RobotoFlex"/>
                                 <Setter Property="TextColor"
                                         Value="Black"/>
                                 <Setter Property="BackgroundColor"
@@ -46,7 +46,7 @@
                                 <Setter Property="BackgroundColor"
                                         Value="#FF46805F"/>
                                 <Setter Property="FontFamily"
-                                        Value="DarkerGrotesque"/>
+                                        Value="RobotoFlex"/>
                                 <Setter Property="TextColor"
                                         Value="Black"/>
                                 <Setter Property="HorizontalOptions"
@@ -67,7 +67,7 @@
                                 <Setter Property="CornerRadius"
                                         Value="20"/>
                                 <Setter Property="FontFamily"
-                                        Value="DarkerGrotesque"/>
+                                        Value="RobotoFlex"/>
                                 <Setter Property="Margin"
                                         Value="30,10"/>
                                 <Setter Property="Padding"
