@@ -26,24 +26,21 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
     [ObservableProperty]
     private DateTime eventDateTime = DateTime.Now;
 
-    partial void OnEventDateTimeChanged(DateTime value)
+    [ObservableProperty]
+    private DateTime selectedDate;
+
+    [ObservableProperty]
+    private TimeSpan selectedTime;
+
+    partial void OnSelectedDateChanged(DateTime value)
     {
-        OnPropertyChanged(nameof(EventTime));
+        EventDateTime = value.Date + SelectedTime;
     }
 
-    public TimeSpan EventTime
+    partial void OnSelectedTimeChanged(TimeSpan value)
     {
-        get => EventDateTime.TimeOfDay;
-        set
-        {
-            if (EventDateTime.TimeOfDay != value)
-            {
-                EventDateTime = EventDateTime.Date + value;
-                OnPropertyChanged(nameof(EventTime));
-            }
-        }
+        EventDateTime = SelectedDate.Date + value;
     }
-
     public TodoItemViewModel(IDatabaseService databaseService, TodoItem? todoItem = null)
     {
         this.databaseService = databaseService;
