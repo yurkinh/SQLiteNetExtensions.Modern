@@ -93,11 +93,11 @@
                         <Editor Text="{Binding NotesBody}"/>
 
                         <HorizontalStackLayout>
-                                <DatePicker Date="{Binding EventDateTime}"
+                                <DatePicker Date="{Binding SelectedDate}"
                                             Margin="10"
                                             BackgroundColor="#FF46805F"
                                             FontSize="28"/>
-                                <TimePicker Time="{Binding EventTime}"
+                                <TimePicker Time="{Binding SelectedTime}"
                                             Margin="10"
                                             BackgroundColor="#FF46805F"
                                             CharacterSpacing="5"

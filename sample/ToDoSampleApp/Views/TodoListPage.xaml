@@ -66,10 +66,12 @@
                                         <Border Style="{StaticResource BorderStyle}"
                                                 BackgroundColor="#FFE7CC98">
                                                 <Grid HorizontalOptions="Fill"
-                                                      ColumnDefinitions="*,Auto,Auto">
+                                                      ColumnDefinitions="*,Auto,Auto"
+                                                      RowDefinitions="Auto, Auto">
                                                         <Label Text="{Binding Name}"
                                                                FontSize="20"
-                                                               VerticalOptions="Center"
+                                                               Grid.ColumnSpan="2"
+                                                               VerticalOptions="Start"
                                                                Margin="20,0"
                                                                HorizontalOptions="Start"/>
                                                         <Label Text="{Binding Notes.CreationTime, StringFormat='{}{0:MM/dd/yyyy   HH:mm}'}"
@@ -78,10 +80,18 @@
                                                                Grid.Column="1"
                                                                HorizontalOptions="Start"
                                                                VerticalOptions="Center"/>
+                                                        <Label Text="{Binding Notes.EventDateTime, StringFormat='{}{0:MM/dd/yyyy   HH:mm}'}"
+                                                               FontSize="14"
+                                                               Margin="20,0"
+                                                               Grid.Row="1"
+                                                               Grid.Column="1"
+                                                               HorizontalOptions="Start"
+                                                               VerticalOptions="Center"/>
                                                         <Image Source="check.png"
                                                                HeightRequest="20"
                                                                WidthRequest="20"
                                                                Margin="10"
+                                                               Grid.RowSpan="2"
                                                                Grid.Column="2"
                                                                HorizontalOptions="End"
                                                                IsVisible="{Binding Done}"/>

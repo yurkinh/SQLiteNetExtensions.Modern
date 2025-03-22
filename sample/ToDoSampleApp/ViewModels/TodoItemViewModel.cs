@@ -27,10 +27,10 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
     private DateTime eventDateTime = DateTime.Now;
 
     [ObservableProperty]
-    private DateTime selectedDate;
+    private DateTime selectedDate = DateTime.Now;
 
     [ObservableProperty]
-    private TimeSpan selectedTime;
+    private TimeSpan selectedTime = DateTime.Now.TimeOfDay;
 
     partial void OnSelectedDateChanged(DateTime value)
     {
