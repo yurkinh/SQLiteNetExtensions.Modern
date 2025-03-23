@@ -71,10 +71,9 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <ProjectReference Include="../../src/SQLiteNetExtensions.Modern/SQLiteNetExtensions.Modern/SQLiteNetExtensions.csproj" />
-	  <ProjectReference Include="../SQLiteNetExtensions.Modern/SQLiteNetExtensions.csproj" />
+	  <ProjectReference Include="..\..\src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.Modern\SQLiteNetExtensions.csproj" />
 	</ItemGroup>
-
+	
 	<ItemGroup>
 	  <Compile Update="Views/TestsPage.xaml.cs">
 	    <DependentUpon>TestsPage.xaml</DependentUpon>
