@@ -20,8 +20,8 @@ public class ReflectionExtensionsTests
         var aOneBProperty = typeB.GetInverseProperty(expectedBOneAProperty);
         var bOneAProperty = typeA.GetInverseProperty(expectedAOneBProperty);
 
-        Assert.AreEqual(expectedAOneBProperty, aOneBProperty, "Type A -> Type B inverse relationship is not correct");
-        Assert.AreEqual(expectedBOneAProperty, bOneAProperty, "Type B -> Type A inverse relationship is not correct");
+        Assert.That(aOneBProperty, Is.EqualTo(expectedAOneBProperty), "Type A -> Type B inverse relationship is not correct");
+        Assert.That(bOneAProperty, Is.EqualTo(expectedBOneAProperty), "Type B -> Type A inverse relationship is not correct");
     }
 
     [Test]
