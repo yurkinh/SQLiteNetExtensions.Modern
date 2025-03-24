@@ -522,15 +522,15 @@ public class RecursiveReadAsyncTests
             var allUsers = new[] { john, thomas, will, claire, jaime, mark, martha, anthony, peter };
             await conn.InsertAllAsync(allUsers);
 
-            john.FollowingUsers = new List<TwitterUser> { peter, thomas };
-            thomas.FollowingUsers = new List<TwitterUser> { john };
-            will.FollowingUsers = new List<TwitterUser> { claire };
-            claire.FollowingUsers = new List<TwitterUser> { will };
-            jaime.FollowingUsers = new List<TwitterUser> { peter, thomas, mark };
-            mark.FollowingUsers = new List<TwitterUser>();
-            martha.FollowingUsers = new List<TwitterUser> { anthony };
-            anthony.FollowingUsers = new List<TwitterUser> { peter };
-            peter.FollowingUsers = new List<TwitterUser> { martha };
+            john.FollowingUsers = [peter, thomas];
+            thomas.FollowingUsers = [john];
+            will.FollowingUsers = [claire];
+            claire.FollowingUsers = [will];
+            jaime.FollowingUsers = [peter, thomas, mark];
+            mark.FollowingUsers = [];
+            martha.FollowingUsers = [anthony];
+            anthony.FollowingUsers = [peter];
+            peter.FollowingUsers = [martha];
 
             foreach (var user in allUsers)
             {

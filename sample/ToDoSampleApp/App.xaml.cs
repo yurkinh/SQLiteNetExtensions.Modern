@@ -8,11 +8,9 @@ public partial class App : Application
 	public App(IDatabaseService databaseService)
 	{
 		InitializeComponent();
-
-		MainPage = new AppShell();
-
 		this.databaseService = databaseService;
 	}
+	protected override Window CreateWindow(IActivationState? activationState) => new(new AppShell());
 
 	protected override async void OnStart()
 	{
