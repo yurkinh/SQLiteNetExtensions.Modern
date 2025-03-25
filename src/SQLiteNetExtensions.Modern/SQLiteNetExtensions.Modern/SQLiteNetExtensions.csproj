@@ -28,7 +28,8 @@
     <PackageId>SQLiteNetExtensions.Modern</PackageId>
 		<PackageReleaseNotes>
 		                    Updated to .NET 9.0;	
-                        Updated samples to .net 9.0;						
+                        Updated samples to .net 9.0;	
+                        Updated unit tests to .net 9.0;					
     </PackageReleaseNotes>
   </PropertyGroup>
 
