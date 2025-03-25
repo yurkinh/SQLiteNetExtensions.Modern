@@ -21,7 +21,7 @@ jobs:
       - name: Setup .NET
         uses: actions/setup-dotnet@v2
         with:
-         dotnet-version: 8.0.x       
+         dotnet-version: 9.0.x       
       - name: Get version information from tag
         id: get_version
         uses: battila7/get-version-action@v2
