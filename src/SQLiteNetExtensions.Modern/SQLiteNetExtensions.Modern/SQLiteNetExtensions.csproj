@@ -9,7 +9,7 @@
 		<Authors>yurkinh</Authors>
 		<Copyright>Copyright © yurkinh and contributors</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageVersion>1.0.0</PackageVersion>
+		<PackageVersion>2.0.0</PackageVersion>
 		<IsPackable>True</IsPackable>
 		<PackageProjectUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</RepositoryUrl>
@@ -27,7 +27,8 @@
 		<PackageIcon>nuget.png</PackageIcon>
     <PackageId>SQLiteNetExtensions.Modern</PackageId>
 		<PackageReleaseNotes>
-		                    Initial release;							
+		                    Updated to .NET 9.0;	
+                        Updated samples to .net 9.0;						
     </PackageReleaseNotes>
   </PropertyGroup>
 
