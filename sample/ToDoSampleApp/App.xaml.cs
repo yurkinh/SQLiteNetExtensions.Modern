@@ -4,7 +4,7 @@ namespace ToDoSampleApp;
 
 public partial class App : Application
 {
-	IDatabaseService databaseService;
+	readonly IDatabaseService databaseService;
 	public App(IDatabaseService databaseService)
 	{
 		InitializeComponent();
