@@ -1,7 +1,6 @@
 using Moq;
 using SQLiteNetExtensions.Attributes;
 using SQLiteNetExtensions.Extensions.TextBlob;
-using NUnit.Framework;
 using NUnit.Framework.Legacy;
 
 namespace SQLiteNetExtensions.UnitTests;
@@ -26,11 +25,11 @@ public class TextBlobTests
         var obj = new ClassA
         {
             Foo = "Foo String",
-            Elements = new List<string>
-            {
+            Elements =
+            [
                 "Foo String 1",
                 "Foo String 2"
-            }
+            ]
         };
 
         const string textValue = "Mock Serialized String";
@@ -43,7 +42,7 @@ public class TextBlobTests
             
         TextBlobOperations.UpdateTextBlobProperty(obj, typeof(ClassA).GetProperty("Elements")!);
 
-        ClassicAssert.AreEqual(textValue, obj1.ElementsBlobbed);
+        Assert.That(obj1.ElementsBlobbed, Is.EqualTo(textValue));
     }
 
     [Test]
@@ -71,6 +70,6 @@ public class TextBlobTests
 
         TextBlobOperations.GetTextBlobChild(obj, typeof(ClassA).GetProperty("Elements")!);
 
-        ClassicAssert.AreEqual(values, obj1.Elements);
+        Assert.That(obj1.Elements, Is.EqualTo(values));
     }
 }

@@ -1,7 +1,6 @@
 using SQLiteNetExtensions.Attributes;
 using SQLiteNetExtensions.Extensions;
 using SQLiteNetExtensions.UnitTests.Models;
-using NUnit.Framework;
 using SQLiteNetExtensions.Enums;
 
 namespace SQLiteNetExtensions.UnitTests;
@@ -13,8 +12,8 @@ public class ReflectionExtensionsTests
     [Test]
     public void TestOneToOneInverse()
     {
-        var typeA = typeof (DummyClassA);
-        var typeB = typeof (DummyClassB);
+        var typeA = typeof(DummyClassA);
+        var typeB = typeof(DummyClassB);
 
         var expectedAOneBProperty = typeA.GetProperty("OneB")!;
         var expectedBOneAProperty = typeB.GetProperty("OneA")!;
@@ -22,8 +21,11 @@ public class ReflectionExtensionsTests
         var aOneBProperty = typeB.GetInverseProperty(expectedBOneAProperty);
         var bOneAProperty = typeA.GetInverseProperty(expectedAOneBProperty);
 
-        Assert.That(aOneBProperty, Is.EqualTo(expectedAOneBProperty), "Type A -> Type B inverse relationship is not correct");
-        Assert.That(bOneAProperty, Is.EqualTo(expectedBOneAProperty), "Type B -> Type A inverse relationship is not correct");
+        Assert.Multiple(() =>
+        {
+            Assert.That(aOneBProperty, Is.EqualTo(expectedAOneBProperty), "Type A -> Type B inverse relationship is not correct");
+            Assert.That(bOneAProperty, Is.EqualTo(expectedBOneAProperty), "Type B -> Type A inverse relationship is not correct");
+        });
     }
 
     [Test]
@@ -41,10 +43,10 @@ public class ReflectionExtensionsTests
     [Test]
     public void TestOneToOneRelationShipAttribute()
     {
-        var typeA = typeof (DummyClassA);
+        var typeA = typeof(DummyClassA);
         var property = typeA.GetProperty("OneB")!;
 
-        var expectedAttributeType = typeof (OneToOneAttribute);
+        var expectedAttributeType = typeof(OneToOneAttribute);
         var attribute = property.GetAttribute<RelationshipAttribute>()!;
         var attributeType = attribute.GetType();
 
@@ -67,13 +69,16 @@ public class ReflectionExtensionsTests
     {
         var typeA = typeof(DummyClassA);
         var property = typeA.GetProperty("OneB")!;
-        var expectedType = typeof (DummyClassB);
+        var expectedType = typeof(DummyClassB);
         const EnclosedType expectedContainerType = EnclosedType.None;
 
         var entityType = property.GetEntityType(out EnclosedType enclosedType);
 
-        Assert.That(entityType, Is.EqualTo(expectedType));
-        Assert.That(enclosedType, Is.EqualTo(expectedContainerType));
+        Assert.Multiple(() =>
+        {
+            Assert.That(entityType, Is.EqualTo(expectedType));
+            Assert.That(enclosedType, Is.EqualTo(expectedContainerType));
+        });
     }
 
     [Test]
@@ -86,8 +91,11 @@ public class ReflectionExtensionsTests
 
         var entityType = property.GetEntityType(out EnclosedType enclosedType);
 
+        Assert.Multiple(() =>
+    {
         Assert.That(entityType, Is.EqualTo(expectedType));
         Assert.That(enclosedType, Is.EqualTo(expectedContainerType));
+    });
     }
 
     [Test]
@@ -100,8 +108,11 @@ public class ReflectionExtensionsTests
 
         var entityType = property.GetEntityType(out EnclosedType enclosedType);
 
-        Assert.That(entityType, Is.EqualTo(expectedType));
-        Assert.That(enclosedType, Is.EqualTo(expectedContainerType));
+        Assert.Multiple(() =>
+        {
+            Assert.That(entityType, Is.EqualTo(expectedType));
+            Assert.That(enclosedType, Is.EqualTo(expectedContainerType));
+        });
     }
 
     [Test]
@@ -113,7 +124,7 @@ public class ReflectionExtensionsTests
         var property = typeC.GetProperty("ManyToOneD")!;
         var expectedForeignKeyProperty = typeD.GetProperty("ClassCKey")!;
 
-        var foreignKeyProperty = typeC.GetForeignKeyProperty(property, inverse:true);
+        var foreignKeyProperty = typeC.GetForeignKeyProperty(property, inverse: true);
 
         Assert.That(foreignKeyProperty, Is.EqualTo(expectedForeignKeyProperty));
     }
@@ -133,12 +144,12 @@ public class ReflectionExtensionsTests
     [Test]
     public void TestForeignKeyInverseExplicitName()
     {
-        var typeA = typeof (DummyClassA);
+        var typeA = typeof(DummyClassA);
         var typeB = typeof(DummyClassB);
         var property = typeB.GetProperty("OneA")!;
         var expectedForeignKeyProperty = typeA.GetProperty("DummyBForeignKey")!;
 
-        var foreignKeyProperty = typeB.GetForeignKeyProperty(property, inverse:true);
+        var foreignKeyProperty = typeB.GetForeignKeyProperty(property, inverse: true);
 
         Assert.That(foreignKeyProperty, Is.EqualTo(expectedForeignKeyProperty));
     }
@@ -146,7 +157,7 @@ public class ReflectionExtensionsTests
     [Test]
     public void TestForeignKeyConventionName()
     {
-        var typeB = typeof (DummyClassB);
+        var typeB = typeof(DummyClassB);
         var property = typeB.GetProperty("ObjectC")!;
         var expectedForeignKeyProperty = typeB.GetProperty("DummyClassCKey")!;
 
@@ -169,8 +180,8 @@ public class ReflectionExtensionsTests
     [Test]
     public void TestManyToManyMetaInfo()
     {
-        var typeA = typeof (DummyClassA);
-        var intermediateType = typeof (IntermediateDummyADummyD);
+        var typeA = typeof(DummyClassA);
+        var intermediateType = typeof(IntermediateDummyADummyD);
 
         var manyAToManyDProperty = typeA.GetProperty("ManyToManyD")!;
         var expectedTypeAForeignKeyProperty = intermediateType.GetProperty("DummyClassAForeignKey")!;
@@ -178,15 +189,18 @@ public class ReflectionExtensionsTests
 
         var metaInfo = typeA.GetManyToManyMetaInfo(manyAToManyDProperty);
 
-        Assert.That(metaInfo.IntermediateType, Is.EqualTo(intermediateType));
-        Assert.That(metaInfo.OriginProperty, Is.EqualTo(expectedTypeAForeignKeyProperty));
-        Assert.That(metaInfo.DestinationProperty, Is.EqualTo(expectedTypeDForeignKeyProperty));
+        Assert.Multiple(() =>
+        {
+            Assert.That(metaInfo.IntermediateType, Is.EqualTo(intermediateType));
+            Assert.That(metaInfo.OriginProperty, Is.EqualTo(expectedTypeAForeignKeyProperty));
+            Assert.That(metaInfo.DestinationProperty, Is.EqualTo(expectedTypeDForeignKeyProperty));
+        });
     }
 
     [Test]
     public void TestExpressionProperty()
     {
-        var typeB = typeof (DummyClassB);
+        var typeB = typeof(DummyClassB);
 
         var expectedAOneBProperty = typeB.GetProperty("OneA")!;
 
