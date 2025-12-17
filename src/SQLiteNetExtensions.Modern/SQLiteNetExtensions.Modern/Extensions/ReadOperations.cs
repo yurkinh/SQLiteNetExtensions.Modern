@@ -6,6 +6,7 @@ using SQLiteNetExtensions.Attributes;
 using SQLiteNetExtensions.Extensions.TextBlob;
 using SQLiteNetExtensions.Exceptions;
 using SQLite;
+using SQLiteNetExtensions.Enums;
 
 namespace SQLiteNetExtensions.Extensions;
 
@@ -33,7 +34,7 @@ public static class ReadOperations
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static List<T> GetAllWithChildren<T>(this SQLiteConnection conn, Expression<Func<T, bool>> filter = null, bool recursive = false)
+	public static List<T> GetAllWithChildren<T>(this SQLiteConnection conn, Expression<Func<T, bool>>? filter = null, bool recursive = false)
 	where T : new()
 	{
 		var elements = conn.Table<T>();
@@ -84,7 +85,7 @@ public static class ReadOperations
 	/// <param name="recursive">If set to <c>true</c> all the relationships with
 	/// <c>CascadeOperation.CascadeRead</c> will be loaded recusively.</param>
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
-	public static T FindWithChildren<T>(this SQLiteConnection conn, object pk, bool recursive = false)
+	public static T? FindWithChildren<T>(this SQLiteConnection conn, object pk, bool recursive = false)
 	where T : new()
 	{
 		var element = conn.Find<T>(pk);
@@ -107,7 +108,7 @@ public static class ReadOperations
 	/// <typeparam name="T">Entity type where the object should be fetched from</typeparam>
 	public static void GetChildren<T>(this SQLiteConnection conn, T element, bool recursive = false)
 	{
-		GetChildrenRecursive(conn, element, false, recursive);
+		GetChildrenRecursive(conn, element!, false, recursive);
 	}
 
 	/// <summary>
@@ -225,12 +226,17 @@ public static class ReadOperations
 		}
 	}
 
-	static object GetOneToOneChildren<T>(this SQLiteConnection conn, IList<T> elements,
+	static T GetOneToOneChildren<T>(this SQLiteConnection conn, IList<T> elements,
 		PropertyInfo relationshipProperty,
 		bool recursive, ObjectCache objectCache)
 	{
+		if (elements.Count == 0)
+		{
+			return default!;
+		}
+
 		var primaryKeys = new Dictionary<object, IList<T>>();
-		var type = elements[0].GetType();
+		var type = elements[0]!.GetType();
 		var entityType = relationshipProperty.GetEntityType(out EnclosedType enclosedType);
 
 		Assert(enclosedType == EnclosedType.None, type, relationshipProperty, "OneToOne relationship cannot be of type List or Array");
@@ -259,16 +265,16 @@ public static class ReadOperations
 		{
 			bool isLoadedFromCache = false;
 			T? value = default;
-			object keyValue;
+			object? keyValue;
 			if (hasForeignKey)
 			{
-				keyValue = currentEntityForeignKeyProperty.GetValue(element, null);
+				keyValue = currentEntityForeignKeyProperty!.GetValue(element, null);
 				if (keyValue != null)
 				{
 					// Try to load from cache when possible
 					if (recursive)
 					{
-						value = (T)GetObjectFromCache(entityType, keyValue, objectCache);
+						value = (T?)GetObjectFromCache(entityType, keyValue, objectCache);
 					}
 
 					if (value != null)
@@ -279,9 +285,9 @@ public static class ReadOperations
 			}
 			else
 			{
-				keyValue = currentEntityPrimaryKeyProperty.GetValue(element, null);
+				keyValue = currentEntityPrimaryKeyProperty!.GetValue(element, null);
 				// Try to replace the loaded entity with the same object from the cache whenever possible
-				value = recursive ? (T)ReplaceWithCacheObjectIfPossible(value, otherEntityPrimaryKeyProperty, objectCache, out isLoadedFromCache) : value;
+				value = recursive ? (T?)ReplaceWithCacheObjectIfPossible(value, otherEntityPrimaryKeyProperty, objectCache, out isLoadedFromCache) : value;
 			}
 
 			if (isLoadedFromCache)
@@ -296,7 +302,7 @@ public static class ReadOperations
 			{
 				if (keyValue != null)
 				{
-					AddPrimaryKeyToDictionary<T>(keyValue, element, primaryKeys);
+					AddPrimaryKeyToDictionary(keyValue, element, primaryKeys);
 				}
 			}
 		}
@@ -310,11 +316,11 @@ public static class ReadOperations
 			}
 			else
 			{
-				columnName = tableMapping.PK.Name;
+				columnName = tableMapping!.PK.Name;
 			}
 
 			var placeHolders = string.Join(",", Enumerable.Repeat("?", primaryKeys.Count));
-			var query = string.Format("select * from [{0}] where [{1}] in ({2})", tableMapping.TableName,
+			var query = string.Format("select * from [{0}] where [{1}] in ({2})", tableMapping!.TableName,
 				columnName, placeHolders);
 			IList<object> values = conn.Query(tableMapping, query, [.. primaryKeys.Keys]);
 
@@ -323,8 +329,8 @@ public static class ReadOperations
 				var keyProperty = otherEntityForeignKeyProperty ?? values[0].GetType().GetPrimaryKey();
 				foreach (object value in values)
 				{
-					var keyValue = keyProperty.GetValue(value);
-					if (primaryKeys.TryGetValue(keyValue, out IList<T> keyElements))
+					var keyValue = keyProperty!.GetValue(value);
+					if (keyValue != null && primaryKeys.TryGetValue(keyValue, out IList<T>? keyElements))
 					{
 						foreach (var keyElement in keyElements)
 						{
@@ -335,7 +341,11 @@ public static class ReadOperations
 							}
 							if (value != null && recursive)
 							{
-								SaveObjectToCache(value, otherEntityPrimaryKeyProperty.GetValue(value, null), objectCache);
+								var primaryKeyValue = otherEntityPrimaryKeyProperty!.GetValue(value, null);
+								if (primaryKeyValue != null)
+								{
+									SaveObjectToCache(value, primaryKeyValue, objectCache);
+								}
 								conn.GetChildrenRecursive(value, true, recursive, objectCache);
 							}
 						}
@@ -343,16 +353,22 @@ public static class ReadOperations
 				}
 			}
 		}
-		return elements[0];
+		return elements[0]!
+			;
 	}
 
 
-	static object GetManyToOneChildren<T>(this SQLiteConnection conn, IList<T> elements,
+	static T GetManyToOneChildren<T>(this SQLiteConnection conn, IList<T> elements,
 		PropertyInfo relationshipProperty,
 		bool recursive, ObjectCache objectCache)
 	{
+		if (elements.Count == 0)
+		{
+			return default!;
+		}
+
 		var primaryKeys = new Dictionary<object, IList<T>>();
-		var type = elements[0].GetType();
+		var type = elements[0]!.GetType();
 		var entityType = relationshipProperty.GetEntityType(out EnclosedType enclosedType);
 
 		Assert(enclosedType == EnclosedType.None, type, relationshipProperty, "ManyToOne relationship cannot be of type List or Array");
@@ -369,9 +385,9 @@ public static class ReadOperations
 
 		foreach (T element in elements)
 		{
-			object value = null;
+			object? value = null;
 			var isLoadedFromCache = false;
-			var foreignKeyValue = currentEntityForeignKeyProperty.GetValue(element, null);
+			var foreignKeyValue = currentEntityForeignKeyProperty!.GetValue(element, null);
 			if (foreignKeyValue != null)
 			{
 				// Try to load from cache when possible
@@ -382,7 +398,7 @@ public static class ReadOperations
 
 				if (value == null)
 				{
-					AddPrimaryKeyToDictionary<T>(foreignKeyValue, element, primaryKeys);
+					AddPrimaryKeyToDictionary(foreignKeyValue, element, primaryKeys);
 				}
 				else
 				{
@@ -399,25 +415,28 @@ public static class ReadOperations
 		if (primaryKeys.Count > 0)
 		{
 			var placeHolders = string.Join(",", Enumerable.Repeat("?", primaryKeys.Count));
-			var query = string.Format("select * from [{0}] where [{1}] in ({2})", tableMapping.TableName,
+			var query = string.Format("select * from [{0}] where [{1}] in ({2})", tableMapping!.TableName,
 										tableMapping.PK.Name, placeHolders);
-			IList<object> values = conn.Query(tableMapping, query, primaryKeys.Keys.ToArray());
+			IList<object> values = conn.Query(tableMapping, query, [.. primaryKeys.Keys]);
 
 			if (values.Count > 0)
 			{
 				var keyProperty = values[0].GetType().GetPrimaryKey();
 				foreach (object value in values)
 				{
-					var keyValue = keyProperty.GetValue(value);
-					IList<T> keyElements;
-					if (primaryKeys.TryGetValue(keyValue, out keyElements))
+					var keyValue = keyProperty!.GetValue(value);
+					if (keyValue != null && primaryKeys.TryGetValue(keyValue, out IList<T>? keyElements))
 					{
 						foreach (var keyElement in keyElements)
 						{
 							relationshipProperty.SetValue(keyElement, value, null);
 							if (value != null && recursive)
 							{
-								SaveObjectToCache(value, otherEntityPrimaryKeyProperty.GetValue(value, null), objectCache);
+								var primaryKeyValue = otherEntityPrimaryKeyProperty!.GetValue(value, null);
+								if (primaryKeyValue != null)
+								{
+									SaveObjectToCache(value, primaryKeyValue, objectCache);
+								}
 								conn.GetChildrenRecursive(value, true, recursive, objectCache);
 							}
 						}
@@ -426,7 +445,7 @@ public static class ReadOperations
 			}
 		}
 
-		return elements[0];
+		return elements[0]!;
 	}
 
 	static void AddPrimaryKeyToDictionary<T>(object key, T element, Dictionary<object, IList<T>> primaryKeys)
@@ -441,11 +460,11 @@ public static class ReadOperations
 		list.Add(element);
 	}
 
-	static IEnumerable GetOneToManyChildren<T>(this SQLiteConnection conn, T element,
+	static IEnumerable? GetOneToManyChildren<T>(this SQLiteConnection conn, T element,
 		PropertyInfo relationshipProperty,
 		bool recursive, ObjectCache objectCache)
 	{
-		var type = element.GetType();
+		var type = element!.GetType();
 		var entityType = relationshipProperty.GetEntityType(out EnclosedType enclosedType);
 
 		Assert(enclosedType != EnclosedType.None, type, relationshipProperty, "OneToMany relationship must be a List or Array");
@@ -465,24 +484,24 @@ public static class ReadOperations
 		var inverseProperty = type.GetInverseProperty(relationshipProperty);
 
 		IList<T> cascadeElements = [];
-		IList values = null;
-		var primaryKeyValue = currentEntityPrimaryKeyProperty.GetValue(element, null);
+		IList? values = null;
+		var primaryKeyValue = currentEntityPrimaryKeyProperty!.GetValue(element, null);
 		if (primaryKeyValue != null)
 		{
 			var query = string.Format("select * from [{0}] where [{1}] = ?", entityType.GetTableName(),
-				otherEntityForeignKeyProperty.GetColumnName());
-			var queryResults = conn.Query(tableMapping, query, primaryKeyValue);
+				otherEntityForeignKeyProperty!.GetColumnName());
+			var queryResults = conn.Query(tableMapping!, query, primaryKeyValue);
 
-			Array array = null;
+			Array? array = null;
 
 			// Create a generic list of the expected type
 			if (enclosedType == EnclosedType.List)
 			{
-				values = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(entityType));
+				values = (IList?)Activator.CreateInstance(typeof(List<>).MakeGenericType(entityType));
 			}
 			else if (enclosedType == EnclosedType.ObservableCollection)
 			{
-				values = (IList)Activator.CreateInstance(typeof(ObservableCollection<>).MakeGenericType(entityType));
+				values = (IList?)Activator.CreateInstance(typeof(ObservableCollection<>).MakeGenericType(entityType));
 			}
 			else
 			{
@@ -494,18 +513,18 @@ public static class ReadOperations
 			{
 				// Replace obtained value with a cached one whenever possible
 				bool loadedFromCache = false;
-				var value = recursive ? ReplaceWithCacheObjectIfPossible(result, otherEntityPrimaryKeyProperty, objectCache, out loadedFromCache) : result;
+				var value = recursive ? (T?)ReplaceWithCacheObjectIfPossible(result, otherEntityPrimaryKeyProperty, objectCache, out loadedFromCache) : result;
 
-				if (array != null)
+				if (array != null && value != null)
 				{
 					array.SetValue(value, i);
 				}
-				else
+				else if (value != null)
 				{
-					values.Add(value);
+					values!.Add(value);
 				}
 
-				if (!loadedFromCache)
+				if (!loadedFromCache && result != null)
 				{
 					cascadeElements.Add(result);
 				}
@@ -521,7 +540,10 @@ public static class ReadOperations
 			// Stablish inverse relationships (we already have that object anyway)
 			foreach (var value in values)
 			{
-				inverseProperty.SetValue(value, element, null);
+				if (value != null)
+				{
+					inverseProperty.SetValue(value, element, null);
+				}
 			}
 		}
 
@@ -539,10 +561,15 @@ public static class ReadOperations
 	static void GetChildrenRecursiveBatched<T>(this SQLiteConnection conn, IList<T> elements, ObjectCache objectCache)
 	{
 		var element = elements[0];
+		if (element == null)
+		{
+			return;
+		}
+
 		foreach (var relationshipProperty in element.GetType().GetRelationshipProperties())
 		{
 			var relationshipAttribute = relationshipProperty.GetAttribute<RelationshipAttribute>();
-			if (relationshipAttribute.IsCascadeRead)
+			if (relationshipAttribute != null && relationshipAttribute.IsCascadeRead)
 			{
 				if (relationshipAttribute is OneToOneAttribute)
 				{
@@ -575,17 +602,17 @@ public static class ReadOperations
 			{
 				foreach (var e in elements)
 				{
-					conn.GetChildRecursive(e, relationshipProperty, false, objectCache);
+					conn.GetChildRecursive(e!, relationshipProperty, false, objectCache);
 				}
 			}
 		}
 	}
 
-	static IEnumerable GetManyToManyChildren<T>(this SQLiteConnection conn, T element,
+	static IEnumerable? GetManyToManyChildren<T>(this SQLiteConnection conn, T element,
 		PropertyInfo relationshipProperty,
 		bool recursive, ObjectCache objectCache)
 	{
-		var type = element.GetType();
+		var type = element!.GetType();
 		var entityType = relationshipProperty.GetEntityType(out EnclosedType enclosedType);
 
 		var currentEntityPrimaryKeyProperty = type.GetPrimaryKey();
@@ -605,29 +632,29 @@ public static class ReadOperations
 		Assert(tableMapping != null, type, relationshipProperty, "There's no mapping table defined for ManyToMany relationship origin");
 
 		IList cascadeElements = new List<object>();
-		IList values = null;
-		var primaryKeyValue = currentEntityPrimaryKeyProperty.GetValue(element, null);
+		IList? values = null;
+		var primaryKeyValue = currentEntityPrimaryKeyProperty!.GetValue(element, null);
 		if (primaryKeyValue != null)
 		{
 			// Obtain the relationship keys
-			var keysQuery = string.Format("select [{0}] from [{1}] where [{2}] = ?", otherEntityForeignKeyProperty.GetColumnName(),
-				intermediateType.GetTableName(), currentEntityForeignKeyProperty.GetColumnName());
+			var keysQuery = string.Format("select [{0}] from [{1}] where [{2}] = ?", otherEntityForeignKeyProperty!.GetColumnName(),
+				intermediateType!.GetTableName(), currentEntityForeignKeyProperty!.GetColumnName());
 
 			var query = string.Format("select * from [{0}] where [{1}] in ({2})", entityType.GetTableName(),
-				otherEntityPrimaryKeyProperty.GetColumnName(), keysQuery);
+				otherEntityPrimaryKeyProperty!.GetColumnName(), keysQuery);
 
-			var queryResults = conn.Query(tableMapping, query, primaryKeyValue);
+			var queryResults = conn.Query(tableMapping!, query, primaryKeyValue);
 
-			Array array = null;
+			Array? array = null;
 
 			// Create a generic list of the expected type
 			if (enclosedType == EnclosedType.List)
 			{
-				values = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(entityType));
+				values = (IList?)Activator.CreateInstance(typeof(List<>).MakeGenericType(entityType));
 			}
 			else if (enclosedType == EnclosedType.ObservableCollection)
 			{
-				values = (IList)Activator.CreateInstance(typeof(ObservableCollection<>).MakeGenericType(entityType));
+				values = (IList?)Activator.CreateInstance(typeof(ObservableCollection<>).MakeGenericType(entityType));
 			}
 			else
 			{
@@ -641,16 +668,16 @@ public static class ReadOperations
 				bool loadedFromCache = false;
 				var value = recursive ? ReplaceWithCacheObjectIfPossible(result, otherEntityPrimaryKeyProperty, objectCache, out loadedFromCache) : result;
 
-				if (array != null)
+				if (array != null && value != null)
 				{
 					array.SetValue(value, i);
 				}
-				else
+				else if (value != null)
 				{
-					values.Add(value);
+					values!.Add(value);
 				}
 
-				if (!loadedFromCache)
+				if (!loadedFromCache && result != null)
 				{
 					cascadeElements.Add(result);
 				}
@@ -666,21 +693,24 @@ public static class ReadOperations
 		{
 			foreach (var child in cascadeElements)
 			{
-				conn.GetChildrenRecursive(child, true, recursive, objectCache);
+				if (child != null)
+				{
+					conn.GetChildrenRecursive(child, true, recursive, objectCache);
+				}
 			}
 		}
 
 		return values;
 	}
 
-	static object ReplaceWithCacheObjectIfPossible(object element, PropertyInfo primaryKeyProperty, ObjectCache objectCache, out bool isLoadedFromCache)
+	static object? ReplaceWithCacheObjectIfPossible(object? element, PropertyInfo? primaryKeyProperty, ObjectCache? objectCache, out bool isLoadedFromCache)
 	{
 		isLoadedFromCache = false;
 		if (element == null || primaryKeyProperty == null || objectCache == null)
 		{
 			return element;
 		}
-		object primaryKey = primaryKeyProperty.GetValue(element, null);
+		var primaryKey = primaryKeyProperty.GetValue(element, null);
 
 		if (primaryKey == null)
 		{
@@ -711,7 +741,7 @@ public static class ReadOperations
 		}
 	}
 
-	static object GetObjectFromCache(Type objectType, object primaryKey, ObjectCache objectCache)
+	static object? GetObjectFromCache(Type objectType, object primaryKey, ObjectCache? objectCache)
 	{
 		if (objectCache == null)
 		{
@@ -719,8 +749,13 @@ public static class ReadOperations
 		}
 
 		var typeName = objectType.FullName;
-		object value = null;
-		if (objectCache.TryGetValue(typeName, out Dictionary<object, object> typeDict))
+		if (typeName == null)
+		{
+			return null;
+		}
+
+		object? value = null;
+		if (objectCache.TryGetValue(typeName, out Dictionary<object, object>? typeDict))
 		{
 			typeDict.TryGetValue(primaryKey, out value);
 		}
@@ -728,7 +763,7 @@ public static class ReadOperations
 		return value;
 	}
 
-	static void SaveObjectToCache(object element, object primaryKey, ObjectCache objectCache)
+	static void SaveObjectToCache(object element, object primaryKey, ObjectCache? objectCache)
 	{
 		if (objectCache == null || primaryKey == null || element == null)
 		{
@@ -736,7 +771,12 @@ public static class ReadOperations
 		}
 
 		var typeName = element.GetType().FullName;
-		if (!objectCache.TryGetValue(typeName, out Dictionary<object, object> typeDict))
+		if (typeName == null)
+		{
+			return;
+		}
+
+		if (!objectCache.TryGetValue(typeName, out Dictionary<object, object>? typeDict))
 		{
 			typeDict = [];
 			objectCache[typeName] = typeDict;
