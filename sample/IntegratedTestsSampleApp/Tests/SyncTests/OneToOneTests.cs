@@ -18,7 +18,7 @@ public static class OneToOneTests
         public int OneClassBKey { get; set; }
 
         [OneToOne]
-        public O2OClassB OneClassB { get; set; }
+        public O2OClassB? OneClassB { get; set; }
     }
 
     public class O2OClassB
@@ -26,7 +26,7 @@ public static class OneToOneTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Foo { get; set; }
+        public string Foo { get; set; } = string.Empty;
     }
 
     public class O2OClassC
@@ -35,9 +35,9 @@ public static class OneToOneTests
         public int ClassId { get; set; }
 
         [OneToOne]     // OneToOne Foreign key can be declared in the referenced class
-        public O2OClassD ElementD { get; set; }
+        public O2OClassD? ElementD { get; set; }
 
-        public string Bar { get; set; }
+        public string Bar { get; set; } = string.Empty;
     }
 
     public class O2OClassD
@@ -48,7 +48,7 @@ public static class OneToOneTests
         [ForeignKey(typeof(O2OClassC))]    // Explicit foreign key attribute for a inverse relationship
         public int ObjectCKey { get; set; }
 
-        public string Foo { get; set; }
+        public string Foo { get; set; } = string.Empty;
     }
 
     public class O2OClassE
@@ -59,9 +59,9 @@ public static class OneToOneTests
         public int ObjectFKey { get; set; }
 
         [OneToOne("ObjectFKey")]        // Explicit foreign key declaration
-        public O2OClassF ObjectF { get; set; }
+        public O2OClassF? ObjectF { get; set; }
 
-        public string Foo { get; set; }
+        public string Foo { get; set; } = string.Empty;
     }
 
     public class O2OClassF
@@ -70,9 +70,9 @@ public static class OneToOneTests
         public int Id { get; set; }
 
         [OneToOne]      // Inverse relationship, doesn't need foreign key
-        public O2OClassE ObjectE { get; set; }
+        public O2OClassE? ObjectE { get; set; }
 
-        public string Bar { get; set; }
+        public string Bar { get; set; } = string.Empty;
     }
     #endregion
 
@@ -97,29 +97,39 @@ public static class OneToOneTests
             conn.Insert(objectA);
 
             if (objectA.OneClassB != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirect: Failed at checking OneClassB is null");
+            }
 
             // Fetch (yet empty) the relationship
             conn.GetChildren(objectA);
 
             if (objectA.OneClassB != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirect: Failed at fetching relationship");
+            }
 
             // Set the relationship using IDs
             objectA.OneClassBKey = objectB.Id;
             conn.Update(objectA);
 
             if (objectA.OneClassB != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirect: Failed at updating relationship");
+            }
 
             // Fetch the relationship
             conn.GetChildren(objectA);
 
             if (objectA.OneClassB == null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirect: Failed at fetching the relationship after update");
+            }
 
             if (objectB.Id != objectA.OneClassB.Id || objectB.Foo != objectA.OneClassB.Foo)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirect: Relationship data mismatch");
+            }
 
             return new Tuple<bool, string>(true, "TestGetOneToOneDirect: Passed");
         }
@@ -147,13 +157,17 @@ public static class OneToOneTests
             conn.Insert(objectC);
 
             if (objectC.ElementD != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneInverseForeignKey: Failed at checking ElementD is null");
+            }
 
             // Fetch (yet empty) the relationship
             conn.GetChildren(objectC);
 
             if (objectC.ElementD != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneInverseForeignKey: Failed at fetching relationship");
+            }
 
             var objectD = new O2OClassD
             {
@@ -166,10 +180,14 @@ public static class OneToOneTests
             conn.GetChildren(objectC);
 
             if (objectC.ElementD == null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneInverseForeignKey: Failed at fetching relationship after insert");
+            }
 
             if (objectC.ClassId != objectC.ElementD.ObjectCKey || objectD.Foo != objectC.ElementD.Foo)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneInverseForeignKey: Relationship data mismatch");
+            }
 
             return new Tuple<bool, string>(true, "TestGetOneToOneInverseForeignKey: Passed");
         }
@@ -201,34 +219,48 @@ public static class OneToOneTests
         conn.Insert(objectE);
 
         if (objectE.ObjectF != null)
+        {
             return Tuple.Create(false, "TestGetOneToOneWithInverseRelationship: objectE.ObjectF is not null before relationship set");
+        }
 
         // Fetch (yet empty) the relationship
         conn.GetChildren(objectE);
 
         if (objectE.ObjectF != null)
+        {
             return Tuple.Create(false, "TestGetOneToOneWithInverseRelationship: objectE.ObjectF is not null after GetChildren");
+        }
 
         objectE.ObjectFKey = objectF.Id;
         conn.Update(objectE);
 
         if (objectE.ObjectF != null)
+        {
             return Tuple.Create(false, "TestGetOneToOneWithInverseRelationship: objectE.ObjectF is still not null after update");
+        }
 
         // Fetch the relationship
         conn.GetChildren(objectE);
 
         if (objectE.ObjectF == null)
+        {
             return Tuple.Create(false, "TestGetOneToOneWithInverseRelationship: objectE.ObjectF is null after GetChildren");
+        }
 
         if (objectF.Id != objectE.ObjectF.Id || objectF.Bar != objectE.ObjectF.Bar)
+        {
             return Tuple.Create(false, "TestGetOneToOneWithInverseRelationship: Relationship data mismatch");
+        }
 
         if (objectE.ObjectF.ObjectE == null || objectE.ObjectF.ObjectE.Foo != objectE.Foo)
+        {
             return Tuple.Create(false, "TestGetOneToOneWithInverseRelationship: Inverse relationship not correct");
+        }
 
         if (!ReferenceEquals(objectE, objectE.ObjectF.ObjectE))
+        {
             return Tuple.Create(false, "TestGetOneToOneWithInverseRelationship: Inverse relationship is not the same object");
+        }
 
         return Tuple.Create(true, "TestGetOneToOneWithInverseRelationship: Passed");
     }
@@ -255,36 +287,50 @@ public static class OneToOneTests
         conn.Insert(objectE);
 
         if (objectF.ObjectE != null)
+        {
             return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKey: objectF.ObjectE is not null before relationship set");
+        }
 
         // Fetch (yet empty) the relationship
         conn.GetChildren(objectF);
 
         if (objectF.ObjectE != null)
+        {
             return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKey: objectF.ObjectE is not null after GetChildren");
+        }
 
         // Set the relationship using IDs
         objectE.ObjectFKey = objectF.Id;
         conn.Update(objectE);
 
         if (objectF.ObjectE != null)
+        {
             return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKey: objectF.ObjectE is still not null after update");
+        }
 
         // Fetch the relationship
         conn.GetChildren(objectF);
 
         if (objectF.ObjectE == null)
+        {
             return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKey: objectF.ObjectE is null after GetChildren");
+        }
 
         if (objectE.Foo != objectF.ObjectE.Foo)
+        {
             return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKey: objectE.Foo is not equal objectF.ObjectE.Foo after GetChildren");
+        }
 
         // Check the inverse relationship
         if (objectF.ObjectE.ObjectF == null)
+        {
             return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKey: objectF.ObjectE.ObjectF isn't null ");
+        }
 
         if (objectE.Id != objectF.ObjectE.ObjectFKey || objectF.Bar != objectF.ObjectE.ObjectF.Bar)
+        {
             return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKey: Relationship data mismatch");
+        }
 
         return Tuple.Create(true, "TestGetInverseOneToOneRelationshipWithExplicitKey: Passed");
     }
@@ -310,18 +356,24 @@ public static class OneToOneTests
         // Set the relationship using objects
         objectA.OneClassB = objectB;
         if (objectA.OneClassBKey != 0)
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationship failed: OneClassBKey should be 0 before update");
+        }
 
         conn.UpdateWithChildren(objectA);
 
         if (objectA.OneClassBKey != objectB.Id)
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationship failed: Foreign key should have been refreshed");
+        }
 
         // Fetch the relationship
         var newObjectA = conn.Get<O2OClassA>(objectA.Id);
 
         if (newObjectA.OneClassBKey != objectB.Id)
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationship failed: Foreign key in database is not updated");
+        }
 
         return Tuple.Create(true, "TestUpdateSetOneToOneRelationship passed");
     }
@@ -348,23 +400,31 @@ public static class OneToOneTests
         objectA.OneClassB = objectB;
 
         if (objectA.OneClassBKey != 0)
+        {
             return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationship failed: Foreign key !=0");
+        }
 
         conn.UpdateWithChildren(objectA);
 
         if (objectA.OneClassBKey != objectB.Id)
+        {
             return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationship failed: Foreign key should have been refreshed");
+        }
 
         // Until here, test is same that TestUpdateSetOneToOneRelationship
         objectA.OneClassB = null; // Unset relationship
 
         if (objectA.OneClassBKey != objectB.Id)
+        {
             return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationship failed: Foreign key shouldn't have been refreshed yet");
+        }
 
         conn.UpdateWithChildren(objectA);
 
         if (objectA.OneClassBKey != 0)
+        {
             return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationship failed: Foreign key hasn't been unset");
+        }
 
         return Tuple.Create(true, "TestUpdateUnsetOneToOneRelationship passed");
     }
@@ -388,20 +448,28 @@ public static class OneToOneTests
 
         objectE.ObjectF = objectF;
         if (objectE.ObjectFKey != 0)
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverse failed: ObjectFKey should be 0 before update");
+        }
 
         conn.UpdateWithChildren(objectE);
 
         if (objectE.ObjectFKey != objectF.Id)
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverse failed: Foreign key should have been refreshed");
+        }
 
         if (!ReferenceEquals(objectF, objectE.ObjectF))
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverse failed: Inverse relationship hasn't been set");
+        }
 
         var newObjectE = conn.Get<O2OClassE>(objectE.Id);
 
         if (newObjectE.ObjectFKey != objectF.Id)
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverse failed: Foreign key in database is not updated");
+        }
 
         return Tuple.Create(true, "TestUpdateSetOneToOneRelationshipWithInverse passed");
     }
@@ -425,20 +493,28 @@ public static class OneToOneTests
 
         objectF.ObjectE = objectE;
         if (objectE.ObjectFKey != 0)
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseForeignKey failed: ObjectFKey should be 0 before update");
+        }
 
         conn.UpdateWithChildren(objectF);
 
         if (objectE.ObjectFKey != objectF.Id)
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseForeignKey failed: Foreign key should have been refreshed");
+        }
 
         if (!ReferenceEquals(objectF, objectE.ObjectF))
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseForeignKey failed: Inverse relationship hasn't been set");
+        }
 
         var newObjectE = conn.Get<O2OClassE>(objectE.Id);
 
         if (newObjectE.ObjectFKey != objectF.Id)
+        {
             return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseForeignKey failed: Foreign key in database is not updated");
+        }
 
         return Tuple.Create(true, "TestUpdateSetOneToOneRelationshipWithInverseForeignKey passed");
     }
@@ -464,12 +540,16 @@ public static class OneToOneTests
         // Set the relationship using objects
         objectF.ObjectE = objectE;
         if (objectE.ObjectFKey != 0)
+        {
             return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipWithInverseForeignKey failed: Foreign key !=0");
+        }
 
         conn.UpdateWithChildren(objectF);
 
         if (objectE.ObjectFKey != objectF.Id)
+        {
             return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipWithInverseForeignKey failed: Foreign key should have been refreshed");
+        }
 
         // At this point the test is the same as TestUpdateSetOneToOneRelationshipWithInverseForeignKey
         objectF.ObjectE = null;     // Unset the relationship
@@ -478,7 +558,9 @@ public static class OneToOneTests
         // Fetch the relationship
         var newObjectA = conn.Get<O2OClassE>(objectE.Id);
         if (newObjectA.ObjectFKey != 0)
+        {
             return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipWithInverseForeignKey failed: Foreign key should have been refreshed in database");
+        }
 
         return Tuple.Create(true, "TestUpdateUnsetOneToOneRelationshipWithInverseForeignKey passed");
     }
@@ -513,16 +595,26 @@ public static class OneToOneTests
         var aElements = conn.GetAllWithChildren<O2OClassA>().OrderBy(a => a.Id).ToArray();
 
         if (aObjects.Length != aElements.Length)
+        {
             return Tuple.Create(false, "TestGetAllNoFilter failed: Number of elements does not match");
+        }
 
         for (int i = 0; i < aObjects.Length; i++)
         {
             if (aObjects[i].Id != aElements[i].Id)
+            {
                 return Tuple.Create(false, $"TestGetAllNoFilter failed: Id mismatch at index {i}");
-            if (aObjects[i].OneClassB.Id != aElements[i].OneClassB.Id)
+            }
+
+            if (aObjects[i].OneClassB!.Id != aElements[i].OneClassB!.Id)
+            {
                 return Tuple.Create(false, $"TestGetAllNoFilter failed: OneClassB Id mismatch at index {i}");
-            if (aObjects[i].OneClassB.Foo != aElements[i].OneClassB.Foo)
+            }
+
+            if (aObjects[i].OneClassB!.Foo != aElements[i].OneClassB!.Foo)
+            {
                 return Tuple.Create(false, $"TestGetAllNoFilter failed: OneClassB Foo mismatch at index {i}");
+            }
         }
 
         return Tuple.Create(true, "TestGetAllNoFilter passed");
@@ -560,16 +652,26 @@ public static class OneToOneTests
             .OrderBy(a => a.ClassId).ToArray();
 
         if (expectedCObjects.Length != cElements.Length)
+        {
             return Tuple.Create(false, "TestGetAllFilter failed: Number of elements does not match");
+        }
 
         for (int i = 0; i < expectedCObjects.Length; i++)
         {
             if (expectedCObjects[i].ClassId != cElements[i].ClassId)
+            {
                 return Tuple.Create(false, $"TestGetAllFilter failed: ClassId mismatch at index {i}");
-            if (expectedCObjects[i].ElementD.Id != cElements[i].ElementD.Id)
+            }
+
+            if (expectedCObjects[i].ElementD!.Id != cElements[i].ElementD!.Id)
+            {
                 return Tuple.Create(false, $"TestGetAllFilter failed: ElementD Id mismatch at index {i}");
-            if (expectedCObjects[i].ElementD.Foo != cElements[i].ElementD.Foo)
+            }
+
+            if (expectedCObjects[i].ElementD!.Foo != cElements[i].ElementD!.Foo)
+            {
                 return Tuple.Create(false, $"TestGetAllFilter failed: ElementD Foo mismatch at index {i}");
+            }
         }
 
         return Tuple.Create(true, "TestGetAllFilter passed");

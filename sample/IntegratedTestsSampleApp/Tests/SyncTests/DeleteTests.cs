@@ -61,7 +61,9 @@ public class DeleteTests
 
             // Verify that the elements have been inserted correctly
             if (conn.Table<DummyClassGuidPK>().Count() != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllGuidPK: Failed at inserting elements");
+            }
 
             var elementsToDelete = new List<DummyClassGuidPK> { elementA, elementC };
 
@@ -70,12 +72,16 @@ public class DeleteTests
 
             // Verify that the elements have been deleted correctly
             if (conn.Table<DummyClassGuidPK>().Count() != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllGuidPK: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (conn.Find<DummyClassGuidPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllGuidPK: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllGuidPK: Passed");
@@ -120,7 +126,9 @@ public class DeleteTests
 
             // Verify that the elements have been inserted correctly
             if (conn.Table<DummyClassIntPK>().Count() != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIntPK: Failed at inserting elements");
+            }
 
             var elementsToDelete = new List<DummyClassIntPK> { elementA, elementC };
 
@@ -129,12 +137,16 @@ public class DeleteTests
 
             // Verify that the elements have been deleted correctly
             if (conn.Table<DummyClassIntPK>().Count() != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIntPK: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (conn.Find<DummyClassIntPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllIntPK: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllIntPK: Passed");
@@ -168,7 +180,9 @@ public class DeleteTests
 
             // Verify that the elements have been inserted correctly
             if (conn.Table<DummyClassIntPK>().Count() != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllThousandObjects: Failed at inserting elements");
+            }
 
             var elementsToDelete = new List<DummyClassIntPK>(elementsList);
             elementsToDelete.RemoveAt(0);
@@ -178,12 +192,16 @@ public class DeleteTests
 
             // Verify that the elements have been deleted correctly
             if (conn.Table<DummyClassIntPK>().Count() != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllThousandObjects: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (conn.Find<DummyClassIntPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllThousandObjects: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllThousandObjects: Passed");
@@ -231,7 +249,9 @@ public class DeleteTests
 
             // Verify that the elements have been inserted correctly
             if (conn.Table<DummyClassGuidPK>().Count() != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIdsGuidPK: Failed at inserting elements");
+            }
 
             var elementsToDelete = new List<DummyClassGuidPK> { elementA, elementC };
             var primaryKeysToDelete = elementsToDelete.Select(e => (object)e.Id);
@@ -241,12 +261,16 @@ public class DeleteTests
 
             // Verify that the elements have been deleted correctly
             if (conn.Table<DummyClassGuidPK>().Count() != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIdsGuidPK: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (conn.Find<DummyClassGuidPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllIdsGuidPK: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllIdsGuidPK: Passed");
@@ -291,7 +315,9 @@ public class DeleteTests
 
             // Verify that the elements have been inserted correctly
             if (conn.Table<DummyClassIntPK>().Count() != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIdsIntPK: Failed at inserting elements");
+            }
 
             var elementsToDelete = new List<DummyClassIntPK> { elementA, elementC };
             var primaryKeysToDelete = elementsToDelete.Select(e => (object)e.Id);
@@ -301,12 +327,16 @@ public class DeleteTests
 
             // Verify that the elements have been deleted correctly
             if (conn.Table<DummyClassIntPK>().Count() != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIdsIntPK: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (conn.Find<DummyClassIntPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllIdsIntPK: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllIdsIntPK: Passed");
