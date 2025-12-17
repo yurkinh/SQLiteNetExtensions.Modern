@@ -1,6 +1,6 @@
 # SQLiteNetExtensions.Modern
 
-This is a .NET 8 migration of the [TwinCoders]([https://bitbucket.org/twincoders])   [SQLiteNetExtensions](https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/)
+This is a .NET 9 migration of the [TwinCoders]([https://bitbucket.org/twincoders])   [SQLiteNetExtensions](https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/)
 
  Available on NuGet: https://www.nuget.org/packages/SQLiteNetExtensions.Modern [![NuGet](https://img.shields.io/nuget/v/SQLiteNetExtensions.Modern.svg?label=NuGet)](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/)
 
@@ -9,6 +9,11 @@ This is a .NET 8 migration of the [TwinCoders]([https://bitbucket.org/twincoders
 sqlite-net is an open source, minimal library to allow .NET and Mono applications to store data in [SQLite 3 databases](http://www.sqlite.org). SQLite-Net Extensions extends its functionality to help the user handle relationships between sqlite-net entities.
 
 ### What's new
+## .NET 9
+* Migrated extensions to .NET 9
+* Migrated samples to .NET 9
+* Migrated Integration tests and unit tests to .NET 9   
+## .NET 8
 * Migrated to .NET 8
 * Updated to the latest version of the [sqlite-net library](https://github.com/praeclarum/sqlite-net)
 * Aligned parity between synchronous and asynchronous extensions (Sync Read/Write operations have Async counterparts)

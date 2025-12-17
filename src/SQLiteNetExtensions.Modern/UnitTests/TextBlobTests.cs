@@ -24,11 +24,11 @@ public class TextBlobTests
         var obj = new ClassA
         {
             Foo = "Foo String",
-            Elements = new List<string>
-            {
+            Elements =
+            [
                 "Foo String 1",
                 "Foo String 2"
-            }
+            ]
         };
 
         const string textValue = "Mock Serialized String";
@@ -41,7 +41,7 @@ public class TextBlobTests
             
         TextBlobOperations.UpdateTextBlobProperty(obj, typeof(ClassA).GetProperty("Elements"));
 
-        Assert.AreEqual(textValue, obj1.ElementsBlobbed);
+        Assert.That(textValue, Is.EqualTo(obj1.ElementsBlobbed));
     }
 
     [Test]
@@ -69,6 +69,6 @@ public class TextBlobTests
 
         TextBlobOperations.GetTextBlobChild(obj, typeof(ClassA).GetProperty("Elements"));
 
-        Assert.AreEqual(values, obj1.Elements);
+        Assert.That(values, Is.EqualTo(obj1.Elements));
     }
 }

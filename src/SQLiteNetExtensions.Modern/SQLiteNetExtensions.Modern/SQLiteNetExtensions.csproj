@@ -9,7 +9,7 @@
 		<Authors>yurkinh</Authors>
 		<Copyright>Copyright © yurkinh and contributors</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageVersion>1.0.0</PackageVersion>
+		<PackageVersion>2.0.2</PackageVersion>
 		<IsPackable>True</IsPackable>
 		<PackageProjectUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</RepositoryUrl>
@@ -27,12 +27,14 @@
 		<PackageIcon>nuget.png</PackageIcon>
     <PackageId>SQLiteNetExtensions.Modern</PackageId>
 		<PackageReleaseNotes>
-		                    Initial release;							
+		                    Fixed 16 KB issue on Android
+                        Replaced "sqlite-net-pcl" nuget with neutral "sqlite-net-base"
     </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>    
-    <PackageReference Include="sqlite-net-pcl" Version="1.9.172" />
+    <PackageReference Include="sqlite-net-base" Version="1.10.196-beta" />
+    <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
   </ItemGroup>
   <ItemGroup>
 		<None Include="..\..\..\nuget.png" PackagePath="nuget.png" Pack="true" />
