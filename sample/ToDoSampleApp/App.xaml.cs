@@ -4,17 +4,17 @@ namespace ToDoSampleApp;
 
 public partial class App : Application
 {
-	IDatabaseService databaseService;
+	readonly IDatabaseService databaseService;
 	public App(IDatabaseService databaseService)
 	{
 		InitializeComponent();
 
-		MainPage = new AppShell();
-
 		this.databaseService = databaseService;
 	}
 
-	protected override async void OnStart()
+    protected override Window CreateWindow(IActivationState? activationState) => new(new AppShell());
+
+    protected override async void OnStart()
 	{
 		await databaseService.Init();
 	}
