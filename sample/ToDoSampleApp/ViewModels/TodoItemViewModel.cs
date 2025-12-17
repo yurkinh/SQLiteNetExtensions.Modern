@@ -107,7 +107,10 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
     private async Task DeleteAsync()
     {
         if (receivedTodoItem == null)
+        {
             return;
+        }
+
         await databaseService.DeleteItemAsync(receivedTodoItem);
         await Shell.Current.GoToAsync("..");
     }
