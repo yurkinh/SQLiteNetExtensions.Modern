@@ -33,7 +33,7 @@ public static class TextBlobOperations
 		}
 
 		var textblobAttribute = relationshipProperty.GetAttribute<TextBlobAttribute>();
-		var textProperty = element.GetType().GetRuntimeProperty(textblobAttribute.TextProperty)
+		var textProperty = element.GetType().GetRuntimeProperty(textblobAttribute!.TextProperty)
 			?? throw new InvalidOperationException($"Text property '{textblobAttribute.TextProperty}' not found");
 
 		if (textProperty.PropertyType != typeof(string))
@@ -65,7 +65,7 @@ public static class TextBlobOperations
 		}
 
 		var textblobAttribute = relationshipProperty.GetAttribute<TextBlobAttribute>();
-		var textProperty = element.GetType().GetRuntimeProperty(textblobAttribute.TextProperty)
+		var textProperty = element.GetType().GetRuntimeProperty(textblobAttribute!.TextProperty)
 			?? throw new InvalidOperationException($"Text property '{textblobAttribute.TextProperty}' not found");
 
 		if (textProperty.PropertyType != typeof(string))
