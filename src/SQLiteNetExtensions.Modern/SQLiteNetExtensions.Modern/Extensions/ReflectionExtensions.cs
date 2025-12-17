@@ -4,16 +4,9 @@ using SQLiteNetExtensions.Attributes;
 using System.Linq.Expressions;
 using System.Collections.ObjectModel;
 using SQLite;
+using SQLiteNetExtensions.Enums;
 
 namespace SQLiteNetExtensions.Extensions;
-
-public enum EnclosedType
-{
-	None,
-	Array,
-	List,
-	ObservableCollection
-}
 
 public class ManyToManyMetaInfo
 {
