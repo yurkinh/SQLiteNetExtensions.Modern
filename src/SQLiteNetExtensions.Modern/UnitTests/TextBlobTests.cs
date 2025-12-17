@@ -1,6 +1,8 @@
 using Moq;
 using SQLiteNetExtensions.Attributes;
 using SQLiteNetExtensions.Extensions.TextBlob;
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace SQLiteNetExtensions.UnitTests;
 
@@ -9,12 +11,12 @@ public class TextBlobTests
 {
     private class ClassA
     {
-        public string Foo { get; set; }
+        public required string Foo { get; set; }
 
-        public string ElementsBlobbed { get; set; }
+        public string? ElementsBlobbed { get; set; }
 
         [TextBlob("ElementsBlobbed")]
-        public List<string> Elements { get; set; }
+        public List<string>? Elements { get; set; }
     }
 
 
@@ -39,9 +41,9 @@ public class TextBlobTests
         var obj1 = obj;
         mockSerializer.Setup(serializer => serializer.Serialize(obj1.Elements)).Returns(() => textValue);
             
-        TextBlobOperations.UpdateTextBlobProperty(obj, typeof(ClassA).GetProperty("Elements"));
+        TextBlobOperations.UpdateTextBlobProperty(obj, typeof(ClassA).GetProperty("Elements")!);
 
-        Assert.AreEqual(textValue, obj1.ElementsBlobbed);
+        ClassicAssert.AreEqual(textValue, obj1.ElementsBlobbed);
     }
 
     [Test]
@@ -64,11 +66,11 @@ public class TextBlobTests
         TextBlobOperations.SetTextSerializer(mockSerializer.Object); // Override default JSON serializer
 
         var obj1 = obj;
-        var elementsProperty = typeof (ClassA).GetProperty("Elements");
+        var elementsProperty = typeof (ClassA).GetProperty("Elements")!;
         mockSerializer.Setup(serializer => serializer.Deserialize(textValue, elementsProperty.PropertyType)).Returns(() => values);
 
-        TextBlobOperations.GetTextBlobChild(obj, typeof(ClassA).GetProperty("Elements"));
+        TextBlobOperations.GetTextBlobChild(obj, typeof(ClassA).GetProperty("Elements")!);
 
-        Assert.AreEqual(values, obj1.Elements);
+        ClassicAssert.AreEqual(values, obj1.Elements);
     }
 }
