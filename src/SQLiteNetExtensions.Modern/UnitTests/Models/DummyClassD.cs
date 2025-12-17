@@ -8,5 +8,5 @@ public class DummyClassD
     public int ClassCKey { get; set; }
 
     [ManyToMany(typeof(IntermediateDummyADummyD))]
-    public List<DummyClassA>? ManyA { get; set; }
+    public List<DummyClassA> ManyA { get; set; }
 }
