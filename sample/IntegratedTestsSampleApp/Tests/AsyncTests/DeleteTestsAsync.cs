@@ -11,8 +11,8 @@ public static class DeleteTestsAsunc
         [PrimaryKey]
         public Guid Id { get; set; }
 
-        public string Foo { get; set; }
-        public string Bar { get; set; }
+        public string Foo { get; set; } = string.Empty;
+        public string Bar { get; set; } = string.Empty;
     }
 
     public class DummyClassIntPK
@@ -20,8 +20,8 @@ public static class DeleteTestsAsunc
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Foo { get; set; }
-        public string Bar { get; set; }
+        public string Foo { get; set; } = string.Empty;
+        public string Bar { get; set; } = string.Empty;
     }
 
     public async static Task<Tuple<bool, string>> TestDeleteAllGuidPKAsync()

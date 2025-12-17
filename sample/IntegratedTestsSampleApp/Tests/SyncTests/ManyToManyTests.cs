@@ -14,9 +14,9 @@ public class ManyToManyTests
         public int Id { get; set; }
 
         [ManyToMany(typeof(ClassAClassB))]
-        public List<M2MClassB> BObjects { get; set; }
+        public List<M2MClassB>? BObjects { get; set; }
 
-        public string Bar { get; set; }
+        public string Bar { get; set; } = string.Empty;
     }
 
     public class M2MClassB
@@ -24,7 +24,7 @@ public class ManyToManyTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Foo { get; set; }
+        public string Foo { get; set; } = string.Empty;
     }
 
     public class ClassAClassB
@@ -42,9 +42,9 @@ public class ManyToManyTests
         public int Id { get; set; }
 
         [ManyToMany(typeof(ClassCClassD), inverseForeignKey: "ClassCId")]   // Foreign key specified in ManyToMany attribute
-        public M2MClassD[] DObjects { get; set; } // Array instead of List
+        public M2MClassD[]? DObjects { get; set; } // Array instead of List
 
-        public string Bar { get; set; }
+        public string Bar { get; set; } = string.Empty;
     }
 
     public class M2MClassD
@@ -52,7 +52,7 @@ public class ManyToManyTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Foo { get; set; }
+        public string Foo { get; set; } = string.Empty;
     }
 
     public class ClassCClassD
@@ -69,9 +69,9 @@ public class ManyToManyTests
         public Guid Id { get; set; } // Guid identifier instead of int
 
         [ManyToMany(typeof(ClassEClassF), inverseForeignKey: "ClassEId")]   // Foreign key specified in ManyToMany attribute
-        public M2MClassF[] FObjects { get; set; } // Array instead of List
+        public M2MClassF[]? FObjects { get; set; } // Array instead of List
 
-        public string Bar { get; set; }
+        public string Bar { get; set; } = string.Empty;
     }
 
     public class M2MClassF
@@ -79,14 +79,15 @@ public class ManyToManyTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Foo { get; set; }
+        public string Foo { get; set; } = string.Empty;
     }
 
     [Table("class_e_class_f")]
     public class ClassEClassF
     {
         public Guid ClassEId { get; set; }   // ForeignKey attribute not needed, already specified in the ManyToMany relationship
-        [ForeignKey(typeof(M2MClassF))]
+        [ForeignKey(typeof(M2MClassF))
+]
         public int ClassFId { get; set; }
     }
 
@@ -95,13 +96,13 @@ public class ManyToManyTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [ManyToMany(typeof(ClassGClassG), "ChildId", "Children")]
-        public ObservableCollection<M2MClassG> Parents { get; set; }
+        public ObservableCollection<M2MClassG>? Parents { get; set; }
 
         [ManyToMany(typeof(ClassGClassG), "ParentId", "Parents")]
-        public List<M2MClassG> Children { get; set; }
+        public List<M2MClassG>? Children { get; set; }
     }
 
     [Table("M2MClassG_ClassG")]
@@ -123,14 +124,14 @@ public class ManyToManyTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string Name { get; set; } = string.Empty;
 
         [Column("parent_elements")]
         [ManyToMany(typeof(ClassHClassH), "ChildId", "Children", ReadOnly = true)] // Parents relationship is read only
-        public List<M2MClassH> Parents { get; set; }
+        public List<M2MClassH>? Parents { get; set; }
 
         [ManyToMany(typeof(ClassHClassH), "ParentId", "Parents")]
-        public ObservableCollection<M2MClassH> Children { get; set; }
+        public ObservableCollection<M2MClassH>? Children { get; set; }
     }
 
     public class ClassHClassH
@@ -404,7 +405,7 @@ public class ManyToManyTests
                 for (var bIndex = 0; bIndex <= aIndex; bIndex++)
                 {
                     var objectB = objectsB[bIndex];
-                    objectA.BObjects.Add(objectB);
+                    objectA.BObjects!.Add(objectB);
                 }
 
                 conn.UpdateWithChildren(objectA);
@@ -499,7 +500,7 @@ public class ManyToManyTests
                 for (var bIndex = 0; bIndex <= aIndex; bIndex++)
                 {
                     var objectB = objectsB[bIndex];
-                    objectA.BObjects.Add(objectB);
+                    objectA.BObjects!.Add(objectB);
                 }
 
                 conn.UpdateWithChildren(objectA);
@@ -518,7 +519,7 @@ public class ManyToManyTests
 
             foreach (var objectA in objectsA)
             {
-                objectA.BObjects.RemoveAll(objectsBToRemove.Contains);
+                objectA.BObjects!.RemoveAll(objectsBToRemove.Contains);
                 conn.UpdateWithChildren(objectA);
             }
 

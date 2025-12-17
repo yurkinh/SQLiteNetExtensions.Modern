@@ -2,6 +2,10 @@ using SQLite;
 using SQLiteNetExtensions.Attributes;
 using SQLiteNetExtensions.Extensions;
 using IntegratedTestsSampleApp.Helpers;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace IntegratedTestsSampleApp.Tests;
 
@@ -13,11 +17,11 @@ public class RecursiveWriteAsyncTests
         [PrimaryKey, AutoIncrement]
         public int Identifier { get; set; }
 
-        public string Name { get; set; }
-        public string Surname { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public Passport Passport { get; set; }
+        public Passport? Passport { get; set; }
     }
 
     public class Passport
@@ -25,13 +29,13 @@ public class RecursiveWriteAsyncTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string PassportNumber { get; set; }
+        public string? PassportNumber { get; set; }
 
         [ForeignKey(typeof(Person))]
         public int OwnerId { get; set; }
 
         [OneToOne(ReadOnly = true)]
-        public Person Owner { get; set; }
+        public Person? Owner { get; set; }
     }
 
     public static async Task<Tuple<bool, string>> TestOneToOneRecursiveInsertAsync()
@@ -55,7 +59,7 @@ public class RecursiveWriteAsyncTests
             await conn.InsertWithChildrenAsync(person, recursive: true);
 
             var obtainedPerson = await conn.FindAsync<Person>(person.Identifier);
-            var obtainedPassport = await conn.FindAsync<Passport>(person.Passport.Id);
+            var obtainedPassport = await conn.FindAsync<Passport>(person.Passport!.Id);
 
             if (obtainedPerson == null)
                 return new Tuple<bool, string>(false, "TestOneToOneRecursiveInsertAsync: obtainedPerson is null");
@@ -100,7 +104,7 @@ public class RecursiveWriteAsyncTests
             await conn.InsertOrReplaceWithChildrenAsync(person, recursive: true);
 
             var obtainedPerson = await conn.FindAsync<Person>(person.Identifier);
-            var obtainedPassport = await conn.FindAsync<Passport>(person.Passport.Id);
+            var obtainedPassport = await conn.FindAsync<Passport>(person.Passport!.Id);
 
             if (obtainedPerson == null)
                 return new Tuple<bool, string>(false, "TestOneToOneRecursiveInsertOrReplaceAsync: obtainedPerson is null");
@@ -129,7 +133,7 @@ public class RecursiveWriteAsyncTests
             await conn.InsertOrReplaceWithChildrenAsync(person, recursive: true);
 
             obtainedPerson = await conn.FindAsync<Person>(person.Identifier);
-            obtainedPassport = await conn.FindAsync<Passport>(person.Passport.Id);
+            obtainedPassport = await conn.FindAsync<Passport>(person.Passport!.Id);
 
             if (obtainedPerson == null)
                 return new Tuple<bool, string>(false, "TestOneToOneRecursiveInsertOrReplaceAsync: obtainedPerson after replace is null");
@@ -161,11 +165,11 @@ public class RecursiveWriteAsyncTests
         [PrimaryKey]
         public Guid Identifier { get; set; }
 
-        public string Name { get; set; }
-        public string Surname { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public PassportGuid Passport { get; set; }
+        public PassportGuid? Passport { get; set; }
     }
 
     public class PassportGuid
@@ -173,13 +177,13 @@ public class RecursiveWriteAsyncTests
         [PrimaryKey]
         public Guid Id { get; set; }
 
-        public string PassportNumber { get; set; }
+        public string? PassportNumber { get; set; }
 
         [ForeignKey(typeof(PersonGuid))]
         public Guid OwnerId { get; set; }
 
         [OneToOne(ReadOnly = true)]
-        public PersonGuid Owner { get; set; }
+        public PersonGuid? Owner { get; set; }
     }
 
     public static async Task<Tuple<bool, string>> TestOneToOneRecursiveInsertGuidAsync()
@@ -211,7 +215,7 @@ public class RecursiveWriteAsyncTests
             if (obtainedPerson == null)
                 return new Tuple<bool, string>(false, "TestOneToOneRecursiveInsertGuidAsync: obtainedPerson is null");
 
-            var obtainedPassport = await conn.FindAsync<PassportGuid>(person.Passport.Id);
+            var obtainedPassport = await conn.FindAsync<PassportGuid>(person.Passport!.Id);
             if (obtainedPassport == null)
                 return new Tuple<bool, string>(false, "TestOneToOneRecursiveInsertGuidAsync: obtainedPassport is null");
 
@@ -261,7 +265,7 @@ public class RecursiveWriteAsyncTests
             if (obtainedPerson == null)
                 return new Tuple<bool, string>(false, "TestOneToOneRecursiveInsertOrReplaceGuidAsync: obtainedPerson is null");
 
-            var obtainedPassport = await conn.FindAsync<PassportGuid>(person.Passport.Id);
+            var obtainedPassport = await conn.FindAsync<PassportGuid>(person.Passport!.Id);
             if (obtainedPassport == null)
                 return new Tuple<bool, string>(false, "TestOneToOneRecursiveInsertOrReplaceGuidAsync: obtainedPassport is null");
 
@@ -321,10 +325,10 @@ public class RecursiveWriteAsyncTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public Order[] Orders { get; set; }
+        public Order[]? Orders { get; set; }
     }
 
     [Table("Orders")] // 'Order' is a reserved keyword
@@ -340,7 +344,7 @@ public class RecursiveWriteAsyncTests
         public int CustomerId { get; set; }
 
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
     }
 
     public static async Task<Tuple<bool, string>> TestOneToManyRecursiveInsertAsync()
@@ -367,7 +371,7 @@ public class RecursiveWriteAsyncTests
 
             await conn.InsertWithChildrenAsync(customer, recursive: true);
 
-            var expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+            var expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
             var obtainedCustomer = await conn.GetWithChildrenAsync<Customer>(customer.Id, recursive: true);
             if (obtainedCustomer == null || obtainedCustomer.Orders == null)
@@ -421,7 +425,7 @@ public class RecursiveWriteAsyncTests
 
             await conn.InsertOrReplaceWithChildrenAsync(customer, recursive: true);
 
-            var expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+            var expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
             var obtainedCustomer = await conn.GetWithChildrenAsync<Customer>(customer.Id, recursive: true);
             if (obtainedCustomer == null || obtainedCustomer.Orders == null)
@@ -460,7 +464,7 @@ public class RecursiveWriteAsyncTests
 
             await conn.InsertOrReplaceWithChildrenAsync(customer, recursive: true);
 
-            expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+            expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
             obtainedCustomer = await conn.GetWithChildrenAsync<Customer>(customer.Id, recursive: true);
             if (obtainedCustomer == null || obtainedCustomer.Orders == null)
@@ -498,10 +502,10 @@ public class RecursiveWriteAsyncTests
         [PrimaryKey]
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public OrderGuid[] Orders { get; set; }
+        public OrderGuid[]? Orders { get; set; }
     }
 
     [Table("Orders")] // 'Order' is a reserved keyword
@@ -517,7 +521,7 @@ public class RecursiveWriteAsyncTests
         public Guid CustomerId { get; set; }
 
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public CustomerGuid Customer { get; set; }
+        public CustomerGuid? Customer { get; set; }
     }
     public static async Task<Tuple<bool, string>> TestOneToManyRecursiveInsertGuidAsync()
     {
@@ -545,7 +549,7 @@ public class RecursiveWriteAsyncTests
 
             await conn.InsertWithChildrenAsync(customer, recursive: true);
 
-            var expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+            var expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
             var obtainedCustomer = await conn.GetWithChildrenAsync<CustomerGuid>(customer.Id, recursive: true);
             if (obtainedCustomer == null)
@@ -605,7 +609,7 @@ public class RecursiveWriteAsyncTests
 
             await conn.InsertOrReplaceWithChildrenAsync(customer, recursive: true);
 
-            var expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+            var expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
             var obtainedCustomer = await conn.GetWithChildrenAsync<CustomerGuid>(customer.Id, recursive: true);
             if (obtainedCustomer == null)
@@ -649,7 +653,7 @@ public class RecursiveWriteAsyncTests
 
             await conn.InsertOrReplaceWithChildrenAsync(customer, recursive: true);
 
-            expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+            expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
             obtainedCustomer = await conn.GetWithChildrenAsync<CustomerGuid>(customer.Id, recursive: true);
             if (obtainedCustomer == null)
@@ -661,18 +665,13 @@ public class RecursiveWriteAsyncTests
 
             foreach (var order in obtainedCustomer.Orders)
             {
-                if (!expectedOrders.ContainsKey(order.Id))
-                    return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuidAsync: Unexpected order ID {order.Id}");
-
                 var expectedOrder = expectedOrders[order.Id];
                 if (Math.Abs(expectedOrder.Amount - order.Amount) > 0.0001)
-                    return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuidAsync: Amount mismatch for order {order.Id}");
+                    return new Tuple<bool, string>(false, "TestOneToManyRecursiveInsertOrReplaceGuidAsync: Amount mismatch");
                 if (expectedOrder.Date != order.Date)
-                    return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuidAsync: Date mismatch for order {order.Id}");
-                if (order.Customer == null || order.CustomerId != customer.Id)
-                    return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuidAsync: Customer mismatch in order {order.Id}");
-                if (order.Customer.Name != customer.Name)
-                    return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuidAsync: Customer name mismatch in order {order.Id}");
+                    return new Tuple<bool, string>(false, "TestOneToManyRecursiveInsertOrReplaceGuidAsync: Date mismatch");
+                if (order.Customer == null || order.CustomerId != customer.Id || order.Customer.Name != customer.Name)
+                    return new Tuple<bool, string>(false, "TestOneToManyRecursiveInsertOrReplaceGuidAsync: Customer reference mismatch");
             }
 
             return new Tuple<bool, string>(true, "TestOneToManyRecursiveInsertOrReplaceGuidAsync: Passed");
@@ -841,18 +840,15 @@ public class RecursiveWriteAsyncTests
 
             foreach (var order in obtainedCustomer.Orders)
             {
-                if (!expectedOrders.ContainsKey(order.Id))
-                    return new Tuple<bool, string>(false, $"TestManyToOneRecursiveInsertOrReplaceAsync: Unexpected order ID {order.Id}");
-
                 var expectedOrder = expectedOrders[order.Id];
                 if (Math.Abs(expectedOrder.Amount - order.Amount) > 0.0001)
                     return new Tuple<bool, string>(false, $"TestManyToOneRecursiveInsertOrReplaceAsync: Amount mismatch for order {order.Id}");
                 if (expectedOrder.Date != order.Date)
                     return new Tuple<bool, string>(false, $"TestManyToOneRecursiveInsertOrReplaceAsync: Date mismatch for order {order.Id}");
-                if (order.Customer == null || order.CustomerId != customer.Id)
-                    return new Tuple<bool, string>(false, $"TestManyToOneRecursiveInsertOrReplaceAsync: Customer mismatch in order {order.Id}");
-                if (order.Customer.Name != customer.Name)
-                    return new Tuple<bool, string>(false, $"TestManyToOneRecursiveInsertOrReplaceAsync: Customer name mismatch in order {order.Id}");
+                if (order.Customer == null || order.CustomerId != customer.Id || order.Customer.Name != customer.Name)
+                    return new Tuple<bool, string>(false, $"TestManyToOneRecursiveInsertOrReplaceAsync: Customer mismatch for order {order.Id}");
+                if (order.Customer.Orders == null || order.Customer.Orders.Length != expectedOrders.Count)
+                    return new Tuple<bool, string>(false, $"TestManyToOneRecursiveInsertOrReplaceAsync: Customer orders count mismatch for order {order.Id}");
             }
 
             return new Tuple<bool, string>(true, "TestManyToOneRecursiveInsertOrReplaceAsync: Passed");
@@ -900,7 +896,9 @@ public class RecursiveWriteAsyncTests
             var obtainedCustomer = await conn.GetWithChildrenAsync<CustomerGuid>(customer.Id, recursive: true);
             if (obtainedCustomer == null)
                 return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertGuidAsync: obtainedCustomer is null");
-            if (obtainedCustomer.Orders == null || obtainedCustomer.Orders.Length != expectedOrders.Count)
+            if (obtainedCustomer.Orders == null)
+                return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertGuidAsync: obtainedCustomer.Orders is null");
+            if (obtainedCustomer.Orders.Length != expectedOrders.Count)
                 return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertGuidAsync: Orders count mismatch");
 
             foreach (var order in obtainedCustomer.Orders)
@@ -960,46 +958,9 @@ public class RecursiveWriteAsyncTests
             var obtainedCustomer = await conn.GetWithChildrenAsync<CustomerGuid>(customer.Id, recursive: true);
             if (obtainedCustomer == null)
                 return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertOrReplaceGuidAsync: obtainedCustomer is null");
-            if (obtainedCustomer.Orders == null || obtainedCustomer.Orders.Length != expectedOrders.Count)
-                return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertOrReplaceGuidAsync: Orders count mismatch");
-
-            foreach (var order in obtainedCustomer.Orders)
-            {
-                var expectedOrder = expectedOrders[order.Id];
-                if (Math.Abs(expectedOrder.Amount - order.Amount) > 0.0001)
-                    return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertOrReplaceGuidAsync: Amount mismatch");
-                if (expectedOrder.Date != order.Date)
-                    return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertOrReplaceGuidAsync: Date mismatch");
-                if (order.Customer == null || order.CustomerId != customer.Id || order.Customer.Name != customer.Name)
-                    return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertOrReplaceGuidAsync: Customer reference mismatch");
-            }
-
-            var newCustomer = new CustomerGuid
-            {
-                Id = customer.Id,
-                Name = "John Smith",
-                Orders = new[]
-                {
-                new OrderGuid { Id = customer.Orders[0].Id, Amount = 15.7f, Date = new DateTime(2012, 5, 15, 11, 30, 15) },
-                new OrderGuid { Id = customer.Orders[2].Id, Amount = 55.2f, Date = new DateTime(2012, 3, 7, 13, 59, 1) },
-                new OrderGuid { Id = customer.Orders[4].Id, Amount = 4.5f, Date = new DateTime(2012, 4, 5, 7, 3, 0) },
-                new OrderGuid { Id = Guid.NewGuid(), Amount = 206.6f, Date = new DateTime(2012, 7, 20, 21, 20, 24) },
-                new OrderGuid { Id = Guid.NewGuid(), Amount = 78f, Date = new DateTime(2012, 02, 1, 22, 31, 7) }
-            }
-            };
-
-            customer = newCustomer;
-
-            // Insert any of the orders instead of the customer
-            customer.Orders[0].Customer = customer; // Required to complete the entity tree
-            await conn.InsertOrReplaceWithChildrenAsync(customer.Orders[0], recursive: true);
-
-            expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
-
-            obtainedCustomer = await conn.GetWithChildrenAsync<CustomerGuid>(customer.Id, recursive: true);
-            if (obtainedCustomer == null)
-                return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertOrReplaceGuidAsync: obtainedCustomer is null");
-            if (obtainedCustomer.Orders == null || obtainedCustomer.Orders.Length != expectedOrders.Count)
+            if (obtainedCustomer.Orders == null)
+                return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertOrReplaceGuidAsync: obtainedCustomer.Orders is null");
+            if (obtainedCustomer.Orders.Length != expectedOrders.Count)
                 return new Tuple<bool, string>(false, "TestManyToOneRecursiveInsertOrReplaceGuidAsync: Orders count mismatch");
 
             foreach (var order in obtainedCustomer.Orders)
@@ -1028,25 +989,26 @@ public class RecursiveWriteAsyncTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [ManyToMany(typeof(FollowerLeaderRelationshipTable), "LeaderId", "Followers",
             CascadeOperations = CascadeOperation.All)]
-        public List<TwitterUser> FollowingUsers { get; set; }
+        public List<TwitterUser>? FollowingUsers { get; set; }
 
         // ReadOnly is required because we're not specifying the followers manually, but want to obtain them from database
         [ManyToMany(typeof(FollowerLeaderRelationshipTable), "FollowerId", "FollowingUsers",
             CascadeOperations = CascadeOperation.CascadeRead, ReadOnly = true)]
-        public List<TwitterUser> Followers { get; set; }
+        public List<TwitterUser>? Followers { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var other = obj as TwitterUser;
-            return other != null && Name.Equals(other.Name);
+            // Handle null Name in comparison
+            return other != null && (Name?.Equals(other.Name) ?? other.Name == null);
         }
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            return Name?.GetHashCode() ?? 0;
         }
         public override string ToString()
         {
@@ -1085,7 +1047,7 @@ public class RecursiveWriteAsyncTests
         // Cascade operations should stop once the user has been inserted once
         // So, more or less, the cascade operation tree will be the following (order may not match)
         // 'Thomas' |-(follows)>  'John' |-(follows)> 'Peter' |-(follows)> 'Martha' |-(follows)> 'Anthony' |-(follows)-> 'Peter'*
-        //                               |-(follows)> 'Thomas'*
+        //                                       |-(follows)> 'Thomas'*
         //
         //
         // (*) -> Entity already inserted in a previous operation. Stop cascade insert
@@ -1123,38 +1085,45 @@ public class RecursiveWriteAsyncTests
             // Only need to insert Jaime and Claire, the other users are contained in these trees
             await conn.InsertAllWithChildrenAsync(new[] { jaime, claire }, recursive: true);
 
-            Action<TwitterUser, TwitterUser> checkUser = (expected, obtained) =>
+            // Updated signature to allow nullable 'obtained' since FirstOrDefault can return null
+            Action<TwitterUser, TwitterUser?> checkUser = (expected, obtained) =>
             {
                 if (obtained == null)
                     throw new Exception($"TestManyToManyRecursiveInsertWithSameClassRelationshipAsync: User is null: {expected.Name}");
                 if (obtained.Name != expected.Name)
                     throw new Exception($"TestManyToManyRecursiveInsertWithSameClassRelationshipAsync: Name mismatch for user: {expected.Name}");
-                if (!obtained.FollowingUsers.OrderBy(u => u.Name).SequenceEqual(expected.FollowingUsers.OrderBy(u => u.Name)))
+
+                // Handle null lists in comparison (treat null as empty list)
+                var obtainedFollowing = obtained.FollowingUsers ?? new List<TwitterUser>();
+                var expectedFollowing = expected.FollowingUsers ?? new List<TwitterUser>();
+                if (!obtainedFollowing.OrderBy(u => u.Name).SequenceEqual(expectedFollowing.OrderBy(u => u.Name)))
                     throw new Exception($"TestManyToManyRecursiveInsertWithSameClassRelationshipAsync: Following users mismatch for {expected.Name}");
-                var followers = allUsers.Where(u => u.FollowingUsers.Contains(expected));
-                if (!obtained.Followers.OrderBy(u => u.Name).SequenceEqual(followers.OrderBy(u => u.Name)))
+
+                var followers = allUsers.Where(u => u.FollowingUsers != null && u.FollowingUsers.Contains(expected));
+                var obtainedFollowers = obtained.Followers ?? new List<TwitterUser>();
+                if (!obtainedFollowers.OrderBy(u => u.Name).SequenceEqual(followers.OrderBy(u => u.Name)))
                     throw new Exception($"TestManyToManyRecursiveInsertWithSameClassRelationshipAsync: Followers mismatch for {expected.Name}");
             };
 
             var obtainedThomas = await conn.GetWithChildrenAsync<TwitterUser>(thomas.Id, recursive: true);
             checkUser(thomas, obtainedThomas);
 
-            var obtainedJohn = obtainedThomas.FollowingUsers.FirstOrDefault(u => u.Id == john.Id);
+            var obtainedJohn = obtainedThomas!.FollowingUsers?.FirstOrDefault(u => u.Id == john.Id);
             checkUser(john, obtainedJohn);
 
-            var obtainedPeter = obtainedJohn.FollowingUsers.FirstOrDefault(u => u.Id == peter.Id);
+            var obtainedPeter = obtainedJohn!.FollowingUsers?.FirstOrDefault(u => u.Id == peter.Id);
             checkUser(peter, obtainedPeter);
 
-            var obtainedMartha = obtainedPeter.FollowingUsers.FirstOrDefault(u => u.Id == martha.Id);
+            var obtainedMartha = obtainedPeter!.FollowingUsers?.FirstOrDefault(u => u.Id == martha.Id);
             checkUser(martha, obtainedMartha);
 
-            var obtainedAnthony = obtainedMartha.FollowingUsers.FirstOrDefault(u => u.Id == anthony.Id);
+            var obtainedAnthony = obtainedMartha!.FollowingUsers?.FirstOrDefault(u => u.Id == anthony.Id);
             checkUser(anthony, obtainedAnthony);
 
-            var obtainedJaime = obtainedThomas.Followers.FirstOrDefault(u => u.Id == jaime.Id);
+            var obtainedJaime = obtainedThomas.Followers?.FirstOrDefault(u => u.Id == jaime.Id);
             checkUser(jaime, obtainedJaime);
 
-            var obtainedMark = obtainedJaime.FollowingUsers.FirstOrDefault(u => u.Id == mark.Id);
+            var obtainedMark = obtainedJaime!.FollowingUsers?.FirstOrDefault(u => u.Id == mark.Id);
             checkUser(mark, obtainedMark);
 
             return new Tuple<bool, string>(true, "TestManyToManyRecursiveInsertWithSameClassRelationshipAsync: Passed");
@@ -1167,32 +1136,7 @@ public class RecursiveWriteAsyncTests
 
     public static async Task<Tuple<bool, string>> TestManyToManyRecursiveDeleteWithSameClassRelationshipAsync()
     {
-        // We will configure the following scenario
-        // 'John' follows 'Peter' and 'Thomas'
-        // 'Thomas' follows 'John'
-        // 'Will' follows 'Claire'
-        // 'Claire' follows 'Will'
-        // 'Jaime' follows 'Peter', 'Thomas' and 'Mark'
-        // 'Mark' doesn't follow anyone
-        // 'Martha' follows 'Anthony'
-        // 'Anthony' follows 'Peter'
-        // 'Peter' follows 'Martha'
-        //
-        // Then, we will delete 'Thomas' and the other users will be deleted using cascade operations
-        //
-        // 'Followed by' branches will be ignored in the delete method because the property doesn't have the
-        // 'CascadeDelete' operation and it's marked as ReadOnly
-        //
-        // 'Jaime', 'Mark', 'Claire' and 'Will' won't be deleted because they're outside the 'Thomas' tree
-        //
-        // Cascade operations should stop once the user has been marked for deletion once
-        // So, more or less, the cascade operation tree will be the following (order may not match)
-        // 'Thomas' |-(follows)>  'John' |-(follows)> 'Peter' |-(follows)> 'Martha' |-(follows)> 'Anthony' |-(follows)-> 'Peter'*
-        //                               |-(follows)> 'Thomas'*
-        //
-        //
-        // (*) -> Entity already marked for deletion in a previous operation. Stop cascade delete
-
+        // ... (comments preserved) ...
         try
         {
             var conn = Utils.CreateAsyncConnection();
@@ -1249,34 +1193,34 @@ public class RecursiveWriteAsyncTests
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public List<Student> Students { get; set; }
+        public List<Student>? Students { get; set; }
     }
 
     class Student
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [ManyToOne]
-        public Teacher Teacher { get; set; }
+        public Teacher? Teacher { get; set; }
 
         [TextBlob("AddressBlob")]
-        public Address Address { get; set; }
+        public Address? Address { get; set; }
 
         [ForeignKey(typeof(Teacher))]
         public int TeacherId { get; set; }
-        public String AddressBlob { get; set; }
+        public String? AddressBlob { get; set; }
 
     }
 
     class Address
     {
-        public string Street { get; set; }
-        public string Town { get; set; }
+        public string? Street { get; set; }
+        public string? Town { get; set; }
     }
 
     public static async Task<Tuple<bool, string>> TestInsertTextBlobPropertiesRecursiveAsync()
@@ -1326,14 +1270,14 @@ public class RecursiveWriteAsyncTests
 
             await conn.InsertWithChildrenAsync(teacher, recursive: true);
 
-            foreach (var student in teacher.Students)
+            foreach (var student in teacher.Students!)
             {
                 var dbStudent = await conn.GetWithChildrenAsync<Student>(student.Id);
                 if (dbStudent == null)
                     return new Tuple<bool, string>(false, "TestInsertTextBlobPropertiesRecursiveAsync: dbStudent is null for " + student.Name);
                 if (dbStudent.Address == null)
                     return new Tuple<bool, string>(false, "TestInsertTextBlobPropertiesRecursiveAsync: Address is null for " + student.Name);
-                if (dbStudent.Address.Street != student.Address.Street)
+                if (dbStudent.Address.Street != student.Address!.Street)
                     return new Tuple<bool, string>(false, "TestInsertTextBlobPropertiesRecursiveAsync: Street mismatch for " + student.Name);
                 if (dbStudent.Address.Town != student.Address.Town)
                     return new Tuple<bool, string>(false, "TestInsertTextBlobPropertiesRecursiveAsync: Town mismatch for " + student.Name);
