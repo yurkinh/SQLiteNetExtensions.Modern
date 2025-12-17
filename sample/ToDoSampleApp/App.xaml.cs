@@ -10,7 +10,6 @@ public partial class App : Application
 		InitializeComponent();
 		this.databaseService = databaseService;
 	}
-
     protected override Window CreateWindow(IActivationState? activationState) => new(new AppShell());
 
     protected override async void OnStart()
