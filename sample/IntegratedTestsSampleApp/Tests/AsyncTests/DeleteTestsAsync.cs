@@ -62,7 +62,9 @@ public static class DeleteTestsAsunc
             // Verify that the elements have been inserted correctly
             var ct = await conn.Table<DummyClassGuidPK>().CountAsync();
             if (ct != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllGuidPKAsync: Failed at inserting elements");
+            }
 
             var elementsToDelete = new List<DummyClassGuidPK> { elementA, elementC };
 
@@ -71,12 +73,16 @@ public static class DeleteTestsAsunc
 
             // Verify that the elements have been deleted correctly
             if (await conn.Table<DummyClassGuidPK>().CountAsync() != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllGuidPKAsync: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (await conn.FindAsync<DummyClassGuidPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllGuidPKAsync: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllGuidPKAsync: Passed");
@@ -121,7 +127,9 @@ public static class DeleteTestsAsunc
 
             // Verify that the elements have been inserted correctly
             if (await conn.Table<DummyClassIntPK>().CountAsync() != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIntPKAsync: Failed at inserting elements");
+            }
 
             // Delete elements from the database
             var elementsToDelete = new List<DummyClassIntPK> { elementA, elementC };
@@ -129,12 +137,16 @@ public static class DeleteTestsAsunc
 
             // Verify that the elements have been deleted correctly
             if (await conn.Table<DummyClassIntPK>().CountAsync() != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIntPKAsync: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (await conn.FindAsync<DummyClassIntPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllIntPKAsync: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllIntPKAsync: Passed");
@@ -167,7 +179,9 @@ public static class DeleteTestsAsunc
 
             // Verify that the elements have been inserted correctly
             if (await conn.Table<DummyClassIntPK>().CountAsync() != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllThousandObjectsAsync: Failed at inserting elements");
+            }
 
             // Delete elements from the database
             var elementsToDelete = new List<DummyClassIntPK>(elementsList);
@@ -177,12 +191,16 @@ public static class DeleteTestsAsunc
 
             // Verify that the elements have been deleted correctly
             if (await conn.Table<DummyClassIntPK>().CountAsync() != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllThousandObjectsAsync: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (await conn.FindAsync<DummyClassIntPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllThousandObjectsAsync: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllThousandObjectsAsync: Passed");
@@ -229,7 +247,9 @@ public static class DeleteTestsAsunc
             await conn.InsertAllAsync(elementsList);
 
             if (await conn.Table<DummyClassGuidPK>().CountAsync() != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIdsGuidPKAsync: Failed at inserting elements");
+            }
 
             var elementsToDelete = new List<DummyClassGuidPK> { elementA, elementC };
             var primaryKeysToDelete = elementsToDelete.Select(e => (object)e.Id);
@@ -239,12 +259,16 @@ public static class DeleteTestsAsunc
 
             // Verify that the elements have been deleted correctly
             if (await conn.Table<DummyClassGuidPK>().CountAsync() != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIdsGuidPKAsync: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (await conn.FindAsync<DummyClassGuidPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllIdsGuidPKAsync: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllIdsGuidPKAsync: Passed");
@@ -290,7 +314,9 @@ public static class DeleteTestsAsunc
             // Verify that the elements have been inserted correctly
             var insertedCount = await conn.Table<DummyClassIntPK>().CountAsync();
             if (insertedCount != elementsList.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIdsIntPKAsync: Failed at inserting elements");
+            }
 
             var elementsToDelete = new List<DummyClassIntPK> { elementA, elementC };
             var primaryKeysToDelete = elementsToDelete.Select(e => (object)e.Id);
@@ -301,12 +327,16 @@ public static class DeleteTestsAsunc
             // Verify that the elements have been deleted correctly
             var remainingCount = await conn.Table<DummyClassIntPK>().CountAsync();
             if (remainingCount != elementsList.Count - elementsToDelete.Count)
+            {
                 return new Tuple<bool, string>(false, "TestDeleteAllIdsIntPKAsync: Failed at deleting elements");
+            }
 
             foreach (var deletedElement in elementsToDelete)
             {
                 if (await conn.FindAsync<DummyClassIntPK>(deletedElement.Id) != null)
+                {
                     return new Tuple<bool, string>(false, $"TestDeleteAllIdsIntPKAsync: Element {deletedElement.Id} was not deleted");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestDeleteAllIdsIntPKAsync: Passed");

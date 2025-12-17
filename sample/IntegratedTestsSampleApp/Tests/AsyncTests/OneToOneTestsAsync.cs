@@ -18,7 +18,7 @@ public static class OneToOneTestsAsync
         public int OneClassBKey { get; set; }
 
         [OneToOne]
-        public O2OClassB OneClassB { get; set; }
+        public O2OClassB? OneClassB { get; set; }
     }
 
     public class O2OClassB
@@ -26,7 +26,7 @@ public static class OneToOneTestsAsync
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Foo { get; set; }
+        public string Foo { get; set; } = string.Empty;
     }
 
     public class O2OClassC
@@ -35,9 +35,9 @@ public static class OneToOneTestsAsync
         public int ClassId { get; set; }
 
         [OneToOne]     // OneToOne Foreign key can be declared in the referenced class
-        public O2OClassD ElementD { get; set; }
+        public O2OClassD? ElementD { get; set; }
 
-        public string Bar { get; set; }
+        public string Bar { get; set; } = string.Empty;
     }
 
     public class O2OClassD
@@ -48,7 +48,7 @@ public static class OneToOneTestsAsync
         [ForeignKey(typeof(O2OClassC))]    // Explicit foreign key attribute for a inverse relationship
         public int ObjectCKey { get; set; }
 
-        public string Foo { get; set; }
+        public string Foo { get; set; } = string.Empty;
     }
 
     public class O2OClassE
@@ -59,9 +59,9 @@ public static class OneToOneTestsAsync
         public int ObjectFKey { get; set; }
 
         [OneToOne("ObjectFKey")]        // Explicit foreign key declaration
-        public O2OClassF ObjectF { get; set; }
+        public O2OClassF? ObjectF { get; set; }
 
-        public string Foo { get; set; }
+        public string Foo { get; set; } = string.Empty;
     }
 
     public class O2OClassF
@@ -70,9 +70,9 @@ public static class OneToOneTestsAsync
         public int Id { get; set; }
 
         [OneToOne]      // Inverse relationship, doesn't need foreign key
-        public O2OClassE ObjectE { get; set; }
+        public O2OClassE? ObjectE { get; set; }
 
-        public string Bar { get; set; }
+        public string Bar { get; set; } = string.Empty;
     }
     #endregion
 
@@ -97,29 +97,39 @@ public static class OneToOneTestsAsync
             await conn.InsertAsync(objectA);
 
             if (objectA.OneClassB != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirectAsync: Failed at checking OneClassB is null");
+            }
 
             // Fetch (yet empty) the relationship
             await conn.GetChildrenAsync(objectA);
 
             if (objectA.OneClassB != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirectAsync: Failed at fetching relationship");
+            }
 
             // Set the relationship using IDs
             objectA.OneClassBKey = objectB.Id;
             await conn.UpdateAsync(objectA);
 
             if (objectA.OneClassB != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirectAsync: Failed at updating relationship");
+            }
 
             // Fetch the relationship
             await conn.GetChildrenAsync(objectA);
 
             if (objectA.OneClassB == null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirectAsync: Failed at fetching the relationship after update");
+            }
 
             if (objectB.Id != objectA.OneClassB.Id || objectB.Foo != objectA.OneClassB.Foo)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneDirectAsync: Relationship data mismatch");
+            }
 
             return new Tuple<bool, string>(true, "TestGetOneToOneDirectAsync: Passed");
         }
@@ -147,13 +157,17 @@ public static class OneToOneTestsAsync
             await conn.InsertAsync(objectC);
 
             if (objectC.ElementD != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneInverseForeignKeyAsync: Failed at checking ElementD is null");
+            }
 
             // Fetch (yet empty) the relationship
             await conn.GetChildrenAsync(objectC);
 
             if (objectC.ElementD != null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneInverseForeignKeyAsync: Failed at fetching relationship");
+            }
 
             var objectD = new O2OClassD
             {
@@ -166,10 +180,14 @@ public static class OneToOneTestsAsync
             await conn.GetChildrenAsync(objectC);
 
             if (objectC.ElementD == null)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneInverseForeignKeyAsync: Failed at fetching relationship after insert");
+            }
 
             if (objectC.ClassId != objectC.ElementD.ObjectCKey || objectD.Foo != objectC.ElementD.Foo)
+            {
                 return new Tuple<bool, string>(false, "TestGetOneToOneInverseForeignKeyAsync: Relationship data mismatch");
+            }
 
             return new Tuple<bool, string>(true, "TestGetOneToOneInverseForeignKeyAsync: Passed");
         }
@@ -203,34 +221,48 @@ public static class OneToOneTestsAsync
             await conn.InsertAsync(objectE);
 
             if (objectE.ObjectF != null)
+            {
                 return Tuple.Create(false, "TestGetOneToOneWithInverseRelationshipAsync: objectE.ObjectF is not null before relationship set");
+            }
 
             // Fetch (yet empty) the relationship
             await conn.GetChildrenAsync(objectE);
 
             if (objectE.ObjectF != null)
+            {
                 return Tuple.Create(false, "TestGetOneToOneWithInverseRelationshipAsync: objectE.ObjectF is not null after GetChildren");
+            }
 
             objectE.ObjectFKey = objectF.Id;
             await conn.UpdateAsync(objectE);
 
             if (objectE.ObjectF != null)
+            {
                 return Tuple.Create(false, "TestGetOneToOneWithInverseRelationshipAsync: objectE.ObjectF is still not null after update");
+            }
 
             // Fetch the relationship
             await conn.GetChildrenAsync(objectE);
 
             if (objectE.ObjectF == null)
+            {
                 return Tuple.Create(false, "TestGetOneToOneWithInverseRelationshipAsync: objectE.ObjectF is null after GetChildren");
+            }
 
             if (objectF.Id != objectE.ObjectF.Id || objectF.Bar != objectE.ObjectF.Bar)
+            {
                 return Tuple.Create(false, "TestGetOneToOneWithInverseRelationshipAsync: Relationship data mismatch");
+            }
 
             if (objectE.ObjectF.ObjectE == null || objectE.ObjectF.ObjectE.Foo != objectE.Foo)
+            {
                 return Tuple.Create(false, "TestGetOneToOneWithInverseRelationshipAsync: Inverse relationship not correct");
+            }
 
             if (!ReferenceEquals(objectE, objectE.ObjectF.ObjectE))
+            {
                 return Tuple.Create(false, "TestGetOneToOneWithInverseRelationshipAsync: Inverse relationship is not the same object");
+            }
 
             return Tuple.Create(true, "TestGetOneToOneWithInverseRelationshipAsync: Passed");
         }
@@ -264,36 +296,50 @@ public static class OneToOneTestsAsync
             await conn.InsertAsync(objectE);
 
             if (objectF.ObjectE != null)
+            {
                 return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKeyAsync: objectF.ObjectE is not null before relationship set");
+            }
 
             // Fetch (yet empty) the relationship
             await conn.GetChildrenAsync(objectF);
 
             if (objectF.ObjectE != null)
+            {
                 return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKeyAsync: objectF.ObjectE is not null after GetChildren");
+            }
 
             // Set the relationship using IDs
             objectE.ObjectFKey = objectF.Id;
             await conn.UpdateAsync(objectE);
 
             if (objectF.ObjectE != null)
+            {
                 return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKeyAsync: objectF.ObjectE is still not null after update");
+            }
 
             // Fetch the relationship
             await conn.GetChildrenAsync(objectF);
 
             if (objectF.ObjectE == null)
+            {
                 return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKeyAsync: objectF.ObjectE is null after GetChildren");
+            }
 
             if (objectE.Foo != objectF.ObjectE.Foo)
+            {
                 return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKeyAsync: objectE.Foo is not equal objectF.ObjectE.Foo after GetChildren");
+            }
 
             // Check the inverse relationship
             if (objectF.ObjectE.ObjectF == null)
+            {
                 return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKeyAsync: objectF.ObjectE.ObjectF isn't null");
+            }
 
             if (objectE.Id != objectF.ObjectE.ObjectFKey || objectF.Bar != objectF.ObjectE.ObjectF.Bar)
+            {
                 return Tuple.Create(false, "TestGetInverseOneToOneRelationshipWithExplicitKeyAsync: Relationship data mismatch");
+            }
 
             return Tuple.Create(true, "TestGetInverseOneToOneRelationshipWithExplicitKeyAsync: Passed");
         }
@@ -326,18 +372,24 @@ public static class OneToOneTestsAsync
             // Set the relationship using objects
             objectA.OneClassB = objectB;
             if (objectA.OneClassBKey != 0)
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipAsync failed: OneClassBKey should be 0 before update");
+            }
 
             await conn.UpdateWithChildrenAsync(objectA);
 
             if (objectA.OneClassBKey != objectB.Id)
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipAsync failed: Foreign key should have been refreshed");
+            }
 
             // Fetch the relationship
             var newObjectA = await conn.GetAsync<O2OClassA>(objectA.Id);
 
             if (newObjectA.OneClassBKey != objectB.Id)
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipAsync failed: Foreign key in database is not updated");
+            }
 
             return Tuple.Create(true, "TestUpdateSetOneToOneRelationshipAsync passed");
         }
@@ -371,23 +423,31 @@ public static class OneToOneTestsAsync
             objectA.OneClassB = objectB;
 
             if (objectA.OneClassBKey != 0)
+            {
                 return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipAsync failed: Foreign key !=0");
+            }
 
             await conn.UpdateWithChildrenAsync(objectA);
 
             if (objectA.OneClassBKey != objectB.Id)
+            {
                 return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipAsync failed: Foreign key should have been refreshed");
+            }
 
             // Until here, test is same that TestUpdateSetOneToOneRelationship
             objectA.OneClassB = null; // Unset relationship
 
             if (objectA.OneClassBKey != objectB.Id)
+            {
                 return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipAsync failed: Foreign key shouldn't have been refreshed yet");
+            }
 
             await conn.UpdateWithChildrenAsync(objectA);
 
             if (objectA.OneClassBKey != 0)
+            {
                 return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipAsync failed: Foreign key hasn't been unset");
+            }
 
             return Tuple.Create(true, "TestUpdateUnsetOneToOneRelationshipAsync passed");
         }
@@ -418,20 +478,28 @@ public static class OneToOneTestsAsync
 
             objectE.ObjectF = objectF;
             if (objectE.ObjectFKey != 0)
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseAsync failed: ObjectFKey should be 0 before update");
+            }
 
             await conn.UpdateWithChildrenAsync(objectE);
 
             if (objectE.ObjectFKey != objectF.Id)
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseAsync failed: Foreign key should have been refreshed");
+            }
 
             if (!ReferenceEquals(objectF, objectE.ObjectF))
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseAsync failed: Inverse relationship hasn't been set");
+            }
 
             var newObjectE = await conn.GetAsync<O2OClassE>(objectE.Id);
 
             if (newObjectE.ObjectFKey != objectF.Id)
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseAsync failed: Foreign key in database is not updated");
+            }
 
             return Tuple.Create(true, "TestUpdateSetOneToOneRelationshipWithInverseAsync passed");
         }
@@ -462,20 +530,28 @@ public static class OneToOneTestsAsync
 
             objectF.ObjectE = objectE;
             if (objectE.ObjectFKey != 0)
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseForeignKeyAsync failed: ObjectFKey should be 0 before update");
+            }
 
             await conn.UpdateWithChildrenAsync(objectF);
 
             if (objectE.ObjectFKey != objectF.Id)
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseForeignKeyAsync failed: Foreign key should have been refreshed");
+            }
 
             if (!ReferenceEquals(objectF, objectE.ObjectF))
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseForeignKeyAsync failed: Inverse relationship hasn't been set");
+            }
 
             var newObjectE = await conn.GetAsync<O2OClassE>(objectE.Id);
 
             if (newObjectE.ObjectFKey != objectF.Id)
+            {
                 return Tuple.Create(false, "TestUpdateSetOneToOneRelationshipWithInverseForeignKeyAsync failed: Foreign key in database is not updated");
+            }
 
             return Tuple.Create(true, "TestUpdateSetOneToOneRelationshipWithInverseForeignKeyAsync passed");
         }
@@ -508,12 +584,16 @@ public static class OneToOneTestsAsync
             // Set the relationship using objects
             objectF.ObjectE = objectE;
             if (objectE.ObjectFKey != 0)
+            {
                 return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipWithInverseForeignKeyAsync failed: Foreign key !=0");
+            }
 
             await conn.UpdateWithChildrenAsync(objectF);
 
             if (objectE.ObjectFKey != objectF.Id)
+            {
                 return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipWithInverseForeignKeyAsync failed: Foreign key should have been refreshed");
+            }
 
             // At this point the test is the same as TestUpdateSetOneToOneRelationshipWithInverseForeignKey
             objectF.ObjectE = null;     // Unset the relationship
@@ -522,7 +602,9 @@ public static class OneToOneTestsAsync
             // Fetch the relationship
             var newObjectA = await conn.GetAsync<O2OClassE>(objectE.Id);
             if (newObjectA.ObjectFKey != 0)
+            {
                 return Tuple.Create(false, "TestUpdateUnsetOneToOneRelationshipWithInverseForeignKeyAsync failed: Foreign key should have been refreshed in database");
+            }
 
             return Tuple.Create(true, "TestUpdateUnsetOneToOneRelationshipWithInverseForeignKeyAsync passed");
         }
@@ -564,16 +646,26 @@ public static class OneToOneTestsAsync
             var aElements = (await conn.GetAllWithChildrenAsync<O2OClassA>()).OrderBy(a => a.Id).ToArray();
 
             if (aObjects.Length != aElements.Length)
+            {
                 return Tuple.Create(false, "TestGetAllNoFilterAsync failed: Number of elements does not match");
+            }
 
             for (int i = 0; i < aObjects.Length; i++)
             {
                 if (aObjects[i].Id != aElements[i].Id)
+                {
                     return Tuple.Create(false, $"TestGetAllNoFilterAsync failed: Id mismatch at index {i}");
-                if (aObjects[i].OneClassB.Id != aElements[i].OneClassB.Id)
+                }
+
+                if (aObjects[i].OneClassB!.Id != aElements[i].OneClassB!.Id)
+                {
                     return Tuple.Create(false, $"TestGetAllNoFilterAsync failed: OneClassB Id mismatch at index {i}");
-                if (aObjects[i].OneClassB.Foo != aElements[i].OneClassB.Foo)
+                }
+
+                if (aObjects[i].OneClassB!.Foo != aElements[i].OneClassB!.Foo)
+                {
                     return Tuple.Create(false, $"TestGetAllNoFilterAsync failed: OneClassB Foo mismatch at index {i}");
+                }
             }
 
             return Tuple.Create(true, "TestGetAllNoFilterAsync passed");
@@ -618,16 +710,26 @@ public static class OneToOneTestsAsync
                 .OrderBy(a => a.ClassId).ToArray();
 
             if (expectedCObjects.Length != cElements.Length)
+            {
                 return Tuple.Create(false, "TestGetAllFilterAsync failed: Number of elements does not match");
+            }
 
             for (int i = 0; i < expectedCObjects.Length; i++)
             {
                 if (expectedCObjects[i].ClassId != cElements[i].ClassId)
+                {
                     return Tuple.Create(false, $"TestGetAllFilterAsync failed: ClassId mismatch at index {i}");
-                if (expectedCObjects[i].ElementD.Id != cElements[i].ElementD.Id)
+                }
+
+                if (expectedCObjects[i].ElementD!.Id != cElements[i].ElementD!.Id)
+                {
                     return Tuple.Create(false, $"TestGetAllFilterAsync failed: ElementD Id mismatch at index {i}");
-                if (expectedCObjects[i].ElementD.Foo != cElements[i].ElementD.Foo)
+                }
+
+                if (expectedCObjects[i].ElementD!.Foo != cElements[i].ElementD!.Foo)
+                {
                     return Tuple.Create(false, $"TestGetAllFilterAsync failed: ElementD Foo mismatch at index {i}");
+                }
             }
 
             return Tuple.Create(true, "TestGetAllFilterAsync passed");
