@@ -1,0 +1,7 @@
+<Solution>
+  <Folder Name="/Tests/" />
+  <Folder Name="/Tests/UnitTests/">
+    <Project Path="UnitTests/UnitTests.csproj" />
+  </Folder>
+  <Project Path="SQLiteNetExtensions.Modern/SQLiteNetExtensions.csproj" />
+</Solution>

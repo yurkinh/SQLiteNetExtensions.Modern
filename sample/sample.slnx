@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="../src/SQLiteNetExtensions.Modern/SQLiteNetExtensions.Modern/SQLiteNetExtensions.csproj" />
+  <Project Path="IntegratedTestsSampleApp/IntegratedTestsSampleApp.csproj" />
+  <Project Path="ToDoSampleApp/ToDoSampleApp.csproj">
+    <Deploy />
+  </Project>
+
+</Solution>
