@@ -26,9 +26,9 @@ jobs:
         id: get_version
         uses: battila7/get-version-action@v2
       - name: Build
-        run: dotnet build src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.sln -c Release 
+        run: dotnet build src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.slnx -c Release 
       - name: Pack
-        run: dotnet pack src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.sln -c Release  --no-build --output .
+        run: dotnet pack src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.slnx -c Release  --no-build --output .
       - name: Push
         run: dotnet nuget push SQLiteNetExtensions.Modern.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
         env:
