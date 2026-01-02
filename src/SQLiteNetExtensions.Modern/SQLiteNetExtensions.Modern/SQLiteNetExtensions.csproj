@@ -9,7 +9,7 @@
 		<Authors>yurkinh</Authors>
 		<Copyright>Copyright © yurkinh and contributors</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageVersion>2.0.2</PackageVersion>
+		<PackageVersion>3.0.0</PackageVersion>
 		<IsPackable>True</IsPackable>
 		<PackageProjectUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</RepositoryUrl>
@@ -27,8 +27,10 @@
 		<PackageIcon>nuget.png</PackageIcon>
     <PackageId>SQLiteNetExtensions.Modern</PackageId>
 		<PackageReleaseNotes>
-		                    Fixed 16 KB issue on Android
-                        Replaced "sqlite-net-pcl" nuget with neutral "sqlite-net-base"
+		                    * Updated to .NET 10
+                        * Fixed nullable warnings
+                        * Updated sample and nugets
+                        * Added compatibility for AOT, CoreCLR
     </PackageReleaseNotes>
   </PropertyGroup>
 
