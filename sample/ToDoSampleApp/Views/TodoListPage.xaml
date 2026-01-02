@@ -1,108 +1,97 @@
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:vm="clr-namespace:ToDoSampleApp.ViewModels"
-             x:DataType="vm:TodoListViewModel"
-             BackgroundColor="Wheat"
-             Shell.BackgroundColor="#FFE7CC98"
-             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             xmlns:models="clr-namespace:ToDoSampleApp.Models;assembly=ToDoSampleApp"
-             x:Class="ToDoSampleApp.Views.TodoListPage">
-        <ContentPage.Behaviors>
-                <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand, Mode=OneTime}"
-                                                EventName="Appearing"/>
-        </ContentPage.Behaviors>
-        <ContentPage.Resources>
-                <ResourceDictionary>
-                        <Style x:Key="ButtonStyle"
-                               TargetType="Button">
-                                <Setter Property="HorizontalOptions"
-                                        Value="Fill"/>
-                                <Setter Property="BackgroundColor"
-                                        Value="SeaGreen"/>
-                                <Setter Property="FontSize"
-                                        Value="22"/>
-                                <Setter Property="FontAttributes"
-                                        Value="Bold"/>
-                                <Setter Property="CornerRadius"
-                                        Value="20"/>
-                                <Setter Property="FontFamily"
-                                        Value="RobotoFlex"/>
-                                <Setter Property="Margin"
-                                        Value="30,10"/>
-                                <Setter Property="Padding"
-                                        Value="5"/>
-                                <Setter Property="TextColor"
-                                        Value="Wheat"/>
-                                <Setter Property="VerticalOptions"
-                                        Value="Center"/>
-                        </Style>
+<ContentPage
+    x:Class="ToDoSampleApp.Views.TodoListPage"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:models="clr-namespace:ToDoSampleApp.Models;assembly=ToDoSampleApp"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    xmlns:vm="clr-namespace:ToDoSampleApp.ViewModels"
+    x:DataType="vm:TodoListViewModel"
+    BackgroundColor="Wheat"
+    Shell.BackgroundColor="#FFE7CC98">
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior Command="{Binding AppearingCommand, Mode=OneTime}" EventName="Appearing" />
+    </ContentPage.Behaviors>
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <Style x:Key="ButtonStyle" TargetType="Button">
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="BackgroundColor" Value="SeaGreen" />
+                <Setter Property="FontSize" Value="22" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="20" />
+                <Setter Property="FontFamily" Value="RobotoFlex" />
+                <Setter Property="Margin" Value="30,10" />
+                <Setter Property="Padding" Value="5" />
+                <Setter Property="TextColor" Value="Wheat" />
+                <Setter Property="VerticalOptions" Value="Center" />
+            </Style>
 
-                        <Style x:Key="BorderStyle"
-                               TargetType="Border">
-                                <Setter Property="HorizontalOptions"
-                                        Value="Fill"/>
-                                <Setter Property="Stroke"
-                                        Value="Transparent"/>
-                                <Setter Property="Margin"
-                                        Value="20"/>
-                        </Style>
-                </ResourceDictionary>
-        </ContentPage.Resources>
-        <VerticalStackLayout>
-                <Button Text="Add Item"
-                        Margin="30"
-                        Style=" {StaticResource ButtonStyle}"
-                        Command="{Binding AddItemCommand}"/>
+            <Style x:Key="BorderStyle" TargetType="Border">
+                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="Stroke" Value="Transparent" />
+                <Setter Property="Margin" Value="20" />
+            </Style>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+    <VerticalStackLayout>
+        <Button
+            Margin="30"
+            Command="{Binding AddItemCommand}"
+            Style="{StaticResource ButtonStyle}"
+            Text="Add Item" />
 
-                <CollectionView ItemsSource="{Binding Items, Mode=OneWay}"
-                                SelectionMode="Single"
-                                SelectionChangedCommand="{Binding SelectItemCommand}">
-                        <CollectionView.ItemsLayout>
-                                <LinearItemsLayout ItemSpacing="8"
-                                                   Orientation="Vertical"/>
-                        </CollectionView.ItemsLayout>
-                        <CollectionView.ItemTemplate>
-                                <DataTemplate x:DataType="models:TodoItem">
-                                        <Border Style="{StaticResource BorderStyle}"
-                                                BackgroundColor="#FFE7CC98">
-                                                <Grid HorizontalOptions="Fill"
-                                                      ColumnDefinitions="*,Auto,Auto"
-                                                      RowDefinitions="Auto, Auto">
-                                                        <Label Text="{Binding Name}"
-                                                               FontSize="20"
-                                                               Grid.ColumnSpan="2"
-                                                               VerticalOptions="Start"
-                                                               Margin="20,0"
-                                                               HorizontalOptions="Start"/>
-                                                        <Label Text="{Binding Notes.CreationTime, StringFormat='{}{0:MM/dd/yyyy   HH:mm}'}"
-                                                               FontSize="14"
-                                                               Margin="20,0"
-                                                               Grid.Column="1"
-                                                               HorizontalOptions="Start"
-                                                               VerticalOptions="Center"/>
-                                                        <Label Text="{Binding Notes.EventDateTime, StringFormat='{}{0:MM/dd/yyyy   HH:mm}'}"
-                                                               FontSize="14"
-                                                               Margin="20,0"
-                                                               Grid.Row="1"
-                                                               Grid.Column="1"
-                                                               HorizontalOptions="Start"
-                                                               VerticalOptions="Center"/>
-                                                        <Image Source="check.png"
-                                                               HeightRequest="20"
-                                                               WidthRequest="20"
-                                                               Margin="10"
-                                                               Grid.RowSpan="2"
-                                                               Grid.Column="2"
-                                                               HorizontalOptions="End"
-                                                               IsVisible="{Binding Done}"/>
-                                                </Grid>
-                                                <Border.GestureRecognizers>
-                                                        <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TodoListViewModel}}, x:DataType=vm:TodoListViewModel, Path=SelectItemCommand}"
-                                                                              CommandParameter="{Binding .}"/>
-                                                </Border.GestureRecognizers>
-                                        </Border>
-                                </DataTemplate>
-                        </CollectionView.ItemTemplate>
-                </CollectionView>
-        </VerticalStackLayout>
+        <CollectionView
+            ItemsSource="{Binding Items, Mode=OneWay}"
+            SelectionChangedCommand="{Binding SelectItemCommand}"
+            SelectionMode="Single">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout ItemSpacing="8" Orientation="Vertical" />
+            </CollectionView.ItemsLayout>
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="models:TodoItem">
+                    <Border BackgroundColor="#FFE7CC98" Style="{StaticResource BorderStyle}">
+                        <Grid
+                            ColumnDefinitions="*,Auto,Auto"
+                            HorizontalOptions="Fill"
+                            RowDefinitions="Auto, Auto">
+                            <Label
+                                Grid.ColumnSpan="2"
+                                Margin="20,0"
+                                FontSize="20"
+                                HorizontalOptions="Start"
+                                Text="{Binding Name}"
+                                VerticalOptions="Start" />
+                            <Label
+                                Grid.Column="1"
+                                Margin="20,0"
+                                FontSize="14"
+                                HorizontalOptions="Start"
+                                Text="{Binding Notes.CreationTime, StringFormat='{}{0:MM/dd/yyyy   HH:mm}'}"
+                                VerticalOptions="Center" />
+                            <Label
+                                Grid.Row="1"
+                                Grid.Column="1"
+                                Margin="20,0"
+                                FontSize="14"
+                                HorizontalOptions="Start"
+                                Text="{Binding Notes.EventDateTime, StringFormat='{}{0:MM/dd/yyyy   HH:mm}'}"
+                                VerticalOptions="Center" />
+                            <Image
+                                Grid.RowSpan="2"
+                                Grid.Column="2"
+                                Margin="10"
+                                HeightRequest="20"
+                                HorizontalOptions="End"
+                                IsVisible="{Binding Done}"
+                                Source="check.png"
+                                WidthRequest="20" />
+                        </Grid>
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TodoListViewModel}}, x:DataType=vm:TodoListViewModel, Path=SelectItemCommand}" CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </VerticalStackLayout>
 </ContentPage>

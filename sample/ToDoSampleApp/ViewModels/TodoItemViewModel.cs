@@ -53,6 +53,8 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
             NotesBody = todoItem.Notes?.Body;
 
             EventDateTime = todoItem.Notes?.EventDateTime ?? DateTime.Now;
+            SelectedDate = EventDateTime.Date;
+            SelectedTime = EventDateTime.TimeOfDay;
         }
     }
 
@@ -66,6 +68,8 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
             NotesTitle = todoItem.Notes?.Title;
             NotesBody = todoItem.Notes?.Body;
             EventDateTime = todoItem.Notes?.EventDateTime ?? DateTime.Now;
+            SelectedDate = EventDateTime.Date;
+            SelectedTime = EventDateTime.TimeOfDay;
         }
     }
 
