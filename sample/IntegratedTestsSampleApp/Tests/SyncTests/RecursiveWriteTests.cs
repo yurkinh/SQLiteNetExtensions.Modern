@@ -2,8 +2,7 @@ using IntegratedTestsSampleApp.Helpers;
 using SQLiteNetExtensions.Extensions;
 using SQLiteNetExtensions.Attributes;
 using SQLite;
-
-
+ 
 namespace IntegratedTestsSampleApp.Tests;
 
 public class RecursiveWriteTests
@@ -15,11 +14,11 @@ public class RecursiveWriteTests
         [PrimaryKey, AutoIncrement]
         public int Identifier { get; set; }
 
-        public string Name { get; set; }
-        public string Surname { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public Passport Passport { get; set; }
+        public Passport? Passport { get; set; }
     }
 
     public class Passport
@@ -27,13 +26,13 @@ public class RecursiveWriteTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string PassportNumber { get; set; }
+        public string? PassportNumber { get; set; }
 
         [ForeignKey(typeof(Person))]
         public int OwnerId { get; set; }
 
         [OneToOne(ReadOnly = true)]
-        public Person Owner { get; set; }
+        public Person? Owner { get; set; }
     }
 
     public static Tuple<bool, string> TestOneToOneRecursiveInsert()
@@ -173,11 +172,11 @@ public class RecursiveWriteTests
         [PrimaryKey]
         public Guid Identifier { get; set; }
 
-        public string Name { get; set; }
-        public string Surname { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public PassportGuid Passport { get; set; }
+        public PassportGuid? Passport { get; set; }
     }
 
     public class PassportGuid
@@ -185,13 +184,13 @@ public class RecursiveWriteTests
         [PrimaryKey]
         public Guid Id { get; set; }
 
-        public string PassportNumber { get; set; }
+        public string? PassportNumber { get; set; }
 
         [ForeignKey(typeof(PersonGuid))]
         public Guid OwnerId { get; set; }
 
         [OneToOne(ReadOnly = true)]
-        public PersonGuid Owner { get; set; }
+        public PersonGuid? Owner { get; set; }
     }
 
     public static Tuple<bool, string> TestOneToOneRecursiveInsertGuid()
@@ -333,10 +332,10 @@ public class RecursiveWriteTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public Order[] Orders { get; set; }
+        public Order[]? Orders { get; set; }
     }
 
     public class Order
@@ -351,7 +350,7 @@ public class RecursiveWriteTests
         public int CustomerId { get; set; }
 
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
     }
 
     public static Tuple<bool, string> TestOneToManyRecursiveInsert()
@@ -365,19 +364,20 @@ public class RecursiveWriteTests
         var customer = new Customer
         {
             Name = "John Smith",
-            Orders = new[]
-            {
-            new Order { Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
-            new Order { Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
-            new Order { Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
-            new Order { Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
-            new Order { Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
-        }
+            Orders =
+            [
+                new Order { Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
+                new Order { Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
+                new Order { Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
+                new Order { Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
+                new Order { Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
+            ]
         };
 
         conn.InsertWithChildren(customer, recursive: true);
 
-        var expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+        // Warning suppression: In this test logic, Orders is explicitly set above.
+        var expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
         var obtainedCustomer = conn.GetWithChildren<Customer>(customer.Id, recursive: true);
         if (obtainedCustomer == null)
@@ -432,19 +432,19 @@ public class RecursiveWriteTests
         var customer = new Customer
         {
             Name = "John Smith",
-            Orders = new[]
-            {
-            new Order { Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
-            new Order { Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
-            new Order { Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
-            new Order { Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
-            new Order { Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
-        }
+            Orders =
+            [
+                new Order { Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
+                new Order { Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
+                new Order { Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
+                new Order { Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
+                new Order { Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
+            ]
         };
 
         conn.InsertOrReplaceWithChildren(customer);
 
-        var expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+        var expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
         var obtainedCustomer = conn.GetWithChildren<Customer>(customer.Id, recursive: true);
         if (obtainedCustomer == null)
@@ -489,14 +489,14 @@ public class RecursiveWriteTests
         {
             Id = customer.Id,
             Name = "John Smith",
-            Orders = new[]
-            {
-            new Order { Id = customer.Orders[0].Id, Amount = 15.7f, Date = new DateTime(2012, 5, 15, 11, 30, 15) },
-            new Order { Id = customer.Orders[2].Id, Amount = 55.2f, Date = new DateTime(2012, 3, 7, 13, 59, 1) },
-            new Order { Id = customer.Orders[4].Id, Amount = 4.5f, Date = new DateTime(2012, 4, 5, 7, 3, 0) },
-            new Order { Amount = 206.6f, Date = new DateTime(2012, 7, 20, 21, 20, 24) },
-            new Order { Amount = 78f, Date = new DateTime(2012, 02, 1, 22, 31, 7) }
-        }
+            Orders =
+            [
+                new Order { Id = customer.Orders[0].Id, Amount = 15.7f, Date = new DateTime(2012, 5, 15, 11, 30, 15) },
+                new Order { Id = customer.Orders[2].Id, Amount = 55.2f, Date = new DateTime(2012, 3, 7, 13, 59, 1) },
+                new Order { Id = customer.Orders[4].Id, Amount = 4.5f, Date = new DateTime(2012, 4, 5, 7, 3, 0) },
+                new Order { Amount = 206.6f, Date = new DateTime(2012, 7, 20, 21, 20, 24) },
+                new Order { Amount = 78f, Date = new DateTime(2012, 02, 1, 22, 31, 7) }
+            ]
         };
 
         customer = newCustomer;
@@ -555,10 +555,10 @@ public class RecursiveWriteTests
         [PrimaryKey]
         public Guid Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public OrderGuid[] Orders { get; set; }
+        public OrderGuid[]? Orders { get; set; }
     }
 
     [Table("Orders")] // 'Order' is a reserved keyword
@@ -574,7 +574,7 @@ public class RecursiveWriteTests
         public Guid CustomerId { get; set; }
 
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public CustomerGuid Customer { get; set; }
+        public CustomerGuid? Customer { get; set; }
     }
 
     public static Tuple<bool, string> TestOneToManyRecursiveInsertGuid()
@@ -589,19 +589,19 @@ public class RecursiveWriteTests
         {
             Id = Guid.NewGuid(),
             Name = "John Smith",
-            Orders = new[]
-            {
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
-        }
+            Orders =
+            [
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
+            ]
         };
 
         conn.InsertWithChildren(customer, recursive: true);
 
-        var expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+        var expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
         var obtainedCustomer = conn.GetWithChildren<CustomerGuid>(customer.Id, recursive: true);
         if (obtainedCustomer == null)
@@ -657,19 +657,19 @@ public class RecursiveWriteTests
         {
             Id = Guid.NewGuid(),
             Name = "John Smith",
-            Orders = new[]
-            {
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
-        }
+            Orders =
+                [
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
+            ]
         };
 
         conn.InsertOrReplaceWithChildren(customer, recursive: true);
 
-        var expectedOrders = customer.Orders.OrderBy(o => o.Date).ToDictionary(o => o.Id);
+        var expectedOrders = customer.Orders!.OrderBy(o => o.Date).ToDictionary(o => o.Id);
 
         var obtainedCustomer = conn.GetWithChildren<CustomerGuid>(customer.Id, recursive: true);
         if (obtainedCustomer == null)
@@ -714,14 +714,14 @@ public class RecursiveWriteTests
         {
             Id = customer.Id,
             Name = "John Smith",
-            Orders = new[]
-            {
+            Orders =
+            [
             new OrderGuid { Id = customer.Orders[0].Id, Amount = 15.7f, Date = new DateTime(2012, 5, 15, 11, 30, 15) },
             new OrderGuid { Id = customer.Orders[2].Id, Amount = 55.2f, Date = new DateTime(2012, 3, 7, 13, 59, 1) },
             new OrderGuid { Id = customer.Orders[4].Id, Amount = 4.5f, Date = new DateTime(2012, 4, 5, 7, 3, 0) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 206.6f, Date = new DateTime(2012, 7, 20, 21, 20, 24) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 78f, Date = new DateTime(2012, 02, 1, 22, 31, 7) }
-        }
+        ]
         };
 
         customer = newCustomer;
@@ -735,7 +735,7 @@ public class RecursiveWriteTests
             return new Tuple<bool, string>(false, "TestOneToManyRecursiveInsertOrReplaceGuid failed: Customer not found after replace.");
 
         if (obtainedCustomer.Orders == null)
-            return new Tuple<bool, string>(false, "TestOneToManyRecursiveInsertOrReplaceGuid failed: Orders not found for customer after replace.");
+            return new Tuple<bool, string>(false, "TestOneToManyRecursiveInsertOrReplaceGuid failed: Orders not found after replace.");
 
         if (expectedOrders.Count != obtainedCustomer.Orders.Length)
             return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuid failed: Order count mismatch after replace. Expected: {expectedOrders.Count}, Found: {obtainedCustomer.Orders.Length}");
@@ -745,13 +745,13 @@ public class RecursiveWriteTests
             var expectedOrder = expectedOrders[order.Id];
 
             if (expectedOrder.Amount != order.Amount)
-                return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuid failed: Amount mismatch for Order {order.Id} after replace. Expected: {expectedOrder.Amount}, Found: {order.Amount}");
+                return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuid failed: Amount mismatch after replace for Order {order.Id}. Expected: {expectedOrder.Amount}, Found: {order.Amount}");
 
             if (expectedOrder.Date.ToUniversalTime() != order.Date.ToUniversalTime())
-                return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuid failed: Date mismatch for Order {order.Id} after replace. Expected: {expectedOrder.Date}, Found: {order.Date}");
+                return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuid failed: Date mismatch after replace for Order {order.Id}. Expected: {expectedOrder.Date}, Found: {order.Date}");
 
             if (order.Customer == null)
-                return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuid failed: Customer not found for Order {order.Id} after replace.");
+                return new Tuple<bool, string>(false, $"TestOneToManyRecursiveInsertOrReplaceGuid failed: Customer not found after replace for Order {order.Id}");
         }
 
         return new Tuple<bool, string>(true, "TestOneToManyRecursiveInsertOrReplaceGuid passed.");
@@ -774,14 +774,14 @@ public class RecursiveWriteTests
         var customer = new Customer
         {
             Name = "John Smith",
-            Orders = new[]
-            {
+            Orders =
+            [
             new Order { Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
             new Order { Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
             new Order { Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
             new Order { Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
             new Order { Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
-        }
+        ]
         };
 
         // Insert one of the orders instead of the customer
@@ -846,14 +846,14 @@ public class RecursiveWriteTests
         var customer = new Customer
         {
             Name = "John Smith",
-            Orders = new[]
-            {
-            new Order { Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
-            new Order { Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
-            new Order { Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
-            new Order { Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
-            new Order { Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
-        }
+            Orders =
+            [
+                new Order { Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
+                new Order { Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
+                new Order { Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
+                new Order { Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
+                new Order { Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
+            ]
         };
 
         // Insert any of the orders instead of the customer
@@ -905,14 +905,14 @@ public class RecursiveWriteTests
         {
             Id = customer.Id,
             Name = "John Smith",
-            Orders = new[]
-            {
+            Orders =
+            [
             new Order { Id = customer.Orders[0].Id, Amount = 15.7f, Date = new DateTime(2012, 5, 15, 11, 30, 15) },
             new Order { Id = customer.Orders[2].Id, Amount = 55.2f, Date = new DateTime(2012, 3, 7, 13, 59, 1) },
             new Order { Id = customer.Orders[4].Id, Amount = 4.5f, Date = new DateTime(2012, 4, 5, 7, 3, 0) },
             new Order { Amount = 206.6f, Date = new DateTime(2012, 7, 20, 21, 20, 24) },
             new Order { Amount = 78f, Date = new DateTime(2012, 02, 1, 22, 31, 7) }
-        }
+        ]
         };
 
         customer = newCustomer;
@@ -983,14 +983,14 @@ public class RecursiveWriteTests
         {
             Id = Guid.NewGuid(),
             Name = "John Smith",
-            Orders = new[]
-            {
+            Orders =
+            [
             new OrderGuid { Id = Guid.NewGuid(), Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
-        }
+        ]
         };
 
         // Insert any of the orders instead of the customer
@@ -1056,14 +1056,14 @@ public class RecursiveWriteTests
         {
             Id = Guid.NewGuid(),
             Name = "John Smith",
-            Orders = new[]
-            {
+            Orders =
+            [
             new OrderGuid { Id = Guid.NewGuid(), Amount = 25.7f, Date = new DateTime(2014, 5, 15, 11, 30, 15) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 15.2f, Date = new DateTime(2014, 3, 7, 13, 59, 1) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 0.5f, Date = new DateTime(2014, 4, 5, 7, 3, 0) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 106.6f, Date = new DateTime(2014, 7, 20, 21, 20, 24) },
             new OrderGuid { Id = Guid.NewGuid(), Amount = 98f, Date = new DateTime(2014, 02, 1, 22, 31, 7) }
-        }
+        ]
         };
 
         // Insert any of the orders instead of the customer
@@ -1116,14 +1116,14 @@ public class RecursiveWriteTests
         {
             Id = customer.Id,
             Name = "John Smith",
-            Orders = new[]
-            {
-            new OrderGuid { Id = customer.Orders[0].Id, Amount = 15.7f, Date = new DateTime(2012, 5, 15, 11, 30, 15) },
-            new OrderGuid { Id = customer.Orders[2].Id, Amount = 55.2f, Date = new DateTime(2012, 3, 7, 13, 59, 1) },
-            new OrderGuid { Id = customer.Orders[4].Id, Amount = 4.5f, Date = new DateTime(2012, 4, 5, 7, 3, 0) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 206.6f, Date = new DateTime(2012, 7, 20, 21, 20, 24) },
-            new OrderGuid { Id = Guid.NewGuid(), Amount = 78f, Date = new DateTime(2012, 02, 1, 22, 31, 7) }
-        }
+            Orders =
+            [
+                new OrderGuid { Id = customer.Orders[0].Id, Amount = 15.7f, Date = new DateTime(2012, 5, 15, 11, 30, 15) },
+                new OrderGuid { Id = customer.Orders[2].Id, Amount = 55.2f, Date = new DateTime(2012, 3, 7, 13, 59, 1) },
+                new OrderGuid { Id = customer.Orders[4].Id, Amount = 4.5f, Date = new DateTime(2012, 4, 5, 7, 3, 0) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 206.6f, Date = new DateTime(2012, 7, 20, 21, 20, 24) },
+                new OrderGuid { Id = Guid.NewGuid(), Amount = 78f, Date = new DateTime(2012, 02, 1, 22, 31, 7) }
+            ]
         };
 
         customer = newCustomer;
@@ -1183,25 +1183,25 @@ public class RecursiveWriteTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [ManyToMany(typeof(FollowerLeaderRelationshipTable), "LeaderId", "Followers",
             CascadeOperations = CascadeOperation.All)]
-        public List<TwitterUser> FollowingUsers { get; set; }
+        public List<TwitterUser>? FollowingUsers { get; set; }
 
         // ReadOnly is required because we're not specifying the followers manually, but want to obtain them from database
         [ManyToMany(typeof(FollowerLeaderRelationshipTable), "FollowerId", "FollowingUsers",
             CascadeOperations = CascadeOperation.CascadeRead, ReadOnly = true)]
-        public List<TwitterUser> Followers { get; set; }
+        public List<TwitterUser>? Followers { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             var other = obj as TwitterUser;
-            return other != null && Name.Equals(other.Name);
+            return other != null && (Name?.Equals(other.Name) ?? other.Name == null);
         }
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            return Name?.GetHashCode() ?? 0;
         }
         public override string ToString()
         {
@@ -1215,7 +1215,7 @@ public class RecursiveWriteTests
         public int LeaderId { get; set; }
         public int FollowerId { get; set; }
     }
-    
+
     public static Tuple<bool, string> TestManyToManyRecursiveInsertWithSameClassRelationship()
     {
         var conn = Utils.CreateConnection();
@@ -1248,7 +1248,8 @@ public class RecursiveWriteTests
 
         conn.InsertAllWithChildren(new[] { jaime, claire }, recursive: true);
 
-        Tuple<bool, string> CheckUser(TwitterUser expected, TwitterUser obtained)
+        // Updated signature to accept nullable 'obtained' since FirstOrDefault returns null
+        Tuple<bool, string> CheckUser(TwitterUser expected, TwitterUser? obtained)
         {
             if (obtained == null)
                 return new Tuple<bool, string>(false, $"User is null: {expected.Name}");
@@ -1256,13 +1257,21 @@ public class RecursiveWriteTests
             if (expected.Name != obtained.Name)
                 return new Tuple<bool, string>(false, $"Expected name '{expected.Name}', but got '{obtained.Name}'");
 
-            var followers = allUsers.Where(u => u.FollowingUsers.Contains(expected));
+            // We can safely assume Followers and FollowingUsers are not null here because they are lists
+            // initialized by the ORM, but a null check is safer in production code. 
+            // For this test, we assume standard behavior.
+            var followers = allUsers.Where(u => u.FollowingUsers != null && u.FollowingUsers.Contains(expected));
 
-            var followingCheck = expected.FollowingUsers.OrderBy(u => u.Name).SequenceEqual(obtained.FollowingUsers.OrderBy(u => u.Name));
+            // Null-checks added for safety
+            var expectedFollowing = expected.FollowingUsers ?? [];
+            var obtainedFollowing = obtained.FollowingUsers ?? [];
+            var obtainedFollowers = obtained.Followers ?? [];
+
+            var followingCheck = expectedFollowing.OrderBy(u => u.Name).SequenceEqual(obtainedFollowing.OrderBy(u => u.Name));
             if (!followingCheck)
                 return new Tuple<bool, string>(false, $"Following users for '{expected.Name}' do not match.");
 
-            var followersCheck = followers.OrderBy(u => u.Name).SequenceEqual(obtained.Followers.OrderBy(u => u.Name));
+            var followersCheck = followers.OrderBy(u => u.Name).SequenceEqual(obtainedFollowers.OrderBy(u => u.Name));
             if (!followersCheck)
                 return new Tuple<bool, string>(false, $"Followers for '{expected.Name}' do not match.");
 
@@ -1273,35 +1282,32 @@ public class RecursiveWriteTests
         var result = CheckUser(thomas, obtainedThomas);
         if (!result.Item1) return result;
 
-        var obtainedJohn = obtainedThomas.FollowingUsers.FirstOrDefault(u => u.Id == john.Id);
+        var obtainedJohn = obtainedThomas!.FollowingUsers!.FirstOrDefault(u => u.Id == john.Id);
         result = CheckUser(john, obtainedJohn);
         if (!result.Item1) return result;
 
-        var obtainedPeter = obtainedJohn.FollowingUsers.FirstOrDefault(u => u.Id == peter.Id);
+        var obtainedPeter = obtainedJohn!.FollowingUsers!.FirstOrDefault(u => u.Id == peter.Id);
         result = CheckUser(peter, obtainedPeter);
         if (!result.Item1) return result;
 
-        var obtainedMartha = obtainedPeter.FollowingUsers.FirstOrDefault(u => u.Id == martha.Id);
+        var obtainedMartha = obtainedPeter!.FollowingUsers!.FirstOrDefault(u => u.Id == martha.Id);
         result = CheckUser(martha, obtainedMartha);
         if (!result.Item1) return result;
 
-        var obtainedAnthony = obtainedMartha.FollowingUsers.FirstOrDefault(u => u.Id == anthony.Id);
+        var obtainedAnthony = obtainedMartha!.FollowingUsers!.FirstOrDefault(u => u.Id == anthony.Id);
         result = CheckUser(anthony, obtainedAnthony);
         if (!result.Item1) return result;
 
-        var obtainedJaime = obtainedThomas.Followers.FirstOrDefault(u => u.Id == jaime.Id);
+        var obtainedJaime = obtainedThomas.Followers!.FirstOrDefault(u => u.Id == jaime.Id);
         result = CheckUser(jaime, obtainedJaime);
         if (!result.Item1) return result;
 
-        var obtainedMark = obtainedJaime.FollowingUsers.FirstOrDefault(u => u.Id == mark.Id);
+        var obtainedMark = obtainedJaime!.FollowingUsers!.FirstOrDefault(u => u.Id == mark.Id);
         result = CheckUser(mark, obtainedMark);
         if (!result.Item1) return result;
 
         return new Tuple<bool, string>(true, "All checks passed successfully.");
     }
-
-
-
 
     public static Tuple<bool, string> TestManyToManyRecursiveDeleteWithSameClassRelationship()
     {
@@ -1358,34 +1364,34 @@ public class RecursiveWriteTests
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public List<Student> Students { get; set; }
+        public List<Student>? Students { get; set; }
     }
 
     class Student
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [ManyToOne]
-        public Teacher Teacher { get; set; }
+        public Teacher? Teacher { get; set; }
 
         [TextBlob("AddressBlob")]
-        public Address Address { get; set; }
+        public Address? Address { get; set; }
 
         [ForeignKey(typeof(Teacher))]
         public int TeacherId { get; set; }
-        public String AddressBlob { get; set; }
+        public String? AddressBlob { get; set; }
 
     }
 
     class Address
     {
-        public string Street { get; set; }
-        public string Town { get; set; }
+        public string? Street { get; set; }
+        public string? Town { get; set; }
     }
 
     public static Tuple<bool, string> TestInsertTextBlobPropertiesRecursive()
@@ -1400,21 +1406,21 @@ public class RecursiveWriteTests
         {
             Name = "John Smith",
             Students = [
-            new Student {
+            new() {
                 Name = "Bruce Banner",
                 Address = new Address {
                     Street = "Sesame Street 5",
                     Town = "Gotham City"
                 }
             },
-            new Student {
+            new() {
                 Name = "Peter Parker",
                 Address = new Address {
                     Street = "Arlington Road 69",
                     Town = "Arkham City"
                 }
             },
-            new Student {
+            new() {
                 Name = "Steve Rogers",
                 Address = new Address {
                     Street = "28th Street 19",
@@ -1426,7 +1432,8 @@ public class RecursiveWriteTests
 
         conn.InsertWithChildren(teacher, recursive: true);
 
-        foreach (var student in teacher.Students)
+        // Suppressing null warning as we know Students is initialized above
+        foreach (var student in teacher.Students!)
         {
             var dbStudent = conn.GetWithChildren<Student>(student.Id);
 
@@ -1440,7 +1447,7 @@ public class RecursiveWriteTests
                 return Tuple.Create(false, $"{nameof(TestInsertTextBlobPropertiesRecursive)}: Address for student '{student.Name}' is null.");
             }
 
-            if (dbStudent.Address.Street != student.Address.Street)
+            if (dbStudent.Address.Street != student.Address!.Street)
             {
                 return Tuple.Create(false, $"{nameof(TestInsertTextBlobPropertiesRecursive)}: Street mismatch for student '{student.Name}'. Expected: '{student.Address.Street}', Found: '{dbStudent.Address.Street}'.");
             }

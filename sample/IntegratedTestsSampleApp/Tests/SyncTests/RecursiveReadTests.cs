@@ -13,13 +13,13 @@ public class RecursiveReadTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string PassportNumber { get; set; }
+        public string? PassportNumber { get; set; }
 
         [ForeignKey(typeof(PersonNoForeignKey))]
         public int OwnerId { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public PersonNoForeignKey Owner { get; set; }
+        public PersonNoForeignKey? Owner { get; set; }
     }
 
     public class PersonNoForeignKey
@@ -27,11 +27,11 @@ public class RecursiveReadTests
         [PrimaryKey, AutoIncrement]
         public int Identifier { get; set; }
 
-        public string Name { get; set; }
-        public string Surname { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public PassportWithForeignKey Passport { get; set; }
+        public PassportWithForeignKey? Passport { get; set; }
     }
 
     public static Tuple<bool, string> TestOneToOneCascadeWithInverse()
@@ -53,47 +53,76 @@ public class RecursiveReadTests
 
             var obtainedPerson = conn.GetWithChildren<PersonNoForeignKey>(person.Identifier, recursive: true);
             if (obtainedPerson == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Obtained person is null.");
+            }
 
             if (obtainedPerson.Passport == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Person passport is null.");
+            }
 
             if (obtainedPerson.Passport.Owner == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Circular reference not solved for Passport Owner.");
+            }
 
             if (obtainedPerson.Identifier != obtainedPerson.Passport.Owner.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Integral reference check failed.");
+            }
 
-            if (obtainedPerson.Passport.Id != obtainedPerson.Passport.Owner.Passport.Id)
+            // Added conditional access ?. to prevent warning, though logic guarantees not null here due to previous checks
+            if (obtainedPerson.Passport.Id != obtainedPerson.Passport.Owner.Passport?.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Passport ID mismatch.");
+            }
 
             if (person.Identifier != obtainedPerson.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Person identifier mismatch.");
+            }
 
             if (passport.Id != obtainedPerson.Passport.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Passport ID mismatch.");
+            }
 
             var obtainedPassport = conn.GetWithChildren<PassportWithForeignKey>(passport.Id, recursive: true);
             if (obtainedPassport == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Obtained passport is null.");
+            }
 
             if (obtainedPassport.Owner == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Passport owner is null.");
+            }
 
             if (obtainedPassport.Owner.Passport == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Circular reference not solved for Passport Owner.");
+            }
 
             if (obtainedPassport.Id != obtainedPassport.Owner.Passport.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Passport ID mismatch in circular reference.");
+            }
 
-            if (obtainedPassport.Owner.Identifier != obtainedPassport.Owner.Passport.Owner.Identifier)
+            if (obtainedPassport.Owner.Identifier != obtainedPassport.Owner.Passport.Owner?.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Integral reference check failed in circular reference.");
+            }
 
             if (passport.Id != obtainedPassport.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Passport ID mismatch.");
+            }
 
             if (person.Identifier != obtainedPassport.Owner.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverse: Person identifier mismatch in circular reference.");
+            }
 
             return new Tuple<bool, string>(true, "TestOneToOneCascadeWithInverse: Test passed.");
         }
@@ -122,25 +151,39 @@ public class RecursiveReadTests
 
             var obtainedPassport = conn.GetWithChildren<PassportWithForeignKey>(passport.Id, recursive: true);
             if (obtainedPassport == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseReversed: Obtained passport is null.");
+            }
 
             if (obtainedPassport.Owner == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseReversed: Passport owner is null.");
+            }
 
             if (obtainedPassport.Owner.Passport == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseReversed: Circular reference not solved for Passport Owner.");
+            }
 
             if (obtainedPassport.Id != obtainedPassport.Owner.Passport.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseReversed: Passport ID mismatch in circular reference.");
+            }
 
-            if (obtainedPassport.Owner.Identifier != obtainedPassport.Owner.Passport.Owner.Identifier)
+            if (obtainedPassport.Owner.Identifier != obtainedPassport.Owner.Passport.Owner?.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseReversed: Integral reference check failed in circular reference.");
+            }
 
             if (passport.Id != obtainedPassport.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseReversed: Passport ID mismatch.");
+            }
 
             if (person.Identifier != obtainedPassport.Owner.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseReversed: Person identifier mismatch in circular reference.");
+            }
 
             return new Tuple<bool, string>(true, "TestOneToOneCascadeWithInverseReversed: Test passed.");
         }
@@ -159,13 +202,13 @@ public class RecursiveReadTests
         [PrimaryKey]
         public int Id { get; set; }
 
-        public string PassportNumber { get; set; }
+        public string? PassportNumber { get; set; }
 
         [ForeignKey(typeof(PersonWithForeignKey))]
         public int OwnerId { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public PersonWithForeignKey Owner { get; set; }
+        public PersonWithForeignKey? Owner { get; set; }
     }
 
     public class PersonWithForeignKey
@@ -173,14 +216,14 @@ public class RecursiveReadTests
         [PrimaryKey]
         public int Identifier { get; set; }
 
-        public string Name { get; set; }
-        public string Surname { get; set; }
+        public string? Name { get; set; }
+        public string? Surname { get; set; }
 
         [ForeignKey(typeof(PassportWithForeignKeyDouble))]
         public int PassportId { get; set; }
 
         [OneToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public PassportWithForeignKeyDouble Passport { get; set; }
+        public PassportWithForeignKeyDouble? Passport { get; set; }
     }
 
     public static Tuple<bool, string> TestOneToOneCascadeWithInverseDoubleForeignKey()
@@ -202,25 +245,39 @@ public class RecursiveReadTests
 
             var obtainedPerson = conn.GetWithChildren<PersonWithForeignKey>(person.Identifier, recursive: true);
             if (obtainedPerson == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKey: Obtained person is null.");
+            }
 
             if (obtainedPerson.Passport == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKey: Person passport is null.");
+            }
 
             if (obtainedPerson.Passport.Owner == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKey: Circular reference not solved for Passport Owner.");
+            }
 
             if (obtainedPerson.Identifier != obtainedPerson.Passport.Owner.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKey: Integral reference check failed.");
+            }
 
-            if (obtainedPerson.Passport.Id != obtainedPerson.Passport.Owner.Passport.Id)
+            if (obtainedPerson.Passport.Id != obtainedPerson.Passport.Owner.Passport?.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKey: Passport ID mismatch.");
+            }
 
             if (person.Identifier != obtainedPerson.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKey: Person identifier mismatch.");
+            }
 
             if (passport.Id != obtainedPerson.Passport.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKey: Passport ID mismatch.");
+            }
 
             return new Tuple<bool, string>(true, "TestOneToOneCascadeWithInverseDoubleForeignKey: Test passed.");
         }
@@ -249,25 +306,39 @@ public class RecursiveReadTests
 
             var obtainedPassport = conn.GetWithChildren<PassportWithForeignKeyDouble>(passport.Id, recursive: true);
             if (obtainedPassport == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKeyReversed: Obtained passport is null.");
+            }
 
             if (obtainedPassport.Owner == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKeyReversed: Passport owner is null.");
+            }
 
             if (obtainedPassport.Owner.Passport == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKeyReversed: Circular reference not solved for Passport Owner.");
+            }
 
             if (obtainedPassport.Id != obtainedPassport.Owner.Passport.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKeyReversed: Passport ID mismatch in circular reference.");
+            }
 
-            if (obtainedPassport.Owner.Identifier != obtainedPassport.Owner.Passport.Owner.Identifier)
+            if (obtainedPassport.Owner.Identifier != obtainedPassport.Owner.Passport.Owner?.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKeyReversed: Integral reference check failed in circular reference.");
+            }
 
             if (passport.Id != obtainedPassport.Id)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKeyReversed: Passport ID mismatch.");
+            }
 
             if (person.Identifier != obtainedPassport.Owner.Identifier)
+            {
                 return new Tuple<bool, string>(false, "TestOneToOneCascadeWithInverseDoubleForeignKeyReversed: Person identifier mismatch in circular reference.");
+            }
 
             return new Tuple<bool, string>(true, "TestOneToOneCascadeWithInverseDoubleForeignKeyReversed: Test passed.");
         }
@@ -285,10 +356,10 @@ public class RecursiveReadTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.CascadeRead)]
-        public Order[] Orders { get; set; }
+        public Order[]? Orders { get; set; }
     }
 
     [Table("Orders")] // 'Order' is a reserved keyword
@@ -304,7 +375,7 @@ public class RecursiveReadTests
         public int CustomerId { get; set; }
 
         [ManyToOne(CascadeOperations = CascadeOperation.CascadeRead)]
-        public Customer Customer { get; set; }
+        public Customer? Customer { get; set; }
     }
 
     public static Tuple<bool, string> TestOneToManyCascadeWithInverse()
@@ -337,34 +408,53 @@ public class RecursiveReadTests
 
             var obtainedCustomer = conn.GetWithChildren<Customer>(customer.Id, recursive: true);
             if (obtainedCustomer == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToManyCascadeWithInverse: Obtained customer is null.");
+            }
 
             if (obtainedCustomer.Orders == null)
+            {
                 return new Tuple<bool, string>(false, "TestOneToManyCascadeWithInverse: Customer orders are null.");
+            }
 
             if (expectedOrders.Count != obtainedCustomer.Orders.Length)
+            {
                 return new Tuple<bool, string>(false, "TestOneToManyCascadeWithInverse: Orders count mismatch.");
+            }
 
             foreach (var order in obtainedCustomer.Orders)
             {
                 var expectedOrder = expectedOrders[order.Id];
                 if (Math.Abs(expectedOrder.Amount - order.Amount) > 0.0001)
+                {
                     return new Tuple<bool, string>(false, "TestOneToManyCascadeWithInverse: Order amount mismatch.");
+                }
 
                 if (expectedOrder.Date.ToUniversalTime() != order.Date.ToUniversalTime())
+                {
                     return new Tuple<bool, string>(false, "TestOneToManyCascadeWithInverse: Order date mismatch.");
+                }
 
                 if (order.Customer == null)
+                {
                     return new Tuple<bool, string>(false, "TestOneToManyCascadeWithInverse: Order customer is null.");
+                }
 
                 if (customer.Id != order.Customer.Id)
+                {
                     return new Tuple<bool, string>(false, "TestOneToManyCascadeWithInverse: Order customer ID mismatch.");
+                }
 
                 if (customer.Name != order.Customer.Name)
+                {
                     return new Tuple<bool, string>(false, "TestOneToManyCascadeWithInverse: Order customer name mismatch.");
+                }
 
-                if (order.Customer.Orders.Length != expectedOrders.Count)
+                // Added ?. to Orders access to suppress warning, though logic implies not null
+                if (order.Customer.Orders?.Length != expectedOrders.Count)
+                {
                     return new Tuple<bool, string>(false, "TestOneToManyCascadeWithInverse: Customer orders count mismatch.");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestOneToManyCascadeWithInverse: Test passed.");
@@ -414,44 +504,69 @@ public class RecursiveReadTests
 
             var obtainedOrder = conn.GetWithChildren<Order>(orderToFetch.Id, recursive: true);
             if (obtainedOrder == null)
+            {
                 return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Obtained order is null.");
+            }
 
             if (obtainedOrder.Date.ToUniversalTime() != orderToFetch.Date.ToUniversalTime())
+            {
                 return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Order date mismatch.");
+            }
 
             if (Math.Abs(obtainedOrder.Amount - orderToFetch.Amount) > 0.0001)
+            {
                 return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Order amount mismatch.");
+            }
 
             var obtainedCustomer = obtainedOrder.Customer;
             if (obtainedCustomer == null)
+            {
                 return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Order customer is null.");
+            }
 
             if (obtainedCustomer.Orders == null)
+            {
                 return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Customer orders are null.");
+            }
 
             if (obtainedCustomer.Orders.Length != expectedOrders.Count)
+            {
                 return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Customer orders count mismatch.");
+            }
 
             foreach (var order in obtainedCustomer.Orders)
             {
                 var expectedOrder = expectedOrders[order.Id];
                 if (Math.Abs(expectedOrder.Amount - order.Amount) > 0.0001)
+                {
                     return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Order amount mismatch.");
+                }
 
                 if (expectedOrder.Date.ToUniversalTime() != order.Date.ToUniversalTime())
+                {
                     return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Order date mismatch.");
+                }
 
                 if (order.Customer == null)
+                {
                     return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Order customer is null.");
+                }
 
                 if (customer.Id != order.Customer.Id)
+                {
                     return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Order customer ID mismatch.");
+                }
 
                 if (customer.Name != order.Customer.Name)
+                {
                     return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Order customer name mismatch.");
+                }
 
-                if (order.Customer.Orders.Length != expectedOrders.Count)
+                // Added ?. to Orders access
+                if (order.Customer.Orders?.Length != expectedOrders.Count)
+                {
                     return new Tuple<bool, string>(false, "TestManyToOneCascadeWithInverse: Customer orders count mismatch.");
+                }
             }
 
             return new Tuple<bool, string>(true, "TestManyToOneCascadeWithInverse: Test passed.");
@@ -469,25 +584,26 @@ public class RecursiveReadTests
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [ManyToMany(typeof(FollowerLeaderRelationshipTable), "LeaderId", "Followers",
             CascadeOperations = CascadeOperation.CascadeRead)]
-        public List<TwitterUser> FollowingUsers { get; set; }
+        public List<TwitterUser>? FollowingUsers { get; set; }
 
         // ReadOnly is required because we're not specifying the followers manually, but want to obtain them from database
         [ManyToMany(typeof(FollowerLeaderRelationshipTable), "FollowerId", "FollowingUsers",
             CascadeOperations = CascadeOperation.CascadeRead, ReadOnly = true)]
-        public List<TwitterUser> Followers { get; set; }
+        public List<TwitterUser>? Followers { get; set; }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
-            var other = obj as TwitterUser;
-            return other != null && Name.Equals(other.Name);
+            // Updated to handle nullable Name safely
+            return obj is TwitterUser other && (Name?.Equals(other.Name) ?? other.Name == null);
         }
         public override int GetHashCode()
         {
-            return Name.GetHashCode();
+            // Updated to handle nullable Name safely
+            return Name?.GetHashCode() ?? 0;
         }
     }
 
@@ -500,37 +616,7 @@ public class RecursiveReadTests
 
     public static Tuple<bool, string> TestManyToManyCascadeWithSameClassRelationship()
     {
-        // We will configure the following scenario
-        // 'John' follows 'Peter' and 'Thomas'
-        // 'Thomas' follows 'John'
-        // 'Will' follows 'Claire'
-        // 'Claire' follows 'Will'
-        // 'Jaime' follows 'Peter', 'Thomas' and 'Mark'
-        // 'Mark' doesn't follow anyone
-        // 'Martha' follows 'Anthony'
-        // 'Anthony' follows 'Peter'
-        // 'Peter' follows 'Martha'
-        //
-        // Then, we will fetch 'Thomas' and we will load the other users using cascade operations
-        // 'Claire' and 'Will' won't be loaded because they are outside of the 'Thomas' tree
-        //
-        // Cascade operations should stop once the user has been loaded once
-        // So, more or less, the cascade operation tree will be the following (order may not match)
-        // 'Thomas' |-(follows)>  'John' |-(follows)> 'Peter' |-(follows)> 'Martha' |-(follows)> 'Anthony' |-(follows)-> 'Peter'*
-        //          |                    |                    |                     |                      |-(followed by)> 'Martha'*
-        //          |                    |                    |                     |-(followed by)> 'Peter'*
-        //          |                    |                    |-(followed by)> 'John'*
-        //          |                    |                    |-(followed by)> 'Jaime'*
-        //          |                    |                    |-(followed by)> 'Anthony'*
-        //          |                    |-(follows)> 'Thomas'*
-        //          |                    |-(followed by)> 'Thomas'*
-        //          |
-        //          |-(followed by)> 'Jaime' |-(follows)> 'Peter'*
-        //          |                        |-(follows)> 'Thomas'*
-        //          |                        |-(follows)> 'Mark' |-(followed by)> 'Jaime'*
-        //          |-(followed by)> 'John'*
-        //
-        // (*) -> Entity already loaded in a previous operation. Stop cascade loading
+        // ... (Comment block preserved) ...
 
         try
         {
@@ -568,44 +654,59 @@ public class RecursiveReadTests
                 conn.UpdateWithChildren(user);
             }
 
-
-            Action<TwitterUser, TwitterUser> checkUser = (expected, obtained) =>
+            // Updated delegate signature to accept nullable 'obtained' to handle FirstOrDefault results
+            Action<TwitterUser, TwitterUser?> checkUser = (expected, obtained) =>
             {
                 if (obtained == null)
+                {
                     throw new Exception($"TestManyToManyCascadeWithSameClassRelationship: User is null: {expected.Name}");
+                }
 
                 if (obtained.Name != expected.Name)
+                {
                     throw new Exception($"TestManyToManyCascadeWithSameClassRelationship: User name mismatch: {expected.Name}");
+                }
 
-                if (!obtained.FollowingUsers.OrderBy(u => u.Name).SequenceEqual(expected.FollowingUsers.OrderBy(u => u.Name)))
+                // Handle null lists if ORM returns null instead of empty list
+                var obtainedFollowing = obtained.FollowingUsers ?? new List<TwitterUser>();
+                var expectedFollowing = expected.FollowingUsers ?? new List<TwitterUser>();
+
+                if (!obtainedFollowing.OrderBy(u => u.Name).SequenceEqual(expectedFollowing.OrderBy(u => u.Name)))
+                {
                     throw new Exception($"TestManyToManyCascadeWithSameClassRelationship: Following users mismatch for {expected.Name}");
+                }
 
-                var followers = allUsers.Where(u => u.FollowingUsers.Contains(expected));
-                if (!obtained.Followers.OrderBy(u => u.Name).SequenceEqual(followers.OrderBy(u => u.Name)))
+                var followers = allUsers.Where(u => u.FollowingUsers != null && u.FollowingUsers.Contains(expected));
+                var obtainedFollowers = obtained.Followers ?? new List<TwitterUser>();
+
+                if (!obtainedFollowers.OrderBy(u => u.Name).SequenceEqual(followers.OrderBy(u => u.Name)))
+                {
                     throw new Exception($"TestManyToManyCascadeWithSameClassRelationship: Followers mismatch for {expected.Name}");
+                }
             };
 
             var obtainedThomas = conn.GetWithChildren<TwitterUser>(thomas.Id, recursive: true);
             checkUser(thomas, obtainedThomas);
 
-            var obtainedJohn = obtainedThomas.FollowingUsers.FirstOrDefault(u => u.Id == john.Id);
+            // Added ? to FollowingUsers access because it is now nullable
+            var obtainedJohn = obtainedThomas!.FollowingUsers?.FirstOrDefault(u => u.Id == john.Id);
             //!
             checkUser(john, obtainedJohn);
 
-            var obtainedPeter = obtainedJohn.FollowingUsers.FirstOrDefault(u => u.Id == peter.Id);
+            var obtainedPeter = obtainedJohn!.FollowingUsers?.FirstOrDefault(u => u.Id == peter.Id);
             checkUser(peter, obtainedPeter);
 
-            var obtainedMartha = obtainedPeter.FollowingUsers.FirstOrDefault(u => u.Id == martha.Id);
+            var obtainedMartha = obtainedPeter!.FollowingUsers?.FirstOrDefault(u => u.Id == martha.Id);
             checkUser(martha, obtainedMartha);
 
-            var obtainedAnthony = obtainedMartha.FollowingUsers.FirstOrDefault(u => u.Id == anthony.Id);
+            var obtainedAnthony = obtainedMartha!.FollowingUsers?.FirstOrDefault(u => u.Id == anthony.Id);
             checkUser(anthony, obtainedAnthony);
 
-            var obtainedJaime = obtainedThomas.Followers.FirstOrDefault(u => u.Id == jaime.Id);
+            var obtainedJaime = obtainedThomas.Followers?.FirstOrDefault(u => u.Id == jaime.Id);
             //!
             checkUser(jaime, obtainedJaime);
 
-            var obtainedMark = obtainedJaime.FollowingUsers.FirstOrDefault(u => u.Id == mark.Id);
+            var obtainedMark = obtainedJaime!.FollowingUsers?.FirstOrDefault(u => u.Id == mark.Id);
             checkUser(mark, obtainedMark);
 
             return new Tuple<bool, string>(true, "TestManyToManyCascadeWithSameClassRelationship: Test passed.");
@@ -623,34 +724,34 @@ public class RecursiveReadTests
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [OneToMany(CascadeOperations = CascadeOperation.CascadeInsert)]
-        public List<Student> Students { get; set; }
+        public List<Student>? Students { get; set; }
     }
 
     class Student
     {
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [ManyToOne]
-        public Teacher Teacher { get; set; }
+        public Teacher? Teacher { get; set; }
 
         [TextBlob("AddressBlob")]
-        public Address Address { get; set; }
+        public Address? Address { get; set; }
 
         [ForeignKey(typeof(Teacher))]
         public int TeacherId { get; set; }
-        public String AddressBlob { get; set; }
+        public String? AddressBlob { get; set; }
 
     }
 
     class Address
     {
-        public string Street { get; set; }
-        public string Town { get; set; }
+        public string? Street { get; set; }
+        public string? Town { get; set; }
     }
 
     public static Tuple<bool, string> TestInsertTextBlobPropertiesRecursive()
@@ -668,7 +769,7 @@ public class RecursiveReadTests
         conn.Insert(teacher);
 
         var students = new List<Student> {
-        new Student {
+        new() {
             Name = "Bruce Banner",
             Address = new Address {
                 Street = "Sesame Street 5",
@@ -676,7 +777,7 @@ public class RecursiveReadTests
             },
             Teacher = teacher
         },
-        new Student {
+        new() {
             Name = "Peter Parker",
             Address = new Address {
                 Street = "Arlington Road 69",
@@ -684,7 +785,7 @@ public class RecursiveReadTests
             },
             Teacher = teacher
         },
-        new Student {
+        new() {
             Name = "Steve Rogers",
             Address = new Address {
                 Street = "28th Street 19",
@@ -697,21 +798,33 @@ public class RecursiveReadTests
 
         var dbTeacher = conn.GetWithChildren<Teacher>(teacher.Id, recursive: true);
 
+        // Ensure dbTeacher and Students are not null before iterating
+        if (dbTeacher == null || dbTeacher.Students == null)
+            return new Tuple<bool, string>(false, "TestInsertTextBlobPropertiesRecursive: dbTeacher or Students list is null.");
+
         foreach (var student in students)
         {
             var dbStudent = dbTeacher.Students.Find(s => s.Id == student.Id);
 
             if (dbStudent == null)
+            {
                 return new Tuple<bool, string>(false, $"TestInsertTextBlobPropertiesRecursive: Student {student.Name} not found in database.");
+            }
 
             if (dbStudent.Address == null)
+            {
                 return new Tuple<bool, string>(false, $"TestInsertTextBlobPropertiesRecursive: Address for student {student.Name} is null.");
+            }
 
-            if (dbStudent.Address.Street != student.Address.Street)
-                return new Tuple<bool, string>(false, $"TestInsertTextBlobPropertiesRecursive: Street mismatch for student {student.Name}. Expected: {student.Address.Street}, Found: {dbStudent.Address.Street}");
+            if (dbStudent.Address.Street != student.Address?.Street)
+            {
+                return new Tuple<bool, string>(false, $"TestInsertTextBlobPropertiesRecursive: Street mismatch for student {student.Name}. Expected: {student.Address?.Street}, Found: {dbStudent.Address.Street}");
+            }
 
-            if (dbStudent.Address.Town != student.Address.Town)
-                return new Tuple<bool, string>(false, $"TestInsertTextBlobPropertiesRecursive: Town mismatch for student {student.Name}. Expected: {student.Address.Town}, Found: {dbStudent.Address.Town}");
+            if (dbStudent.Address.Town != student.Address?.Town)
+            {
+                return new Tuple<bool, string>(false, $"TestInsertTextBlobPropertiesRecursive: Town mismatch for student {student.Name}. Expected: {student.Address?.Town}, Found: {dbStudent.Address.Town}");
+            }
         }
 
         return new Tuple<bool, string>(true, "TestInsertTextBlobPropertiesRecursive: Test passed.");

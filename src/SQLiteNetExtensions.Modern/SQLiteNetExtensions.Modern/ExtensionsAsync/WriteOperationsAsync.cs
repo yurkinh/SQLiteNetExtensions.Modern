@@ -4,6 +4,7 @@ using SQLiteNetExtensions.Attributes;
 using SQLiteNetExtensions.Exceptions;
 using SQLiteNetExtensions.Extensions.TextBlob;
 using SQLite;
+using SQLiteNetExtensions.Enums;
 
 namespace SQLiteNetExtensions.Extensions;
 
@@ -157,12 +158,12 @@ public static class WriteOperationsAsync
 		var type = typeof(T);
 		var primaryKeyProperty = type.GetPrimaryKey();
 
-		return conn.DeleteAllIdsAsync(primaryKeyValues.ToArray(), type.GetTableName(), primaryKeyProperty.GetColumnName());
+		return conn.DeleteAllIdsAsync([.. primaryKeyValues], type.GetTableName(), primaryKeyProperty!.GetColumnName());
 	}
 
 
 	#region Private methods
-	static async Task InsertAllWithChildrenRecursiveAsync(this SQLiteAsyncConnection conn, IEnumerable elements, bool replace, bool recursive, ISet<object> objectCache = null)
+	static async Task InsertAllWithChildrenRecursiveAsync(this SQLiteAsyncConnection conn, IEnumerable elements, bool replace, bool recursive, ISet<object>? objectCache = null)
 	{
 		if (elements == null)
 		{
@@ -183,7 +184,7 @@ public static class WriteOperationsAsync
 		}
 	}
 
-	static async Task InsertWithChildrenRecursiveAsync(this SQLiteAsyncConnection conn, object element, bool replace, bool recursive, ISet<object> objectCache = null)
+	static async Task InsertWithChildrenRecursiveAsync(this SQLiteAsyncConnection conn, object element, bool replace, bool recursive, ISet<object>? objectCache = null)
 	{
 		objectCache ??= new HashSet<object>();
 		if (objectCache.Contains(element))
@@ -199,7 +200,7 @@ public static class WriteOperationsAsync
 		await conn.UpdateWithChildrenAsync(element);
 	}
 
-	static async Task InsertChildrenRecursiveAsync(this SQLiteAsyncConnection conn, object element, bool replace, bool recursive, ISet<object> objectCache = null)
+	static async Task InsertChildrenRecursiveAsync(this SQLiteAsyncConnection conn, object element, bool replace, bool recursive, ISet<object>? objectCache = null)
 	{
 		if (element == null)
 		{
@@ -212,13 +213,16 @@ public static class WriteOperationsAsync
 			var relationshipAttribute = relationshipProperty.GetAttribute<RelationshipAttribute>();
 
 			// Ignore read-only attributes and process only 'CascadeInsert' attributes
-			if (relationshipAttribute.ReadOnly || !relationshipAttribute.IsCascadeInsert)
+			if (relationshipAttribute != null && (relationshipAttribute.ReadOnly || !relationshipAttribute.IsCascadeInsert))
 			{
 				continue;
 			}
 
 			var value = relationshipProperty.GetValue(element, null);
-			await conn.InsertValueAsync(value, replace, recursive, objectCache);
+			if (value != null)
+			{
+				await conn.InsertValueAsync(value, replace, recursive, objectCache);
+			}
 		}
 	}
 
@@ -288,7 +292,7 @@ public static class WriteOperationsAsync
 		return conn.InsertElementAsync(element, replace, primaryKeyProperty, isAutoIncrementPrimaryKey, objectCache);
 	}
 
-	static Task InsertElementAsync(this SQLiteAsyncConnection conn, object element, bool replace, PropertyInfo primaryKeyProperty, bool isAutoIncrementPrimaryKey, ISet<object> objectCache)
+	static Task InsertElementAsync(this SQLiteAsyncConnection conn, object element, bool replace, PropertyInfo? primaryKeyProperty, bool isAutoIncrementPrimaryKey, ISet<object>? objectCache)
 	{
 		if (element == null || (objectCache != null && objectCache.Contains(element)))
 		{
@@ -296,7 +300,7 @@ public static class WriteOperationsAsync
 		}
 
 		bool isPrimaryKeySet = false;
-		if (replace && isAutoIncrementPrimaryKey)
+		if (replace && isAutoIncrementPrimaryKey && primaryKeyProperty != null)
 		{
 			var primaryKeyValue = primaryKeyProperty.GetValue(element, null);
 			var defaultPrimaryKeyValue = primaryKeyProperty.PropertyType.GetDefault();
@@ -316,7 +320,7 @@ public static class WriteOperationsAsync
 		}
 	}
 
-	static async Task DeleteAllRecursiveAsync(this SQLiteAsyncConnection conn, IEnumerable elements, bool recursive, ISet<object> objectCache = null)
+	static async Task DeleteAllRecursiveAsync(this SQLiteAsyncConnection conn, IEnumerable elements, bool recursive, ISet<object>? objectCache = null)
 	{
 		if (elements == null)
 		{
@@ -344,13 +348,16 @@ public static class WriteOperationsAsync
 					var relationshipAttribute = relationshipProperty.GetAttribute<RelationshipAttribute>();
 
 					// Ignore read-only attributes or those that are not marked as CascadeDelete
-					if (!relationshipAttribute.IsCascadeDelete || relationshipAttribute.ReadOnly)
+					if (relationshipAttribute == null || !relationshipAttribute.IsCascadeDelete || relationshipAttribute.ReadOnly)
 					{
 						continue;
 					}
 
 					var value = relationshipProperty.GetValue(element, null);
-					await conn.DeleteValueRecursiveAsync(value, recursive, objectCache);
+					if (value != null)
+					{
+						await conn.DeleteValueRecursiveAsync(value, recursive, objectCache);
+					}
 				}
 			}
 		}
@@ -392,14 +399,14 @@ public static class WriteOperationsAsync
 				?? throw new InvalidOperationException($"Cannot delete objects of type {type.Name} without primary key");
 
 			var primaryKeyValues = group
-				.Select(primaryKeyProperty.GetValue)
+				.Select(obj => primaryKeyProperty.GetValue(obj))
 				.Where(key => key is not null)
 				.ToArray();
 
 			if (primaryKeyValues.Length > 0)
 			{
 				await conn.DeleteAllIdsAsync(
-					primaryKeyValues,
+					primaryKeyValues!,
 					type.GetTableName(),
 					primaryKeyProperty.GetColumnName()
 				);
@@ -415,7 +422,7 @@ public static class WriteOperationsAsync
 			var relationshipAttribute = relationshipProperty.GetAttribute<RelationshipAttribute>();
 
 			// Ignore read-only attributes
-			if (relationshipAttribute.ReadOnly)
+			if (relationshipAttribute == null || relationshipAttribute.ReadOnly)
 			{
 				continue;
 			}
@@ -431,8 +438,8 @@ public static class WriteOperationsAsync
 					Assert(destinationPrimaryKeyProperty != null, type, relationshipProperty, "Found foreign key but destination Type doesn't have primary key");
 
 					var relationshipValue = relationshipProperty.GetValue(element, null);
-					object foreignKeyValue = null;
-					if (relationshipValue != null)
+					object? foreignKeyValue = null;
+					if (relationshipValue != null && destinationPrimaryKeyProperty != null)
 					{
 						foreignKeyValue = destinationPrimaryKeyProperty.GetValue(relationshipValue, null);
 					}
@@ -454,7 +461,7 @@ public static class WriteOperationsAsync
 			var relationshipAttribute = relationshipProperty.GetAttribute<RelationshipAttribute>();
 
 			// Ignore read-only attributes
-			if (relationshipAttribute.ReadOnly)
+			if (relationshipAttribute == null || relationshipAttribute.ReadOnly)
 			{
 				continue;
 			}
@@ -497,17 +504,25 @@ public static class WriteOperationsAsync
 			Assert(inverseEntityType == type, type, relationshipProperty, "OneToMany inverse relationship is not the expected type");
 		}
 
-		var keyValue = originPrimaryKeyProperty.GetValue(element, null);
-		var children = (IEnumerable)relationshipProperty.GetValue(element, null);
+		var keyValue = originPrimaryKeyProperty!.GetValue(element, null);
+		var children = (IEnumerable?)relationshipProperty.GetValue(element, null);
 		var childrenKeyList = new List<object>();
 		if (children != null)
 		{
 			foreach (var child in children)
 			{
-				var childKey = inversePrimaryKeyProperty.GetValue(child, null);
-				childrenKeyList.Add(childKey);
+				if (child == null)
+				{
+					continue;
+				}
 
-				inverseForeignKeyProperty.SetValue(child, keyValue, null);
+				var childKey = inversePrimaryKeyProperty!.GetValue(child, null);
+				if (childKey != null)
+				{
+					childrenKeyList.Add(childKey);
+				}
+
+				inverseForeignKeyProperty!.SetValue(child, keyValue, null);
 				inverseProperty?.SetValue(child, element, null);
 			}
 		}
@@ -515,8 +530,8 @@ public static class WriteOperationsAsync
 
 		// Delete previous relationships
 		var deleteQuery = string.Format("update [{0}] set [{1}] = NULL where [{1}] == ?",
-			entityType.GetTableName(), inverseForeignKeyProperty.GetColumnName());
-		var deleteParamaters = new List<object> { keyValue };
+			entityType.GetTableName(), inverseForeignKeyProperty!.GetColumnName());
+		var deleteParamaters = new List<object> { keyValue! };
 		await conn.ExecuteAsync(deleteQuery, [.. deleteParamaters]);
 
 		var chunks = Split(childrenKeyList, queryLimit);
@@ -527,9 +542,9 @@ public static class WriteOperationsAsync
 			// Objects already updated, now change the database
 			var childrenPlaceHolders = string.Join(",", Enumerable.Repeat("?", chunk.Count));
 			var query = string.Format("update [{0}] set [{1}] = ? where [{2}] in ({3})",
-				entityType.GetTableName(), inverseForeignKeyProperty.GetColumnName(), inversePrimaryKeyProperty.GetColumnName(), childrenPlaceHolders);
+				entityType.GetTableName(), inverseForeignKeyProperty!.GetColumnName(), inversePrimaryKeyProperty!.GetColumnName(), childrenPlaceHolders);
 
-			var parameters = new List<object> { keyValue };
+			var parameters = new List<object> { keyValue! };
 			parameters.AddRange(chunk);
 			await conn.ExecuteAsync(query, [.. parameters]);
 		}
@@ -550,19 +565,18 @@ public static class WriteOperationsAsync
 		var inverseProperty = type.GetInverseProperty(relationshipProperty);
 		if (inverseProperty != null)
 		{
-			EnclosedType inverseEnclosedType;
-			var inverseEntityType = inverseProperty.GetEntityType(out inverseEnclosedType);
+			var inverseEntityType = inverseProperty.GetEntityType(out EnclosedType inverseEnclosedType);
 			Assert(inverseEnclosedType == EnclosedType.None, type, relationshipProperty, "OneToOne inverse relationship shouldn't be List or Array");
 			Assert(inverseEntityType == type, type, relationshipProperty, "OneToOne inverse relationship is not the expected type");
 		}
 
-		object keyValue = null;
+		object? keyValue = null;
 		if (originPrimaryKeyProperty != null && inverseForeignKeyProperty != null)
 		{
 			keyValue = originPrimaryKeyProperty.GetValue(element, null);
 		}
 
-		object childKey = null;
+		object? childKey = null;
 		var child = relationshipProperty.GetValue(element, null);
 		if (child != null)
 		{
@@ -612,30 +626,36 @@ public static class WriteOperationsAsync
 		Assert(currentEntityForeignKeyProperty != null, type, relationshipProperty, "ManyToMany relationship origin must have a foreign key defined in the intermediate type");
 		Assert(otherEntityForeignKeyProperty != null, type, relationshipProperty, "ManyToMany relationship destination must have a foreign key defined in the intermediate type");
 
-		var primaryKey = currentEntityPrimaryKeyProperty.GetValue(element, null);
+		var primaryKey = currentEntityPrimaryKeyProperty!.GetValue(element, null);
 
 		// Obtain the list of children keys
-		var childList = (IEnumerable)relationshipProperty.GetValue(element, null);
-		var childKeyList = (from object child in childList ?? new List<object>()
-							select otherEntityPrimaryKeyProperty.GetValue(child, null)).ToList();
+		var childList = (IEnumerable?)relationshipProperty.GetValue(element, null);
+		var childKeyList = (from object? child in childList ?? new List<object>()
+							where child != null
+							let key = otherEntityPrimaryKeyProperty!.GetValue(child, null)
+							where key != null
+							select key).ToList();
 
 		List<object> currentChildKeyList = [];
 		var chunks = Split(childKeyList, queryLimit);
 		var loopTo = chunks.Count == 0 ? 1 : chunks.Count;
 		for (int i = 0; i < loopTo; i++)
 		{
-			var chunk = chunks.Count > i ? chunks[i] : new List<object>();
+			var chunk = chunks.Count > i ? chunks[i] : [];
 			// Check for already existing relationships
 			var childrenPlaceHolders = string.Join(",", Enumerable.Repeat("?", chunk.Count));
 			var currentChildrenQuery = string.Format("select [{0}] from [{1}] where [{2}] == ? and [{0}] in ({3})",
-				otherEntityForeignKeyProperty.GetColumnName(), intermediateType.GetTableName(), currentEntityForeignKeyProperty.GetColumnName(), childrenPlaceHolders);
+				otherEntityForeignKeyProperty!.GetColumnName(), intermediateType!.GetTableName(), currentEntityForeignKeyProperty!.GetColumnName(), childrenPlaceHolders);
 
-			var parameters = new List<object> { primaryKey };
+			var parameters = new List<object> { primaryKey! };
 			parameters.AddRange(chunk);
 			currentChildKeyList.AddRange(
-				from object child in
+				from object? child in
 					await conn.QueryAsync(await conn.GetMappingAsync(intermediateType), currentChildrenQuery, [.. parameters])
-				select otherEntityForeignKeyProperty.GetValue(child, null));
+				where child != null
+				let key = otherEntityForeignKeyProperty!.GetValue(child, null)
+				where key != null
+				select key);
 		}
 
 		// Insert missing relationships in the intermediate table
@@ -643,9 +663,13 @@ public static class WriteOperationsAsync
 		var missingIntermediateObjects = new List<object>(missingChildKeyList.Count);
 		foreach (var missingChildKey in missingChildKeyList)
 		{
-			var intermediateObject = Activator.CreateInstance(intermediateType);
-			currentEntityForeignKeyProperty.SetValue(intermediateObject, primaryKey, null);
-			otherEntityForeignKeyProperty.SetValue(intermediateObject, missingChildKey, null);
+			var intermediateObject = Activator.CreateInstance(intermediateType!);
+			if (intermediateObject == null)
+			{
+				continue;
+			}
+			currentEntityForeignKeyProperty!.SetValue(intermediateObject, primaryKey, null);
+			otherEntityForeignKeyProperty!.SetValue(intermediateObject, missingChildKey, null);
 
 			missingIntermediateObjects.Add(intermediateObject);
 		}
@@ -654,15 +678,15 @@ public static class WriteOperationsAsync
 
 		for (int i = 0; i < loopTo; i++)
 		{
-			var chunk = chunks.Count > i ? chunks[i] : new List<object>();
+			var chunk = chunks.Count > i ? chunks[i] : [];
 			var childrenPlaceHolders = string.Join(",", Enumerable.Repeat("?", chunk.Count));
 
 			// Delete any other pending relationship
 			var deleteQuery = string.Format("delete from [{0}] where [{1}] == ? and [{2}] not in ({3})",
-				intermediateType.GetTableName(), currentEntityForeignKeyProperty.GetColumnName(),
-				otherEntityForeignKeyProperty.GetColumnName(), childrenPlaceHolders);
+				intermediateType!.GetTableName(), currentEntityForeignKeyProperty!.GetColumnName(),
+				otherEntityForeignKeyProperty!.GetColumnName(), childrenPlaceHolders);
 
-			var parameters = new List<object> { primaryKey };
+			var parameters = new List<object> { primaryKey! };
 			parameters.AddRange(chunk);
 			await conn.ExecuteAsync(deleteQuery, [.. parameters]);
 		}
@@ -709,7 +733,7 @@ public static class WriteOperationsAsync
 		return result;
 	}
 
-	static void Assert(bool assertion, Type type, PropertyInfo property, string message)
+	static void Assert(bool assertion, Type type, PropertyInfo? property, string message)
 	{
 		if (EnableRuntimeAssertions && !assertion)
 		{

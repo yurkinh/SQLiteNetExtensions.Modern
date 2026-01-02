@@ -42,7 +42,9 @@ public partial class TodoListViewModel(IDatabaseService databaseService) : Obser
     private async Task SelectItemAsync(TodoItem selectedItem)
     {
         if (selectedItem == null)
+        {
             return;
+        }
 
         await Shell.Current.GoToAsync(nameof(TodoItemPage), new Dictionary<string, object>
         {

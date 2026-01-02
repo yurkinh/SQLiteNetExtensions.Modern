@@ -1,4 +1,5 @@
 using SQLite;
+using SQLiteNetExtensions.Attributes;
 
 namespace ToDoSampleApp.Models;
 
@@ -11,4 +12,7 @@ public class Notes
 	public string? Body { get; set; }
 	public DateTime CreationTime { get; set; } = DateTime.Now;
 	public DateTime EventDateTime { get; set; }
+
+	[OneToOne(inverseProperty: nameof(TodoItem.Notes))]
+	public TodoItem? TodoItem { get; set; }
 }

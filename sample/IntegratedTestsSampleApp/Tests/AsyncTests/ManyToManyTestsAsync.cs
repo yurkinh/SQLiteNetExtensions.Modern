@@ -14,9 +14,9 @@ public class ManyToManyTestsAsync
         public int Id { get; set; }
 
         [ManyToMany(typeof(ClassAClassB))]
-        public List<M2MClassB> BObjects { get; set; }
+        public List<M2MClassB>? BObjects { get; set; }
 
-        public string Bar { get; set; }
+        public string? Bar { get; set; }
     }
 
     public class M2MClassB
@@ -24,7 +24,7 @@ public class ManyToManyTestsAsync
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Foo { get; set; }
+        public string? Foo { get; set; }
     }
 
     public class ClassAClassB
@@ -42,9 +42,9 @@ public class ManyToManyTestsAsync
         public int Id { get; set; }
 
         [ManyToMany(typeof(ClassCClassD), inverseForeignKey: "ClassCId")]   // Foreign key specified in ManyToMany attribute
-        public M2MClassD[] DObjects { get; set; } // Array instead of List
+        public M2MClassD[]? DObjects { get; set; } // Array instead of List
 
-        public string Bar { get; set; }
+        public string? Bar { get; set; }
     }
 
     public class M2MClassD
@@ -52,7 +52,7 @@ public class ManyToManyTestsAsync
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Foo { get; set; }
+        public string? Foo { get; set; }
     }
 
     public class ClassCClassD
@@ -69,9 +69,9 @@ public class ManyToManyTestsAsync
         public Guid Id { get; set; } // Guid identifier instead of int
 
         [ManyToMany(typeof(ClassEClassF), inverseForeignKey: "ClassEId")]   // Foreign key specified in ManyToMany attribute
-        public M2MClassF[] FObjects { get; set; } // Array instead of List
+        public M2MClassF[]? FObjects { get; set; } // Array instead of List
 
-        public string Bar { get; set; }
+        public string? Bar { get; set; }
     }
 
     public class M2MClassF
@@ -79,7 +79,7 @@ public class ManyToManyTestsAsync
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Foo { get; set; }
+        public string? Foo { get; set; }
     }
 
     [Table("class_e_class_f")]
@@ -95,13 +95,13 @@ public class ManyToManyTestsAsync
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [ManyToMany(typeof(ClassGClassG), "ChildId", "Children")]
-        public ObservableCollection<M2MClassG> Parents { get; set; }
+        public ObservableCollection<M2MClassG>? Parents { get; set; }
 
         [ManyToMany(typeof(ClassGClassG), "ParentId", "Parents")]
-        public List<M2MClassG> Children { get; set; }
+        public List<M2MClassG>? Children { get; set; }
     }
 
     [Table("M2MClassG_ClassG")]
@@ -123,14 +123,14 @@ public class ManyToManyTestsAsync
         [PrimaryKey, AutoIncrement]
         public int Id { get; set; }
 
-        public string Name { get; set; }
+        public string? Name { get; set; }
 
         [Column("parent_elements")]
         [ManyToMany(typeof(ClassHClassH), "ChildId", "Children", ReadOnly = true)] // Parents relationship is read only
-        public List<M2MClassH> Parents { get; set; }
+        public List<M2MClassH>? Parents { get; set; }
 
         [ManyToMany(typeof(ClassHClassH), "ParentId", "Parents")]
-        public ObservableCollection<M2MClassH> Children { get; set; }
+        public ObservableCollection<M2MClassH>? Children { get; set; }
     }
 
     public class ClassHClassH
@@ -185,13 +185,17 @@ public class ManyToManyTestsAsync
             {
                 var copyA = objectA;
                 if (objectA.BObjects != null)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyList: Failed at checking initial BObjects null");
+                }
 
                 // Fetch (yet empty) the relationship
                 await conn.GetChildrenAsync(copyA);
 
                 if (copyA.BObjects == null || copyA.BObjects.Count != 0)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyList: Failed at fetching empty relationship");
+                }
             }
 
             // Create the relationships in the intermediate table
@@ -213,7 +217,9 @@ public class ManyToManyTestsAsync
 
                 // Relationship still empty because hasn't been refreshed
                 if (objectA.BObjects == null || objectA.BObjects.Count != 0)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyList: Failed at checking relationship before refresh");
+                }
 
                 // Fetch the relationship
                 await conn.GetChildrenAsync(objectA);
@@ -221,13 +227,17 @@ public class ManyToManyTestsAsync
                 var childrenCount = i + 1;
 
                 if (objectA.BObjects == null || objectA.BObjects.Count != childrenCount)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyList: Failed at fetching relationship after update");
+                }
 
                 var foos = objectsB.GetRange(0, childrenCount).Select(objectB => objectB.Foo).ToList();
                 foreach (var objectB in objectA.BObjects)
                 {
                     if (!foos.Contains(objectB.Foo))
+                    {
                         return new Tuple<bool, string>(false, "TestGetManyToManyList: Relationship data mismatch");
+                    }
                 }
             }
 
@@ -282,13 +292,17 @@ public class ManyToManyTestsAsync
             {
                 var copyC = objectC;
                 if (objectC.DObjects != null)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyArray: Failed at checking initial DObjects null");
+                }
 
                 // Fetch (yet empty) the relationship
                 await conn.GetChildrenAsync(copyC);
 
                 if (copyC.DObjects == null || copyC.DObjects.Length != 0)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyArray: Failed at fetching empty relationship");
+                }
             }
 
             // Create the relationships in the intermediate table
@@ -310,7 +324,9 @@ public class ManyToManyTestsAsync
 
                 // Relationship still empty because hasn't been refreshed
                 if (objectC.DObjects == null || objectC.DObjects.Length != 0)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyArray: Failed at checking relationship before refresh");
+                }
 
                 // Fetch the relationship
                 await conn.GetChildrenAsync(objectC);
@@ -318,13 +334,17 @@ public class ManyToManyTestsAsync
                 var childrenCount = i + 1;
 
                 if (objectC.DObjects == null || objectC.DObjects.Length != childrenCount)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyArray: Failed at fetching relationship after update");
+                }
 
                 var foos = objectsD.GetRange(0, childrenCount).Select(objectD => objectD.Foo).ToList();
                 foreach (var objectD in objectC.DObjects)
                 {
                     if (!foos.Contains(objectD.Foo))
+                    {
                         return new Tuple<bool, string>(false, "TestGetManyToManyArray: Relationship data mismatch");
+                    }
                 }
             }
 
@@ -383,7 +403,7 @@ public class ManyToManyTestsAsync
                 for (var bIndex = 0; bIndex <= aIndex; bIndex++)
                 {
                     var objectB = objectsB[bIndex];
-                    objectA.BObjects.Add(objectB);
+                    objectA.BObjects!.Add(objectB);
                 }
 
                 await conn.UpdateWithChildrenAsync(objectA);
@@ -402,13 +422,17 @@ public class ManyToManyTestsAsync
                     .ToList();
 
                 if (childrenCount != storedChildKeyList.Count())
+                {
                     return new Tuple<bool, string>(false, "TestUpdateSetManyToManyListAsync: Relationship count is not correct");
+                }
 
                 var expectedChildIds = objectsB.GetRange(0, childrenCount).Select(objectB => objectB.Id).ToList();
                 foreach (var objectBKey in storedChildKeyList)
                 {
                     if (!expectedChildIds.Contains(objectBKey))
+                    {
                         return new Tuple<bool, string>(false, "TestUpdateSetManyToManyListAsync: Relationship ID is not correct");
+                    }
                 }
             }
 
@@ -475,7 +499,7 @@ public class ManyToManyTestsAsync
                 for (var bIndex = 0; bIndex <= aIndex; bIndex++)
                 {
                     var objectB = objectsB[bIndex];
-                    objectA.BObjects.Add(objectB);
+                    objectA.BObjects!.Add(objectB);
                 }
 
                 await conn.UpdateWithChildrenAsync(objectA);
@@ -494,7 +518,7 @@ public class ManyToManyTestsAsync
 
             foreach (var objectA in objectsA)
             {
-                objectA.BObjects.RemoveAll(objectsBToRemove.Contains);
+                objectA.BObjects!.RemoveAll(objectsBToRemove.Contains);
                 await conn.UpdateWithChildrenAsync(objectA);
             }
 
@@ -522,12 +546,16 @@ public class ManyToManyTestsAsync
                     .ToList();
 
                 if (expectedChildIds.Count != storedChildKeyList.Count)
+                {
                     return new Tuple<bool, string>(false, $"TestUpdateUnsetManyToManyListAsync: Relationship count is not correct for Object with Id {objectA.Id}");
+                }
 
                 foreach (var objectBKey in storedChildKeyList)
                 {
                     if (!expectedChildIds.Contains(objectBKey))
+                    {
                         return new Tuple<bool, string>(false, "TestUpdateUnsetManyToManyListAsync: Relationship ID is not correct");
+                    }
                 }
             }
 
@@ -589,28 +617,38 @@ public class ManyToManyTestsAsync
 
                 // Check Name
                 if (expected.Name != obtained.Name)
+                {
                     return new Tuple<bool, string>(false, $"TestManyToManyCircularAsync failed for object with Id {expected.Id}: Name mismatch");
+                }
 
                 // Check Children count
                 if ((expected.Children ?? []).Count != (obtained.Children ?? []).Count)
+                {
                     return new Tuple<bool, string>(false, $"TestManyToManyCircularAsync failed for object with Id {expected.Id}: Children count mismatch");
+                }
 
                 // Check Parents count
                 if ((expected.Parents ?? []).Count != (obtained.Parents ?? []).Count)
+                {
                     return new Tuple<bool, string>(false, $"TestManyToManyCircularAsync failed for object with Id {expected.Id}: Parents count mismatch");
+                }
 
                 // Check each child
                 foreach (var child in expected.Children ?? Enumerable.Empty<M2MClassG>())
                 {
-                    if (!obtained.Children.Any(c => c.Id == child.Id && c.Name == child.Name))
+                    if (obtained.Children == null || !obtained.Children.Any(c => c.Id == child.Id && c.Name == child.Name))
+                    {
                         return new Tuple<bool, string>(false, $"TestManyToManyCircularAsync failed for object with Id {expected.Id}: Child with Id {child.Id} not found");
+                    }
                 }
 
                 // Check each parent
                 foreach (var parent in expected.Parents ?? Enumerable.Empty<M2MClassG>())
                 {
-                    if (!obtained.Parents.Any(p => p.Id == parent.Id && p.Name == parent.Name))
+                    if (obtained.Parents == null || !obtained.Parents.Any(p => p.Id == parent.Id && p.Name == parent.Name))
+                    {
                         return new Tuple<bool, string>(false, $"TestManyToManyCircularAsync failed for object with Id {expected.Id}: Parent with Id {parent.Id} not found");
+                    }
                 }
             }
 
@@ -666,13 +704,17 @@ public class ManyToManyTestsAsync
             {
                 var copyE = objectE;
                 if (objectE.FObjects != null)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyGuidIdentifier: FObjects should be null initially");
+                }
 
                 // Fetch (yet empty) the relationship
                 await conn.GetChildrenAsync(copyE);
 
                 if (copyE.FObjects == null || copyE.FObjects.Length != 0)
+                {
                     return new Tuple<bool, string>(false, "TestGetManyToManyGuidIdentifier: FObjects should be empty after GetChildren");
+                }
             }
 
             // Create the relationships in the intermediate table
@@ -695,7 +737,9 @@ public class ManyToManyTestsAsync
 
                 // Relationship still empty because hasn't been refreshed
                 if (objectE.FObjects == null || objectE.FObjects.Length != 0)
+                {
                     return new Tuple<bool, string>(false, $"TestGetManyToManyGuidIdentifier: FObjects should still be empty for ClassE Id {objectE.Id}");
+                }
 
                 // Fetch the relationship
                 await conn.GetChildrenAsync(objectE);
@@ -703,14 +747,18 @@ public class ManyToManyTestsAsync
                 var childrenCount = i + 1;
 
                 if (objectE.FObjects == null || objectE.FObjects.Length != childrenCount)
+                {
                     return new Tuple<bool, string>(false, $"TestGetManyToManyGuidIdentifier: Incorrect number of FObjects for ClassE Id {objectE.Id}");
+                }
 
                 // Check that the expected "Foo" values match the fetched ones
                 var foos = objectsF.GetRange(0, childrenCount).Select(objectF => objectF.Foo).ToList();
                 foreach (var objectF in objectE.FObjects)
                 {
                     if (!foos.Contains(objectF.Foo))
+                    {
                         return new Tuple<bool, string>(false, $"TestGetManyToManyGuidIdentifier: Foo value mismatch for ClassE Id {objectE.Id}");
+                    }
                 }
             }
 
@@ -774,28 +822,38 @@ public class ManyToManyTestsAsync
 
                 // Check Name
                 if (expected.Name != obtained.Name)
+                {
                     return new Tuple<bool, string>(false, $"TestManyToManyCircularReadOnlyAsync failed for object with Id {expected.Id}: Name mismatch");
+                }
 
                 // Check Children count
                 if ((expected.Children ?? []).Count != (obtained.Children ?? []).Count)
+                {
                     return new Tuple<bool, string>(false, $"TestManyToManyCircularReadOnlyAsync failed for object with Id {expected.Id}: Children count mismatch");
+                }
 
                 // Check Parents count
                 if ((expected.Parents ?? []).Count != (obtained.Parents ?? []).Count)
+                {
                     return new Tuple<bool, string>(false, $"TestManyToManyCircularReadOnlyAsync failed for object with Id {expected.Id}: Parents count mismatch");
+                }
 
                 // Check each child
                 foreach (var child in expected.Children ?? Enumerable.Empty<M2MClassH>())
                 {
-                    if (!obtained.Children.Any(c => c.Id == child.Id && c.Name == child.Name))
+                    if (obtained.Children == null || !obtained.Children.Any(c => c.Id == child.Id && c.Name == child.Name))
+                    {
                         return new Tuple<bool, string>(false, $"TestManyToManyCircularReadOnlyAsync failed for object with Id {expected.Id}: Child with Id {child.Id} not found");
+                    }
                 }
 
                 // Check each parent
                 foreach (var parent in expected.Parents ?? Enumerable.Empty<M2MClassH>())
                 {
-                    if (!obtained.Parents.Any(p => p.Id == parent.Id && p.Name == parent.Name))
+                    if (obtained.Parents == null || !obtained.Parents.Any(p => p.Id == parent.Id && p.Name == parent.Name))
+                    {
                         return new Tuple<bool, string>(false, $"TestManyToManyCircularReadOnlyAsync failed for object with Id {expected.Id}: Parent with Id {parent.Id} not found");
+                    }
                 }
             }
 
