@@ -1,4 +1,4 @@
-<ContentPage
+﻿<ContentPage
     x:Class="ToDoSampleApp.Views.TodoListPage"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -7,8 +7,8 @@
     xmlns:vm="clr-namespace:ToDoSampleApp.ViewModels"
     x:Name="This"
     x:DataType="vm:TodoListViewModel"
-    BackgroundColor="Wheat"
-    Shell.BackgroundColor="#FFE7CC98">
+    BackgroundColor="#F5F7FA"
+    Shell.BackgroundColor="#10B981">
     <ContentPage.Behaviors>
         <toolkit:EventToCommandBehavior
             BindingContext="{Binding BindingContext, Source={x:Reference This}, x:DataType=ContentPage}"
@@ -17,85 +17,197 @@
     </ContentPage.Behaviors>
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Style x:Key="ButtonStyle" TargetType="Button">
-                <Setter Property="HorizontalOptions" Value="Fill" />
-                <Setter Property="BackgroundColor" Value="SeaGreen" />
-                <Setter Property="FontSize" Value="22" />
+            <Style x:Key="AddButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#10B981" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontSize" Value="18" />
                 <Setter Property="FontAttributes" Value="Bold" />
-                <Setter Property="CornerRadius" Value="20" />
+                <Setter Property="CornerRadius" Value="28" />
+                <Setter Property="HeightRequest" Value="56" />
                 <Setter Property="FontFamily" Value="RobotoFlex" />
-                <Setter Property="Margin" Value="30,10" />
-                <Setter Property="Padding" Value="5" />
-                <Setter Property="TextColor" Value="Wheat" />
-                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="Shadow">
+                    <Shadow
+                        Brush="Black"
+                        Opacity="0.2"
+                        Radius="12"
+                        Offset="0,4" />
+                </Setter>
             </Style>
 
-            <Style x:Key="BorderStyle" TargetType="Border">
-                <Setter Property="HorizontalOptions" Value="Fill" />
+            <Style x:Key="CardBorderStyle" TargetType="Border">
+                <Setter Property="BackgroundColor" Value="White" />
                 <Setter Property="Stroke" Value="Transparent" />
-                <Setter Property="Margin" Value="20" />
+                <Setter Property="StrokeThickness" Value="0" />
+                <Setter Property="Shadow">
+                    <Shadow
+                        Brush="Black"
+                        Opacity="0.08"
+                        Radius="8"
+                        Offset="0,2" />
+                </Setter>
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
-    <VerticalStackLayout>
-        <Button
-            Margin="30"
-            Command="{Binding AddItemCommand}"
-            Style="{StaticResource ButtonStyle}"
-            Text="Add Item" />
 
+    <Grid Padding="0" RowDefinitions="Auto,*,Auto">
+        <!--  Header  -->
+        <Grid Padding="20,50,20,20" BackgroundColor="#10B981">
+            <Label
+                FontAttributes="Bold"
+                FontFamily="RobotoFlex"
+                FontSize="32"
+                Text="My Tasks"
+                TextColor="White" />
+        </Grid>
+
+        <!--  Tasks List  -->
         <CollectionView
+            Grid.Row="1"
+            Margin="16,16,16,0"
             ItemsSource="{Binding Items, Mode=OneWay}"
+            SelectedItem="{Binding SelectedItem}"
             SelectionChangedCommand="{Binding SelectItemCommand}"
             SelectionMode="Single">
             <CollectionView.ItemsLayout>
-                <LinearItemsLayout ItemSpacing="8" Orientation="Vertical" />
+                <LinearItemsLayout ItemSpacing="12" Orientation="Vertical" />
             </CollectionView.ItemsLayout>
+            <CollectionView.EmptyView>
+                <VerticalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="16"
+                    VerticalOptions="Center">
+                    <Label
+                        FontSize="64"
+                        HorizontalOptions="Center"
+                        Text="📝" />
+                    <Label
+                        FontFamily="RobotoFlex"
+                        FontSize="18"
+                        HorizontalOptions="Center"
+                        Text="No tasks yet"
+                        TextColor="#9CA3AF" />
+                    <Label
+                        FontFamily="RobotoFlex"
+                        FontSize="14"
+                        HorizontalOptions="Center"
+                        Text="Tap the + button to create your first task"
+                        TextColor="#D1D5DB" />
+                </VerticalStackLayout>
+            </CollectionView.EmptyView>
             <CollectionView.ItemTemplate>
                 <DataTemplate x:DataType="models:TodoItem">
-                    <Border BackgroundColor="#FFE7CC98" Style="{StaticResource BorderStyle}">
+                    <Border
+                        Padding="16"
+                        StrokeShape="RoundRectangle 16"
+                        Style="{StaticResource CardBorderStyle}">
+                        <Border.Triggers>
+                            <DataTrigger
+                                Binding="{Binding Done}"
+                                TargetType="Border"
+                                Value="True">
+                                <Setter Property="Opacity" Value="0.7" />
+                            </DataTrigger>
+                        </Border.Triggers>
                         <Grid
-                            ColumnDefinitions="*,Auto,Auto"
-                            HorizontalOptions="Fill"
-                            RowDefinitions="Auto, Auto">
-                            <Label
-                                Grid.ColumnSpan="2"
-                                Margin="20,0"
-                                FontSize="20"
-                                HorizontalOptions="Start"
-                                Text="{Binding Name}"
-                                VerticalOptions="Start" />
+                            ColumnDefinitions="Auto,*,Auto"
+                            ColumnSpacing="12"
+                            RowDefinitions="Auto,Auto,Auto">
+                            <!--  Status Indicator  -->
+                            <BoxView
+                                Grid.RowSpan="3"
+                                CornerRadius="2"
+                                VerticalOptions="Fill"
+                                WidthRequest="4"
+                                Color="{Binding Done, Converter={StaticResource BoolToColorConverter}}" />
+
+                            <!--  Task Name  -->
                             <Label
                                 Grid.Column="1"
-                                Margin="20,0"
-                                FontSize="14"
-                                HorizontalOptions="Start"
-                                Text="{Binding Notes.CreationTime, StringFormat='{}{0:MM/dd/yyyy   HH:mm}'}"
-                                VerticalOptions="Center" />
+                                FontAttributes="Bold"
+                                FontFamily="RobotoFlex"
+                                FontSize="18"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding Name}"
+                                TextColor="#1F2937">
+                                <Label.Triggers>
+                                    <DataTrigger
+                                        Binding="{Binding Done}"
+                                        TargetType="Label"
+                                        Value="True">
+                                        <Setter Property="TextDecorations" Value="Strikethrough" />
+                                        <Setter Property="TextColor" Value="#9CA3AF" />
+                                    </DataTrigger>
+                                </Label.Triggers>
+                            </Label>
+
+                            <!--  Notes Title  -->
                             <Label
                                 Grid.Row="1"
                                 Grid.Column="1"
-                                Margin="20,0"
+                                FontFamily="RobotoFlex"
                                 FontSize="14"
-                                HorizontalOptions="Start"
-                                Text="{Binding Notes.EventDateTime, StringFormat='{}{0:MM/dd/yyyy   HH:mm}'}"
-                                VerticalOptions="Center" />
-                            <Image
-                                Grid.RowSpan="2"
+                                IsVisible="{Binding Notes.Title, Converter={StaticResource StringNotNullOrEmptyConverter}}"
+                                LineBreakMode="TailTruncation"
+                                Text="{Binding Notes.Title}"
+                                TextColor="#6B7280" />
+
+                            <!--  Date/Time Info  -->
+                            <HorizontalStackLayout
+                                Grid.Row="2"
+                                Grid.Column="1"
+                                Margin="0,4,0,0"
+                                Spacing="12">
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label FontSize="12" Text="📅" />
+                                    <Label
+                                        FontFamily="RobotoFlex"
+                                        FontSize="12"
+                                        Text="{Binding Notes.EventDateTime, StringFormat='{0:MMM dd, yyyy}'}"
+                                        TextColor="#9CA3AF" />
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label FontSize="12" Text="🕐" />
+                                    <Label
+                                        FontFamily="RobotoFlex"
+                                        FontSize="12"
+                                        Text="{Binding Notes.EventDateTime, StringFormat='{0:HH:mm}'}"
+                                        TextColor="#9CA3AF" />
+                                </HorizontalStackLayout>
+                            </HorizontalStackLayout>
+
+                            <!--  Done Indicator  -->
+                            <Border
+                                Grid.RowSpan="3"
                                 Grid.Column="2"
-                                Margin="10"
-                                HeightRequest="20"
-                                HorizontalOptions="End"
+                                BackgroundColor="#10B981"
+                                HeightRequest="32"
                                 IsVisible="{Binding Done}"
-                                Source="check.png"
-                                WidthRequest="20" />
+                                StrokeShape="Ellipse"
+                                VerticalOptions="Center"
+                                WidthRequest="32">
+                                <Label
+                                    FontAttributes="Bold"
+                                    FontSize="18"
+                                    HorizontalOptions="Center"
+                                    Text="✓"
+                                    TextColor="White"
+                                    VerticalOptions="Center" />
+                            </Border>
                         </Grid>
-                        <Border.GestureRecognizers>
-                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TodoListViewModel}}, x:DataType=vm:TodoListViewModel, Path=SelectItemCommand}" CommandParameter="{Binding .}" />
-                        </Border.GestureRecognizers>
                     </Border>
                 </DataTemplate>
             </CollectionView.ItemTemplate>
         </CollectionView>
-    </VerticalStackLayout>
+
+        <!--  Floating Action Button  -->
+        <Button
+            Grid.Row="2"
+            Margin="0,0,24,24"
+            Command="{Binding AddItemCommand}"
+            HorizontalOptions="End"
+            Style="{StaticResource AddButtonStyle}"
+            Text="+ Add Task"
+            VerticalOptions="End"
+            WidthRequest="140" />
+    </Grid>
 </ContentPage>

@@ -4,94 +4,203 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:vm="clr-namespace:ToDoSampleApp.ViewModels"
-    Title="{Binding Name}"
+    Title="Task Details"
     x:DataType="vm:TodoItemViewModel"
-    BackgroundColor="Wheat"
-    Shell.BackgroundColor="#FFE7CC98">
+    BackgroundColor="#F5F7FA"
+    Shell.BackgroundColor="#10B981">
     <ContentPage.Resources>
         <ResourceDictionary>
-            <Style TargetType="Label">
-                <Setter Property="HorizontalOptions" Value="Fill" />
-                <Setter Property="FontSize" Value="22" />
+            <Style x:Key="SectionLabelStyle" TargetType="Label">
+                <Setter Property="FontSize" Value="14" />
                 <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="TextColor" Value="#059669" />
                 <Setter Property="FontFamily" Value="RobotoFlex" />
-                <Setter Property="TextColor" Value="Black" />
-                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="Margin" Value="0,0,0,8" />
             </Style>
-            <Style TargetType="Entry">
-                <Setter Property="HorizontalOptions" Value="Fill" />
-                <Setter Property="FontSize" Value="22" />
+
+            <Style x:Key="InputEntryStyle" TargetType="Entry">
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="FontFamily" Value="RobotoFlex" />
-                <Setter Property="TextColor" Value="Black" />
-                <Setter Property="BackgroundColor" Value="#FF46805F" />
-                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="TextColor" Value="#1F2937" />
+                <Setter Property="PlaceholderColor" Value="#9CA3AF" />
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="HeightRequest" Value="56" />
             </Style>
-            <Style TargetType="Editor">
-                <Setter Property="FontSize" Value="20" />
-                <Setter Property="BackgroundColor" Value="#FF46805F" />
+
+            <Style x:Key="InputEditorStyle" TargetType="Editor">
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="FontFamily" Value="RobotoFlex" />
-                <Setter Property="TextColor" Value="Black" />
-                <Setter Property="HorizontalOptions" Value="Fill" />
+                <Setter Property="TextColor" Value="#1F2937" />
+                <Setter Property="PlaceholderColor" Value="#9CA3AF" />
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="MinimumHeightRequest" Value="120" />
                 <Setter Property="AutoSize" Value="TextChanges" />
             </Style>
-            <Style x:Key="ButtonStyle" TargetType="Button">
-                <Setter Property="HorizontalOptions" Value="Fill" />
-                <Setter Property="BackgroundColor" Value="SeaGreen" />
-                <Setter Property="FontSize" Value="22" />
+
+            <Style x:Key="InputBorderStyle" TargetType="Border">
+                <Setter Property="Stroke" Value="#E5E7EB" />
+                <Setter Property="StrokeThickness" Value="1" />
+                <Setter Property="StrokeShape" Value="RoundRectangle 12" />
+                <Setter Property="BackgroundColor" Value="White" />
+            </Style>
+
+            <Style x:Key="PrimaryButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#10B981" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontSize" Value="16" />
                 <Setter Property="FontAttributes" Value="Bold" />
-                <Setter Property="CornerRadius" Value="20" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HeightRequest" Value="52" />
                 <Setter Property="FontFamily" Value="RobotoFlex" />
-                <Setter Property="Margin" Value="30,10" />
-                <Setter Property="Padding" Value="5" />
-                <Setter Property="TextColor" Value="Wheat" />
-                <Setter Property="VerticalOptions" Value="Center" />
+                <Setter Property="Shadow">
+                    <Shadow
+                        Brush="Black"
+                        Opacity="0.15"
+                        Radius="8"
+                        Offset="0,2" />
+                </Setter>
+            </Style>
+
+            <Style x:Key="SecondaryButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="White" />
+                <Setter Property="TextColor" Value="#6B7280" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HeightRequest" Value="52" />
+                <Setter Property="FontFamily" Value="RobotoFlex" />
+                <Setter Property="BorderColor" Value="#E5E7EB" />
+                <Setter Property="BorderWidth" Value="1" />
+            </Style>
+
+            <Style x:Key="DangerButtonStyle" TargetType="Button">
+                <Setter Property="BackgroundColor" Value="#EF4444" />
+                <Setter Property="TextColor" Value="White" />
+                <Setter Property="FontSize" Value="16" />
+                <Setter Property="FontAttributes" Value="Bold" />
+                <Setter Property="CornerRadius" Value="12" />
+                <Setter Property="HeightRequest" Value="52" />
+                <Setter Property="FontFamily" Value="RobotoFlex" />
+                <Setter Property="Shadow">
+                    <Shadow
+                        Brush="Black"
+                        Opacity="0.15"
+                        Radius="8"
+                        Offset="0,2" />
+                </Setter>
             </Style>
         </ResourceDictionary>
     </ContentPage.Resources>
+
     <ScrollView>
-        <VerticalStackLayout
-            Margin="20"
-            Spacing="20"
-            VerticalOptions="Start">
-            <Label Text="Name" />
-            <Entry Text="{Binding Name}" />
+        <VerticalStackLayout Padding="20" Spacing="24">
+            <!--  Task Name Section  -->
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource SectionLabelStyle}" Text="Task Name" />
+                <Border Style="{StaticResource InputBorderStyle}">
+                    <Entry
+                        Placeholder="Enter task name"
+                        Style="{StaticResource InputEntryStyle}"
+                        Text="{Binding Name}" />
+                </Border>
+            </VerticalStackLayout>
 
-            <Label Text="Notes Title" />
-            <Entry Text="{Binding NotesTitle}" />
+            <!--  Notes Title Section  -->
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource SectionLabelStyle}" Text="Notes Title" />
+                <Border Style="{StaticResource InputBorderStyle}">
+                    <Entry
+                        Placeholder="Enter notes title (optional)"
+                        Style="{StaticResource InputEntryStyle}"
+                        Text="{Binding NotesTitle}" />
+                </Border>
+            </VerticalStackLayout>
 
-            <Label Text="Notes" />
-            <Editor Text="{Binding NotesBody}" />
+            <!--  Notes Body Section  -->
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource SectionLabelStyle}" Text="Description" />
+                <Border Style="{StaticResource InputBorderStyle}">
+                    <Editor
+                        Placeholder="Enter task description"
+                        Style="{StaticResource InputEditorStyle}"
+                        Text="{Binding NotesBody}" />
+                </Border>
+            </VerticalStackLayout>
 
-            <HorizontalStackLayout>
-                <DatePicker
-                    Margin="10"
-                    BackgroundColor="#FF46805F"
-                    Date="{Binding SelectedDate}"
-                    FontSize="28" />
-                <TimePicker
-                    Margin="10"
-                    BackgroundColor="#FF46805F"
-                    CharacterSpacing="5"
-                    FontAutoScalingEnabled="True"
-                    FontSize="28"
-                    Time="{Binding SelectedTime}" />
-            </HorizontalStackLayout>
+            <!--  Date & Time Section  -->
+            <VerticalStackLayout Spacing="8">
+                <Label Style="{StaticResource SectionLabelStyle}" Text="Due Date and Time" />
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="12">
+                    <Border Style="{StaticResource InputBorderStyle}">
+                        <DatePicker
+                            BackgroundColor="Transparent"
+                            Date="{Binding SelectedDate}"
+                            FontFamily="RobotoFlex"
+                            FontSize="16"
+                            TextColor="#1F2937" />
+                    </Border>
+                    <Border Grid.Column="1" Style="{StaticResource InputBorderStyle}">
+                        <TimePicker
+                            BackgroundColor="Transparent"
+                            FontFamily="RobotoFlex"
+                            FontSize="16"
+                            TextColor="#1F2937"
+                            Time="{Binding SelectedTime}" />
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
 
-            <Label Text="Done" />
-            <Switch IsToggled="{Binding Done}" />
+            <!--  Done Status Section  -->
+            <Border
+                Padding="16"
+                BackgroundColor="White"
+                Stroke="#E5E7EB"
+                StrokeShape="RoundRectangle 12"
+                StrokeThickness="1">
+                <Grid ColumnDefinitions="*,Auto">
+                    <VerticalStackLayout Spacing="4">
+                        <Label
+                            FontAttributes="Bold"
+                            FontFamily="RobotoFlex"
+                            FontSize="16"
+                            Text="Mark as Complete"
+                            TextColor="#1F2937" />
+                        <Label
+                            FontFamily="RobotoFlex"
+                            FontSize="12"
+                            Text="Check this when the task is done"
+                            TextColor="#9CA3AF" />
+                    </VerticalStackLayout>
+                    <Switch
+                        Grid.Column="1"
+                        IsToggled="{Binding Done}"
+                        OnColor="#10B981"
+                        ThumbColor="White"
+                        VerticalOptions="Center" />
+                </Grid>
+            </Border>
 
-            <Button
-                Command="{Binding SaveCommand}"
-                Style="{StaticResource ButtonStyle}"
-                Text="Save" />
-            <Button
-                Command="{Binding DeleteCommand}"
-                Style="{StaticResource ButtonStyle}"
-                Text="Delete" />
-            <Button
-                Command="{Binding CancelCommand}"
-                Style="{StaticResource ButtonStyle}"
-                Text="Cancel" />
+            <!--  Action Buttons  -->
+            <VerticalStackLayout Margin="0,8,0,0" Spacing="12">
+                <Button
+                    Command="{Binding SaveCommand}"
+                    Style="{StaticResource PrimaryButtonStyle}"
+                    Text="💾 Save Task" />
+
+                <Button
+                    Command="{Binding DeleteCommand}"
+                    IsVisible="{Binding IsEditMode}"
+                    Style="{StaticResource DangerButtonStyle}"
+                    Text="🗑️ Delete Task" />
+
+                <Button
+                    Command="{Binding CancelCommand}"
+                    Style="{StaticResource SecondaryButtonStyle}"
+                    Text="Cancel" />
+            </VerticalStackLayout>
+
+            <!--  Spacer for bottom  -->
+            <BoxView HeightRequest="20" Color="Transparent" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

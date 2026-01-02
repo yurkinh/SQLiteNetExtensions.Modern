@@ -32,6 +32,9 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
     [ObservableProperty]
     private TimeSpan selectedTime = DateTime.Now.TimeOfDay;
 
+    [ObservableProperty]
+    private bool isEditMode;
+
     partial void OnSelectedDateChanged(DateTime value)
     {
         EventDateTime = value.Date + SelectedTime;
@@ -63,6 +66,7 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
         if (query.TryGetValue("TodoItem", out var todoItemObj) && todoItemObj is TodoItem todoItem)
         {
             receivedTodoItem = todoItem;
+            IsEditMode = true;
             Name = todoItem.Name;
             Done = todoItem.Done;
             NotesTitle = todoItem.Notes?.Title;
@@ -70,6 +74,10 @@ public partial class TodoItemViewModel : ObservableObject, IQueryAttributable
             EventDateTime = todoItem.Notes?.EventDateTime ?? DateTime.Now;
             SelectedDate = EventDateTime.Date;
             SelectedTime = EventDateTime.TimeOfDay;
+        }
+        else
+        {
+            IsEditMode = false;
         }
     }
 
