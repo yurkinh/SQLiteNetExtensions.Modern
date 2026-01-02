@@ -13,6 +13,18 @@ public partial class TodoListViewModel(IDatabaseService databaseService) : Obser
 
     public ObservableCollection<TodoItem> Items { get; private set; } = [];
 
+    [ObservableProperty]
+    private TodoItem? selectedItem;
+
+    partial void OnSelectedItemChanged(TodoItem? value)
+    {
+        if (value != null)
+        {
+            SelectItemAsync(value).ConfigureAwait(false);
+            SelectedItem = null; // Reset selection
+        }
+    }
+
     public async Task LoadItemsAsync()
     {
         var items = await databaseService.GetItemsAsync();
