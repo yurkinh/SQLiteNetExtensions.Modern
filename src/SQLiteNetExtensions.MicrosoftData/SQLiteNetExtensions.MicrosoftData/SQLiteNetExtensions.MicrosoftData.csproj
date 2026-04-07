@@ -37,6 +37,10 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.Data.Sqlite" Version="10.0.5" />
   </ItemGroup>
+
+  <ItemGroup>
+    <InternalsVisibleTo Include="UnitTests" />
+  </ItemGroup>
   <ItemGroup>
     <None Include="..\..\..\nuget.png" PackagePath="nuget.png" Pack="true" />
     <None Include="..\..\..\README.md" PackagePath="README.md" Pack="true" />
