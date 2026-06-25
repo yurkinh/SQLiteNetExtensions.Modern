@@ -1,6 +1,6 @@
 # SQLiteNetExtensions.Modern
 
-This is a .NET 9 migration of the [TwinCoders]([https://bitbucket.org/twincoders])   [SQLiteNetExtensions](https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/)
+This is a .NET 10 migration of the [TwinCoders]([https://bitbucket.org/twincoders])   [SQLiteNetExtensions](https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/)
 
  Available on NuGet: https://www.nuget.org/packages/SQLiteNetExtensions.Modern [![NuGet](https://img.shields.io/nuget/v/SQLiteNetExtensions.Modern.svg?label=NuGet)](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/)
 
@@ -9,6 +9,13 @@ This is a .NET 9 migration of the [TwinCoders]([https://bitbucket.org/twincoders
 sqlite-net is an open source, minimal library to allow .NET and Mono applications to store data in [SQLite 3 databases](http://www.sqlite.org). SQLite-Net Extensions extends its functionality to help the user handle relationships between sqlite-net entities.
 
 ### What's new
+## .NET 10
+* Migrated extensions to .NET 10
+* Migrated samples to .NET 10
+* Migrated Integration tests and unit tests to .NET 10
+* Upgraded `sqlite-net-base` to 1.11.272-beta
+* Explicit `SQLitePCLRaw.bundle_green 2.1.11` references added to all sample projects
+* **Security:** Addresses [GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q) — see [Security](#security) section below
 ## .NET 9
 * Migrated extensions to .NET 9
 * Migrated samples to .NET 9
@@ -37,12 +44,37 @@ Complementarily `UpdateWithChildren` looks at the relationships that you have se
 
 You can update foreign keys manually if you feel more comfortable handling some relationships by yourself and let the SQLite-Net extensions handle the rest for you. You can even add or remove SQLite-Net extensions of any project at any time without changes to your database.
 
+## Security
+
+> ⚠️ **Known vulnerability in `sqlite-net-pcl` ≤ 1.9.172**
+>
+> The stable release `sqlite-net-pcl 1.9.172` (referenced in the official [.NET MAUI local databases](https://learn.microsoft.com/en-us/dotnet/maui/data-cloud/database-sqlite) guide) brings in a transitive dependency on `SQLitePCLRaw.lib.e_sqlite3 2.1.2`, which contains a high-severity SQLite vulnerability ([GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q)).
+>
+> This project uses **`sqlite-net-base`** (without a bundled SQLite provider) together with an **explicit** `SQLitePCLRaw.bundle_green` reference, giving you full control over the SQLite native library version. Starting with version 3.1.0 the dependency has been upgraded to `sqlite-net-base 1.11.272-beta` and `SQLitePCLRaw.bundle_green 2.1.11`.
+>
+> **Recommended package combination:**
+> ```xml
+> <PackageReference Include="SQLiteNetExtensions.Modern" Version="3.1.0" />
+> <PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
+> <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+> ```
+>
+> See the [dotnet/maui discussion #36070](https://github.com/dotnet/maui/discussions/36070) for full context.
+
 ## Installation
 The easiest way of installing the library in your project is by adding a reference to [_SQLiteNetExtensions.Modern_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/).
 
-Currently, the recommended version is the official SQLite-Net PCL NuGet package. If you are using this SQLite-Net version, you can simply add a reference to [_SQLiteNetExtensions.Modern_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/). Nuget package contains both sync and async versions.
+This package uses `sqlite-net-base` so you need to also add a SQLitePCLRaw bundle. The recommended combination is:
 
-Otherwise, you can download and compile the sources by yourself and add the reference to your newly compiled DLL or add SQLite-Net Extensions project as a dependency to your code.
+```xml
+<PackageReference Include="SQLiteNetExtensions.Modern" Version="3.1.0" />
+<PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
+<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+```
+
+> **Do not** use `sqlite-net-pcl 1.9.172` — it introduces a high-severity SQLite vulnerability via its bundled `SQLitePCLRaw.lib.e_sqlite3 2.1.2`. See the [Security](#security) section above.
+
+The NuGet package contains both sync and async extension versions. You can also download and compile the sources and add the reference to your compiled DLL, or add the SQLite-Net Extensions project as a dependency directly.
 
 ## Get help
 The best way to get help is searching [StackOverflow](http://stackoverflow.com) for already existing answers of your problem or asking your own question and tagging it with [`sqlite-net-extensions` tag](http://stackoverflow.com/questions/tagged/sqlite-net-extensions).

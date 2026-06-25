@@ -9,7 +9,7 @@
 		<Authors>yurkinh</Authors>
 		<Copyright>Copyright © yurkinh and contributors</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageVersion>3.0.0</PackageVersion>
+		<PackageVersion>3.1.0</PackageVersion>
 		<IsPackable>True</IsPackable>
 		<PackageProjectUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</RepositoryUrl>
@@ -31,11 +31,15 @@
                         * Fixed nullable warnings
                         * Updated sample and nugets
                         * Added compatibility for AOT, CoreCLR
+                        * Upgraded sqlite-net-base to 1.11.272-beta
+                        * Addresses SQLite high-severity vulnerability GHSA-2m69-gcr7-jv3q
+                          (use sqlite-net-base + SQLitePCLRaw.bundle_green >= 2.1.11
+                           instead of the vulnerable sqlite-net-pcl 1.9.172)
     </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>    
-    <PackageReference Include="sqlite-net-base" Version="1.10.196-beta" />
+    <PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
     <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
   </ItemGroup>
   <ItemGroup>

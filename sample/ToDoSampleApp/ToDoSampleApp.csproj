@@ -68,7 +68,8 @@
 		<PackageReference Include="Microsoft.Extensions.Logging.Debug" Version="10.0.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="CommunityToolkit.Maui" Version="13.0.0" />		
-		<PackageReference Include="sqlite-net-base" Version="1.10.196-beta" />
+		<PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
+		<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
 	</ItemGroup>
 
 	<ItemGroup>
