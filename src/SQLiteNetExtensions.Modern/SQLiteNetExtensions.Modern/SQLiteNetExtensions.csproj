@@ -35,8 +35,8 @@
   </PropertyGroup>
 
   <ItemGroup>    
-    <PackageReference Include="sqlite-net-base" Version="1.10.196-beta" />
-    <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+    <PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
+    <PackageReference Include="sqlitepclraw.bundle_e_sqlite3" Version="3.0.3" />
   </ItemGroup>
   <ItemGroup>
 		<None Include="..\..\..\nuget.png" PackagePath="nuget.png" Pack="true" />
