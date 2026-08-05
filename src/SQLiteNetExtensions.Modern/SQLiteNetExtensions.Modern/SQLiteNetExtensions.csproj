@@ -26,11 +26,7 @@
 		<DebugType>portable</DebugType>
 		<PackageIcon>nuget.png</PackageIcon>
     <PackageId>SQLiteNetExtensions.Modern</PackageId>
-		<PackageReleaseNotes>
-		                    * Updated to .NET 10
-                        * Fixed nullable warnings
-                        * Updated sample and nugets
-                        * Added compatibility for AOT, CoreCLR
+		<PackageReleaseNotes>		                   
                         * Upgraded sqlite-net-base to 1.11.272-beta
                         * Addresses SQLite high-severity vulnerability GHSA-2m69-gcr7-jv3q
                           (use sqlite-net-base + SQLitePCLRaw.bundle_green >= 2.1.11
