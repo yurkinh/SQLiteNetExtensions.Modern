@@ -64,13 +64,15 @@ You can update foreign keys manually if you feel more comfortable handling some 
 ## Installation
 The easiest way of installing the library in your project is by adding a reference to [_SQLiteNetExtensions.Modern_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/).
 
-This package uses `sqlite-net-base` so you need to also add a SQLitePCLRaw bundle. The recommended combination is:
+This package uses `sqlite-net-base`, which deliberately ships **without** a SQLite provider — the package itself only depends on `sqlite-net-base`, so the choice of SQLitePCLRaw bundle/provider is entirely yours. You must add one to your app. The recommended combination is:
 
 ```xml
 <PackageReference Include="SQLiteNetExtensions.Modern" Version="3.1.0" />
 <PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
 <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
 ```
+
+Any other SQLitePCLRaw setup works too — e.g. `SQLitePCLRaw.config.e_sqlite3` + `SourceGear.sqlite3` (3.x line) if you want a current statically-linked SQLite under your own control.
 
 > **Do not** use `sqlite-net-pcl 1.9.172` — it introduces a high-severity SQLite vulnerability via its bundled `SQLitePCLRaw.lib.e_sqlite3 2.1.2`. See the [Security](#security) section above.
 
