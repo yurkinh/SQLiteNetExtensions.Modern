@@ -14,7 +14,8 @@ sqlite-net is an open source, minimal library to allow .NET and Mono application
 * Migrated samples to .NET 10
 * Migrated Integration tests and unit tests to .NET 10
 * Upgraded `sqlite-net-base` to 1.11.272-beta
-* Explicit `SQLitePCLRaw.bundle_green 2.1.11` references added to all sample projects
+* Removed the `SQLitePCLRaw.bundle_green` dependency from the package — the choice of SQLitePCLRaw bundle/provider is now yours
+* Samples and unit tests use `SQLitePCLRaw.bundle_e_sqlite3 3.0.5` (SQLite 3.53.4) instead of `SQLitePCLRaw.bundle_green 2.1.11`
 * **Security:** Addresses [GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q) — see [Security](#security) section below
 ## .NET 9
 * Migrated extensions to .NET 9
@@ -50,13 +51,15 @@ You can update foreign keys manually if you feel more comfortable handling some 
 >
 > The stable release `sqlite-net-pcl 1.9.172` (referenced in the official [.NET MAUI local databases](https://learn.microsoft.com/en-us/dotnet/maui/data-cloud/database-sqlite) guide) brings in a transitive dependency on `SQLitePCLRaw.lib.e_sqlite3 2.1.2`, which contains a high-severity SQLite vulnerability ([GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q)).
 >
-> This project uses **`sqlite-net-base`** (without a bundled SQLite provider) together with an **explicit** `SQLitePCLRaw.bundle_green` reference, giving you full control over the SQLite native library version. Starting with version 3.1.0 the dependency has been upgraded to `sqlite-net-base 1.11.272-beta` and `SQLitePCLRaw.bundle_green 2.1.11`.
+> This project uses **`sqlite-net-base`** (without a bundled SQLite provider). Starting with version 3.2.0 the package itself no longer depends on any SQLitePCLRaw bundle, so you add one **explicitly**, giving you full control over the SQLite native library version.
+>
+> The advisory has since been extended to cover `SQLitePCLRaw.lib.e_sqlite3` ≤ 2.1.11, which is what `SQLitePCLRaw.bundle_green 2.1.11` brings in. `bundle_green` was removed in SQLitePCLRaw 3.0, so the recommended bundle is now `SQLitePCLRaw.bundle_e_sqlite3 3.0.5` (SQLite 3.53.4). Note that, unlike `bundle_green`, `bundle_e_sqlite3` uses the bundled SQLite on iOS as well instead of the system library.
 >
 > **Recommended package combination:**
 > ```xml
-> <PackageReference Include="SQLiteNetExtensions.Modern" Version="3.1.0" />
+> <PackageReference Include="SQLiteNetExtensions.Modern" Version="3.2.0" />
 > <PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
-> <PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+> <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
 > ```
 >
 > See the [dotnet/maui discussion #36070](https://github.com/dotnet/maui/discussions/36070) for full context.
@@ -67,14 +70,14 @@ The easiest way of installing the library in your project is by adding a referen
 This package uses `sqlite-net-base`, which deliberately ships **without** a SQLite provider — the package itself only depends on `sqlite-net-base`, so the choice of SQLitePCLRaw bundle/provider is entirely yours. You must add one to your app. The recommended combination is:
 
 ```xml
-<PackageReference Include="SQLiteNetExtensions.Modern" Version="3.1.0" />
+<PackageReference Include="SQLiteNetExtensions.Modern" Version="3.2.0" />
 <PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
-<PackageReference Include="SQLitePCLRaw.bundle_green" Version="2.1.11" />
+<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
 ```
 
 Any other SQLitePCLRaw setup works too — e.g. `SQLitePCLRaw.config.e_sqlite3` + `SourceGear.sqlite3` (3.x line) if you want a current statically-linked SQLite under your own control.
 
-> **Do not** use `sqlite-net-pcl 1.9.172` — it introduces a high-severity SQLite vulnerability via its bundled `SQLitePCLRaw.lib.e_sqlite3 2.1.2`. See the [Security](#security) section above.
+> **Do not** use `sqlite-net-pcl 1.9.172` or `SQLitePCLRaw.bundle_green` ≤ 2.1.11 — both bring in a vulnerable `SQLitePCLRaw.lib.e_sqlite3` (high-severity SQLite vulnerability). See the [Security](#security) section above.
 
 The NuGet package contains both sync and async extension versions. You can also download and compile the sources and add the reference to your compiled DLL, or add the SQLite-Net Extensions project as a dependency directly.
 
