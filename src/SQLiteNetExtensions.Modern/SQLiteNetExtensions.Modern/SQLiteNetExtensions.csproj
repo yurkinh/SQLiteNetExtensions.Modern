@@ -27,17 +27,16 @@
 		<PackageIcon>nuget.png</PackageIcon>
     <PackageId>SQLiteNetExtensions.Modern</PackageId>
 		<PackageReleaseNotes>		                   
-                        * Replaced SQLitePCLRaw.bundle_green 2.1.11 with SQLitePCLRaw.bundle_e_sqlite3 3.0.5
-                          (bundle_green was removed in SQLitePCLRaw 3.0, and SQLitePCLRaw.lib.e_sqlite3 &lt;= 2.1.11
-                           is flagged by the high-severity advisory GHSA-2m69-gcr7-jv3q)
-                        * Bundled native SQLite updated to 3.53.4
+                        * Removed the SQLitePCLRaw.bundle_green dependency - consumers now choose their own SQLitePCLRaw bundle/provider
+                        * Recommended bundle is now SQLitePCLRaw.bundle_e_sqlite3 3.0.5 (SQLite 3.53.4):
+                          bundle_green was removed in SQLitePCLRaw 3.0, and SQLitePCLRaw.lib.e_sqlite3 &lt;= 2.1.11
+                          is flagged by the high-severity advisory GHSA-2m69-gcr7-jv3q
                         * sqlite-net-base 1.11.272-beta (latest available)
     </PackageReleaseNotes>
   </PropertyGroup>
 
   <ItemGroup>    
     <PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
-    <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
   </ItemGroup>
   <ItemGroup>
 		<None Include="..\..\..\nuget.png" PackagePath="nuget.png" Pack="true" />

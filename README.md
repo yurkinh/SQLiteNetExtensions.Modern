@@ -14,7 +14,8 @@ sqlite-net is an open source, minimal library to allow .NET and Mono application
 * Migrated samples to .NET 10
 * Migrated Integration tests and unit tests to .NET 10
 * Upgraded `sqlite-net-base` to 1.11.272-beta
-* Replaced `SQLitePCLRaw.bundle_green 2.1.11` with `SQLitePCLRaw.bundle_e_sqlite3 3.0.5` (SQLite 3.53.4) in the library and all sample projects
+* Removed the `SQLitePCLRaw.bundle_green` dependency from the package — the choice of SQLitePCLRaw bundle/provider is now yours
+* Samples and unit tests use `SQLitePCLRaw.bundle_e_sqlite3 3.0.5` (SQLite 3.53.4) instead of `SQLitePCLRaw.bundle_green 2.1.11`
 * **Security:** Addresses [GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q) — see [Security](#security) section below
 ## .NET 9
 * Migrated extensions to .NET 9
@@ -50,9 +51,9 @@ You can update foreign keys manually if you feel more comfortable handling some 
 >
 > The stable release `sqlite-net-pcl 1.9.172` (referenced in the official [.NET MAUI local databases](https://learn.microsoft.com/en-us/dotnet/maui/data-cloud/database-sqlite) guide) brings in a transitive dependency on `SQLitePCLRaw.lib.e_sqlite3 2.1.2`, which contains a high-severity SQLite vulnerability ([GHSA-2m69-gcr7-jv3q](https://github.com/advisories/GHSA-2m69-gcr7-jv3q)).
 >
-> This project uses **`sqlite-net-base`** (without a bundled SQLite provider) together with an **explicit** SQLitePCLRaw bundle reference, giving you full control over the SQLite native library version.
+> This project uses **`sqlite-net-base`** (without a bundled SQLite provider). Starting with version 3.2.0 the package itself no longer depends on any SQLitePCLRaw bundle, so you add one **explicitly**, giving you full control over the SQLite native library version.
 >
-> The advisory has since been extended to cover `SQLitePCLRaw.lib.e_sqlite3` ≤ 2.1.11, which is what `SQLitePCLRaw.bundle_green 2.1.11` brings in. `bundle_green` was removed in SQLitePCLRaw 3.0, so starting with version 3.2.0 this package depends on `SQLitePCLRaw.bundle_e_sqlite3 3.0.5` (SQLite 3.53.4) instead. Note that, unlike `bundle_green`, `bundle_e_sqlite3` uses the bundled SQLite on iOS as well instead of the system library.
+> The advisory has since been extended to cover `SQLitePCLRaw.lib.e_sqlite3` ≤ 2.1.11, which is what `SQLitePCLRaw.bundle_green 2.1.11` brings in. `bundle_green` was removed in SQLitePCLRaw 3.0, so the recommended bundle is now `SQLitePCLRaw.bundle_e_sqlite3 3.0.5` (SQLite 3.53.4). Note that, unlike `bundle_green`, `bundle_e_sqlite3` uses the bundled SQLite on iOS as well instead of the system library.
 >
 > **Recommended package combination:**
 > ```xml
@@ -66,13 +67,15 @@ You can update foreign keys manually if you feel more comfortable handling some 
 ## Installation
 The easiest way of installing the library in your project is by adding a reference to [_SQLiteNetExtensions.Modern_ NuGet package](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/).
 
-This package uses `sqlite-net-base` so you need to also add a SQLitePCLRaw bundle. The recommended combination is:
+This package uses `sqlite-net-base`, which deliberately ships **without** a SQLite provider — the package itself only depends on `sqlite-net-base`, so the choice of SQLitePCLRaw bundle/provider is entirely yours. You must add one to your app. The recommended combination is:
 
 ```xml
 <PackageReference Include="SQLiteNetExtensions.Modern" Version="3.2.0" />
 <PackageReference Include="sqlite-net-base" Version="1.11.272-beta" />
 <PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
 ```
+
+Any other SQLitePCLRaw setup works too — e.g. `SQLitePCLRaw.config.e_sqlite3` + `SourceGear.sqlite3` (3.x line) if you want a current statically-linked SQLite under your own control.
 
 > **Do not** use `sqlite-net-pcl 1.9.172` or `SQLitePCLRaw.bundle_green` ≤ 2.1.11 — both bring in a vulnerable `SQLitePCLRaw.lib.e_sqlite3` (high-severity SQLite vulnerability). See the [Security](#security) section above.
 
