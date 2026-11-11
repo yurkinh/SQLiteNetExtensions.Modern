@@ -9,6 +9,10 @@ jobs:
   release-nuget:
   
     runs-on: windows-latest
+    environment: release
+    permissions:
+      id-token: write   # Required for NuGet trusted publishing (OIDC)
+      contents: read
 
     steps:
       - uses: actions/checkout@v4
@@ -29,7 +33,10 @@ jobs:
         run: dotnet build src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.slnx -c Release 
       - name: Pack
         run: dotnet pack src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.slnx -c Release  --no-build --output .
+      - name: NuGet login (OIDC)
+        id: login
+        uses: NuGet/login@v1
+        with:
+          user: ${{ secrets.NUGET_USER }}  # nuget.org profile name, NOT email
       - name: Push
-        run: dotnet nuget push SQLiteNetExtensions.Modern.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ secrets.NUGET_API_KEY }}
-        env:
-          GITHUB_TOKEN: ${{ secrets.NUGET_API_KEY }}
+        run: dotnet nuget push SQLiteNetExtensions.Modern.*.nupkg -s https://api.nuget.org/v3/index.json -k ${{ steps.login.outputs.NUGET_API_KEY }} --skip-duplicate
