@@ -1,7 +1,7 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
+    <TargetFramework>net11.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
     <Nullable>enable</Nullable>
 
@@ -9,7 +9,7 @@
 		<Authors>yurkinh</Authors>
 		<Copyright>Copyright © yurkinh and contributors</Copyright>
 		<PackageReadmeFile>README.md</PackageReadmeFile>
-		<PackageVersion>3.2.0</PackageVersion>
+		<PackageVersion>4.0.0</PackageVersion>
 		<IsPackable>True</IsPackable>
 		<PackageProjectUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</PackageProjectUrl>
 		<RepositoryUrl>https://github.com/yurkinh/SQLiteNetExtensions.Modern</RepositoryUrl>
@@ -27,6 +27,7 @@
 		<PackageIcon>nuget.png</PackageIcon>
     <PackageId>SQLiteNetExtensions.Modern</PackageId>
 		<PackageReleaseNotes>		                   
+                        * Migrated to .NET 11 (net11.0 only; .NET 10 and earlier are no longer targeted - use 3.2.0 for .NET 10)
                         * Removed the SQLitePCLRaw.bundle_green dependency - consumers now choose their own SQLitePCLRaw bundle/provider
                         * Recommended bundle is now SQLitePCLRaw.bundle_e_sqlite3 3.0.5 (SQLite 3.53.4):
                           bundle_green was removed in SQLitePCLRaw 3.0, and SQLitePCLRaw.lib.e_sqlite3 &lt;= 2.1.11

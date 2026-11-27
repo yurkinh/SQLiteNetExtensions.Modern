@@ -1,6 +1,6 @@
 # SQLiteNetExtensions.Modern
 
-This is a .NET 10 migration of the [TwinCoders]([https://bitbucket.org/twincoders])   [SQLiteNetExtensions](https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/)
+This is a .NET 11 migration of the [TwinCoders]([https://bitbucket.org/twincoders])   [SQLiteNetExtensions](https://bitbucket.org/twincoders/sqlite-net-extensions/src/master/)
 
  Available on NuGet: https://www.nuget.org/packages/SQLiteNetExtensions.Modern [![NuGet](https://img.shields.io/nuget/v/SQLiteNetExtensions.Modern.svg?label=NuGet)](https://www.nuget.org/packages/SQLiteNetExtensions.Modern/)
 
@@ -9,6 +9,10 @@ This is a .NET 10 migration of the [TwinCoders]([https://bitbucket.org/twincoder
 sqlite-net is an open source, minimal library to allow .NET and Mono applications to store data in [SQLite 3 databases](http://www.sqlite.org). SQLite-Net Extensions extends its functionality to help the user handle relationships between sqlite-net entities.
 
 ### What's new
+## .NET 11
+* Migrated extensions to .NET 11 (`net11.0` only - the last release supporting .NET 10 is 3.2.0)
+* Migrated unit tests to .NET 11
+* Samples remain on .NET 10 for now, pending MAUI 11 packages
 ## .NET 10
 * Migrated extensions to .NET 10
 * Migrated samples to .NET 10
