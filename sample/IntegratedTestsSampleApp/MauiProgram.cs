@@ -1,4 +1,7 @@
-﻿using Microsoft.Extensions.Logging;
+﻿#if DEBUG
+using Microsoft.Maui.DevFlow.Agent;
+#endif
+using Microsoft.Extensions.Logging;
 
 namespace IntegratedTestsSampleApp;
 
@@ -20,6 +23,7 @@ public static class MauiProgram
 
 #if DEBUG
 		builder.Logging.AddDebug();
+		builder.AddMauiDevFlowAgent();
 #endif
 
 		return builder.Build();
