@@ -9,6 +9,9 @@
         <!-- When App Sandbox is enabled, this value is required to open outgoing network connections. -->
         <key>com.apple.security.network.client</key>
         <true/>
+        <!-- Allows incoming connections; needed by the MAUI DevFlow agent, which only runs in Debug builds. -->
+        <key>com.apple.security.network.server</key>
+        <true/>
     </dict>
 </plist>
 

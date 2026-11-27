@@ -1,4 +1,7 @@
-﻿using CommunityToolkit.Maui;
+﻿#if DEBUG
+using Microsoft.Maui.DevFlow.Agent;
+#endif
+using CommunityToolkit.Maui;
 using Microsoft.Extensions.Logging;
 using ToDoSampleApp.Services;
 using ToDoSampleApp.ViewModels;
@@ -26,6 +29,7 @@ public static class MauiProgram
 
 #if DEBUG
 		builder.Logging.AddDebug();
+		builder.AddMauiDevFlowAgent();
 #endif
 
 		return builder.UseMauiApp<App>().Build();

@@ -70,6 +70,10 @@
 		<PackageReference Include="SQLitePCLRaw.bundle_e_sqlite3" Version="3.0.5" />
 	</ItemGroup>
 
+	<ItemGroup Condition="'$(Configuration)' == 'Debug'">
+		<PackageReference Include="Microsoft.Maui.DevFlow.Agent" Version="0.1.0-preview.16.26575.3" />
+	</ItemGroup>
+
 	<ItemGroup>
 	  <ProjectReference Include="..\..\src\SQLiteNetExtensions.Modern\SQLiteNetExtensions.Modern\SQLiteNetExtensions.csproj" />
 	</ItemGroup>
